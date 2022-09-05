@@ -18,7 +18,7 @@ const Courier = require("../models/courier")(sequelize);
 const Transaction_list = require("../models/transaction_list")(sequelize);
 const Transaction = require("../models/transaction")(sequelize);
 const Product_description = require("../models/product_description")(sequelize);
-const Produk_img = require("../models/product_img")(sequelize);
+const Product_img = require("../models/product_img")(sequelize);
 const Product_stock = require("../models/product_stock")(sequelize);
 const Product = require("../models/product")(sequelize);
 const Product_category = require("../models/product_category")(sequelize);
@@ -63,8 +63,8 @@ Transaction.belongsTo(Payment, { foreignKey: "id_payment" });
 Product_description.hasOne(Product, { foreignKey: "id_produk_description" });
 Product.belongsTo(Product_description, { foreignKey: "id_produk_description" });
 
-Product.hasMany(Produk_img, { foreignKey: "id_product" });
-Produk_img.belongsTo(Product, { foreignKey: "id_product" });
+Product.hasMany(Product_img, { foreignKey: "id_product" });
+Product_img.belongsTo(Product, { foreignKey: "id_product" });
 
 Product.hasMany(Product_stock, { foreignKey: "id_product" });
 Product_stock.belongsTo(Product, { foreignKey: "id_product" });
@@ -112,7 +112,7 @@ module.exports = {
   Transaction_list,
   Transaction,
   Product_description,
-  Produk_img,
+  Product_img,
   Product_stock,
   Product,
   Product_category,

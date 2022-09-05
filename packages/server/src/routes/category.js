@@ -1,18 +1,12 @@
-// const express = require("express");
-// const router = express.Router();
+const express = require("express");
+const router = express.Router();
 
-// const { commentController } = require("../controller");
+const { categoryController } = require("../controller");
 
-// // -------------------- get comment dari post id dan di limit 5
-// router.get("/post/:id", commentController.getComment);
+// -------------------- get all category
+router.get("/", categoryController.getCategory);
 
-// // -------------------- add comment
-// router.post("/", commentController.addComment);
+router.get("/idProduct/:id", categoryController.getCategoryByProduct);
 
-// // -------------------- edit comment dari post id
-// router.patch("/:id", commentController.editComment);
 
-// // -------------------- delete comment
-// router.delete("/:id", commentController.deleteComment);
-
-// module.exports = router;
+module.exports = router;

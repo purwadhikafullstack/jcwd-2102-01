@@ -1,28 +1,17 @@
-// const express = require("express");
-// const router = express.Router();
-// const fileUploader = require("../lib/uploader");
+const express = require("express");
+const router = express.Router();
+const fileUploader = require("../lib/uploader");
 
-// const { postController } = require("../controller");
+const { productController } = require("../controller");
 // // router.get("/", postController.getAllPost);
 
-// router.get("/", postController.getPostPaging);
+router.get("/", productController.getProductPaging);
 
 // router.get("/user/:id", postController.getPostByUser);
 
-// router.get("/postId/:id", postController.getPostById);
+router.get("/productDetail/:code", productController.getProductById);
 
-// router.post(
-//   "/",
-//   fileUploader({
-//     destinationFolder: "post_images",
-//     fileType: "image",
-//     prefix: "POST",
-//   }).single("image"),
-//   postController.addPost
-// );
+router.get("/productImage/:id", productController.getProductImageById);
 
-// router.patch("/:id", postController.editPost);
 
-// router.delete("/:id", postController.deletePost);
-
-// module.exports = router;
+module.exports = router;

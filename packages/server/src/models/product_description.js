@@ -5,6 +5,7 @@ const Product_description = (sequelize) => {
     weight: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
+      allowNull: false,
     },
     kegunaan: {
       type: DataTypes.STRING(500),

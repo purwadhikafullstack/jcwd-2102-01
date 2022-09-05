@@ -2,6 +2,14 @@ const { DataTypes } = require("sequelize");
 
 const Address = (sequelize) => {
   return sequelize.define("Address", {
+    receiver_name: {
+      type: DataTypes.STRING(120),
+      allowNull: false,
+    },
+    receiver_phone: {
+      type: DataTypes.STRING(14),
+      allowNull: true,
+    },
     address: {
       type: DataTypes.STRING(350),
       allowNull: false,
@@ -31,10 +39,7 @@ const Address = (sequelize) => {
       type: DataTypes.STRING(20),
       allowNull: false,
     },
-    default_address: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
+    
   });
 };
 

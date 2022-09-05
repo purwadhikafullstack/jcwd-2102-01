@@ -9,8 +9,6 @@ router.post("/", userController.register);
 
 router.post("/login", userController.login);
 
-router.post("/getUser", userController.getUser);
-
 router.post("/resendVerification", userController.resendVerification);
 
 router.patch("/edit/:id",userController.editUser);

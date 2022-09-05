@@ -44,6 +44,11 @@ const User = (sequelize) => {
       type: DataTypes.STRING(255),
       allowNull: true,
     },
+    default_address: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      allowNull: true,
+    },
   });
 };
 

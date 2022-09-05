@@ -1,4 +1,4 @@
-const { User } = require("../lib/sequelize");
+const { User, Address } = require("../lib/sequelize");
 const { Op } = require("sequelize");
 const bcrypt = require("bcrypt");
 const { generateToken, verifyToken } = require("../lib/jwt");
@@ -92,7 +92,10 @@ const userController = {
       const { id } = req.params;
       
       const findUser = await User.findAll({
-        attributes: ['id','username','email','full_name','roles','phone_no','gender','image_url'],
+        attributes: ['id','username','email','full_name','roles','phone_no','gender','image_url','defaultAddresses'],
+        include: [
+          { model : Address },
+        ],
           where: {
             id,
           },
@@ -110,26 +113,7 @@ const userController = {
     }
   },
 
-  // -------------------- get User ONLINE Controller -------------------- //
-  getUser: async (req, res) => {
-    try {      
-      const findUser = await User.findAll({
-        attributes: ['id','username','email','full_name','online_status','image_url'],
-        order: [["online_status", "DESC"]]
-      }
-      )
-      return res.status(200).json({
-        message: "Get User Profile",
-        result: findUser,  
-      });
-    } catch (err) {
-      console.log(err);
-      res.status(500).json({
-        message: err.toString(),
-      });
-    }
-  },
-
+  
   // -------------------- User Register Controller -------------------- //
   register: async (req, res) => {
     try {
@@ -274,17 +258,19 @@ const userController = {
   editUser: async (req, res) => {
     try {
       const { id } = req.params;
-      const { username, email, birth, full_name, gender, phone_no } = req.body;
+      const {  email, birth, full_name, gender, default_address } = req.body;
+      // const { username, email, birth, full_name, gender, phone_no } = req.body;
       
     const findUser = await User.findOne({
         where: {
           id: { [Op.notIn]: [id] },
-          [Op.or]: [{ username }, { email }],
+          [Op.or]: [ { email }],
+          // [Op.or]: [{ username }, { email }],
         },
       });
 
       if (findUser) {
-        throw Error("username/email has been taken");
+        throw Error("email has been taken");
       }
       
     await User.update(

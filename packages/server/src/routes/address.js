@@ -7,7 +7,7 @@ const { addressController } = require("../controller");
 router.get("/user/:id", addressController.getAddressUser);
 
 // -------------------- add address
-router.post("/add/:id", addressController.addAddress);
+router.post("/add/:idUser", addressController.addAddress);
 
 // -------------------- edit address
 router.patch("/:id", addressController.editAddress);

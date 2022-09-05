@@ -35,8 +35,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use("/address", addressRoutes);
-// app.use("/category", categoryRoutes);
-// app.use("/product", productRoutes);
+app.use("/category", categoryRoutes);
+app.use("/products", productRoutes);
 // app.use("/transaction", transactionRoutes);
 app.use("/user", userRoutes);
 

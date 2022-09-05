@@ -13,14 +13,21 @@ const Product_stock = (sequelize) => {
     capital_price: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
+      allowNull: false,
+    },
+    first_price: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
     },
     selling_price: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
+      allowNull: false,
     },
     profit: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
+      allowNull: false,
     },
     converted: {
       type: DataTypes.BOOLEAN,
