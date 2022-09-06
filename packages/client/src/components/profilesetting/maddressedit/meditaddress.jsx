@@ -40,6 +40,22 @@ export default function MeditAddress(props) {
       city_id: `${city_idEd}`,
       postal_code: `${postalCodeEd}`,
     },
+    validationSchema: Yup.object().shape({
+      receiver_name: Yup.string().required("Nama penerima wajib diisi").
+        min(3, 'Nama penerima terlalu pendek!').
+        max(50, 'Nama tidak boleh lebih dari 50 karakter').
+        matches(/^[aA-zZ\s]+$/, "hanya boleh diisi huruf").trim(),
+      receiver_phone: Yup.string().required("Nomor Hp penerima wajib diisi").
+        min(10, 'Nomor handphone salah atau kurang dari 12 angka').
+        max(12, 'Nomor handphone salah atau lebih dari 12 angka'),
+      address: Yup.string().required("Alamat wajib diisi").
+        min(10, 'Alamat minimal 10 karakter').
+        max(350, 'Alamat maksimal 350 karakter').trim(),
+      province: Yup.string().required("Provinsi wajib diisi"),
+      city_name: Yup.string().required("Nama Kota wajib diisi"),
+      postal_code: Yup.string().required("Kode Post wajib diisi"),
+    }),
+    validateOnChange: false,
     onSubmit: async () => {
       const { receiver_name, receiver_phone, address, province_id, city_id, postal_code, default_address } = formik.values
       try {
@@ -176,7 +192,7 @@ export default function MeditAddress(props) {
               placeholder='Nama Penerima'
               required
               type="text"
-              maxLength={"120"}
+              maxLength={"50"}
               onChange={(event) =>
                 formik.setFieldValue("receiver_name", event.target.value)
               }
@@ -187,7 +203,7 @@ export default function MeditAddress(props) {
           </FormControl>
         </Box>
         <Box ml='10px'>
-          {/* -------------------- receiver_name -------------------- */}
+          {/* -------------------- receiver_Phone -------------------- */}
           <FormControl isInvalid={formik.errors.receiver_phone}>
             {/* {formik.values.receiver_phone} */}
             <FormLabel display='flex'>Nomor HP penerima<Text color='red'>*</Text></FormLabel>
@@ -195,7 +211,6 @@ export default function MeditAddress(props) {
               placeholder='Nomor HP'
               required
               type="number"
-              maxLength={"120"}
               onChange={(event) =>
                 formik.setFieldValue("receiver_phone", event.target.value)
               }
@@ -216,7 +231,7 @@ export default function MeditAddress(props) {
           required
           type="text"
           defaultValue={alamatEd}
-          maxLength={"300"}
+          maxLength={"350"}
           onChange={(event) =>
             formik.setFieldValue("address", event.target.value)
           }

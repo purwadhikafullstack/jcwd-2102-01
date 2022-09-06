@@ -11,10 +11,18 @@ import { useEffect, useState } from 'react';
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import ForgotPass from '../../components/auth/ForgotPass'
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useRouter } from 'next/router';
+import { axiosInstance } from '../../lib/api';
+import { useToast } from '@chakra-ui/react';
 
 export default function RegisterForm() {
   const [passwordView, setPasswordView] = useState(false);
   const [passwordViewRep, setPasswordViewRep] = useState(false);
+  const userSelector = useSelector((state) => state.auth);
+  const router = useRouter();
+  const toast = useToast();
 
   const formik = useFormik({
     initialValues: {
@@ -23,13 +31,20 @@ export default function RegisterForm() {
       full_name: "",
       password: "",
       repassword: "",
+      phone_no: "",
+      roles: "User",
     },
     validationSchema: Yup.object().shape({
       email: Yup.string()
         .required("Email is required")
-        .matches(/@/, "Please inclue an '@' in the email address"),
+        // .matches(/@/, "Please inclue an '@' in the email address")
+        .email('Format harus email'),
+      // .matches(/.com/, "Please include an '.com' in the email address"),
       username: Yup.string().required("Username is required"),
-      full_name: Yup.string().required("Fullname is required"),
+      full_name: Yup.string()
+        .required("Nama wajib diisi")
+        .min(3, 'Nama anda terlalu pendek!')
+        .matches(/^[aA-zZ\s]+$/, "hanya boleh diisi huruf").trim(),
       password: Yup.string()
         .required("Password is required")
         .min(8, "Password should be of minimum 8 characters length")
@@ -40,45 +55,50 @@ export default function RegisterForm() {
       repassword: Yup.string()
         .oneOf([Yup.ref("password")], "Passwords do not match")
         .required("Confirm password is required"),
+      phone_no: Yup.number()
+        .required("Phone number is required")
+        .min(7, "Phone number should be of minimum 7 character length")
     }),
     validateOnChange: false,
-    onSubmit: (values) => {
-      dispatch(userRegister(values, formik.setSubmitting))
-    },
-
     // ------------------------------- code setelah register tidak login
-    // onSubmit: async () => {
-    //   // const formData = new FormData();
-    //   const { email, username, full_name, password } = formik.values;
+    onSubmit: async () => {
+      const formData = new FormData();
+      const { email, username, full_name, password, phone_no, roles } = formik.values;
+      formData.append("email", email);
+      formData.append("username", username);
+      formData.append("fullname", full_name);
+      formData.append("password", password);
+      formData.append("phone_no", phone_no);
+      formData.append("roles", roles);
 
-    //   // formData.append("email", email);
-    //   // formData.append("username", username);
-    //   // formData.append("fullname", fullname);
-    //   // formData.append("password", password) ;
-
-    //   try {
-    //     await axiosInstance.post("/user", formik.values).then(() => {
-    //       toast({
-    //         title: "Register Success check your email",
-    //         status: "success",
-    //         isClosable: true,
-    //       });
-    //     });
-    //   } catch (err) {
-    //     console.log(err);
-    //     toast({
-    //       title: "Failed to Register / Email or Username has been taken",
-    //       status: "error",
-    //       isClosable: true,
-    //     });
-    //   }
-
-    //   // router.reload(window.location.pathname)
-    // },
-  });
+      try {
+        await axiosInstance.post("/user", formik.values).then(() => {
+          toast({
+            title: "Register Success check your email",
+            status: "success",
+            isClosable: true,
+          });
+        });
+      } catch (err) {
+        console.log(err);
+        toast({
+          title: "Failed to Register / Email or Username has been taken",
+          status: "error",
+          isClosable: true,
+        });
+      }
+    },
+  },
+  );
+  useEffect(() => {
+    if (userSelector?.id) {
+      router.push("/home");
+    }
+  }, [userSelector?.id])
 
   return (
     <>
+
       <Box display='flex' borderRadius='15px' boxShadow='md' bg='#ffffff' borderWidth='1px' >
         {/* -------------------- left cover image -------------------- */}
         <Box flexWrap='wrap' className='image-auth'
@@ -166,6 +186,35 @@ export default function RegisterForm() {
                   {formik.errors.full_name}
                 </FormHelperText>
               </FormControl>
+
+              {/* ---------- Phone Number Input ---------- */}
+
+              <FormControl
+                id="phone_no"
+                isInvalid={formik.errors.phone_no}
+                marginTop={"20px"}
+              >
+                <Input
+                  required
+                  className='inputText'
+                  type="text"
+                  maxLength={"40"}
+                  onChange={(event) =>
+                    formik.setFieldValue("phone_no", event.target.value)
+                  }
+                />
+                <FormLabel className="labelText">
+                  &nbsp; Phone Number &nbsp;
+                </FormLabel>
+                <FormHelperText color="red">
+                  {formik.errors.phone_no}
+                </FormHelperText>
+              </FormControl>
+              <FormLabel classname="labelText">
+
+
+
+              </FormLabel>
 
               {/* ---------- Password Input ---------- */}
               <FormControl
@@ -279,22 +328,14 @@ export default function RegisterForm() {
             {/* ---------- Sign Up Button ---------- */}
             <Box align={"center"}>
               <Button
-                onClick={() => {
-                  async function submit() {
-                    await formik.handleSubmit();
-                  }
-                  submit()
+                loadingText="Submitting"
+                size="lg"
+                bg={"blue.400"}
+                color={"white"}
+                _hover={{
+                  bg: "blue.500",
                 }}
-                w={"250px"}
-                colorScheme="twitter"
-                mb={"5px"}
-                disabled={
-                  formik.values.email.length > 9 &&
-                    formik.values.username.length > 2 &&
-                    formik.values.full_name.length > 2
-                    ? false
-                    : true
-                }
+                onClick={formik.handleSubmit}
               >
                 Sign up
               </Button>
@@ -309,6 +350,7 @@ export default function RegisterForm() {
           </Stack>
         </Box>
       </Box>
+
     </>
   )
 }

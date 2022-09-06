@@ -29,9 +29,8 @@ export default function ProductListing() {
   const [product, setProduct] = useState([])
 
   // ---------- for Filtering -----------//
-  const [pageStart, setPageStart] = useState(1)
   const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(3)
+  const [limit, setLimit] = useState()
   const [totalProduct, setTotalProduct] = useState(0)
   const [totalPage, setTotalPage] = useState(0)
   const [orderBy, setOrderBy] = useState()
@@ -103,21 +102,21 @@ export default function ProductListing() {
     try {
       // axiosInstance.get(`/comment/post/${id}?page=${startComment}&limit=${5}`)
       // get all product length
-      axiosInstance.get(`/products?limit=&page=`)
-        .then((res) => {
-          const temp = res.data.result
-          setTotalProduct(temp.length)
-        })
+      // axiosInstance.get(`/products?limit=&page=`)
+      //   .then((res) => {
+      //     const temp = res.data.result
+      //     setTotalProduct(temp.length)
+      //   })
 
       if (category1 || category2 || category3) {
-        axiosInstance.get(`/products?search=${formik.values.searchName}&sort=${sort}&orderby=${order}&category=${category1}&category2=${category2}&category3=${category3}&limit=16&page=${page}`)
+        axiosInstance.get(`/products?search=${formik.values.searchName}&sort=${sort}&orderby=${order}&category=${category1}&category2=${category2}&category3=${category3}&limit=12&page=${page}`)
           .then((res) => {
             setProduct(res.data.result)
             const temp = res.data.result
             // console.log(temp)
           })
       } else {
-        axiosInstance.get(`/products?search=${formik.values.searchName}&sort=${sort}&orderby=${order}&category=&category2=&category3=&limit=16&page=${page}`)
+        axiosInstance.get(`/products?search=${formik.values.searchName}&sort=${sort}&orderby=${order}&category=&category2=&category3=&limit=12&page=${page}`)
           .then((res) => {
             setProduct(res.data.result)
             const temp = res.data.result
@@ -153,22 +152,10 @@ export default function ProductListing() {
     fetchCategory()
     fetchProduct()
     setIsLoading(false);
-    setTotalPage(Math.ceil(totalProduct / 16))
-
+    setTotalPage(Math.ceil(totalProduct / 3))
+    // console.log('total produk ' + totalProduct)
+    // console.log('total page ' + totalPage)
   }, [router.isReady]);
-
-  console.log('total produk ' + totalProduct)
-  console.log('total page ' + totalPage)
-  console.log(page)
-
-  const renderButton = () => {
-    const array = [...Array(totalPage)]
-    return (
-      array.map(_ =>
-        <Button size='sm' m='3px' onClick={() => setPage(pageStart++)} borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
-          _hover={{ bg: '#009B90', color: 'white' }}>{pageStart++}</Button>)
-    )
-  }
 
   // const renderButton = () => {
   //   return totalPage.map((val) => {
@@ -187,9 +174,9 @@ export default function ProductListing() {
     fetchProduct()
   }, [autoRender]);
 
-  useEffect(() => {
-    fetchProduct()
-  }, [page]);
+  // useEffect(() => {
+  //   fetchCategory()
+  // }, [autoRender]);
 
   return (
     <>
@@ -361,7 +348,13 @@ export default function ProductListing() {
           <Box display='flex' justifyContent='center'>
             <Button onClick={() => setPage(1)} size='sm' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
               _hover={{ bg: '#009B90', color: 'white' }}>Prev</Button>
-            {renderButton()}
+            {/* {renderButton()} */}
+            <Button onClick={() => setPage(1)} size='sm' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
+              _hover={{ bg: '#009B90', color: 'white' }}>1</Button>
+            <Button onClick={() => setPage(2)} size='sm' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
+              _hover={{ bg: '#009B90', color: 'white' }}>2</Button>
+            <Button size='sm' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
+              _hover={{ bg: '#009B90', color: 'white' }}>3</Button>
             <Button size='sm' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
               _hover={{ bg: '#009B90', color: 'white' }}>Next</Button>
           </Box>

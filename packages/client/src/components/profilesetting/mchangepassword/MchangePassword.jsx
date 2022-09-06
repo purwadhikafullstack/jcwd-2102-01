@@ -8,7 +8,7 @@ import { IoMdEye, IoMdEyeOff } from 'react-icons/io';
 // import logogambar from '../../assets/imgs/ChicStorylogo.png'
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-// import { axiosInstance } from "../../lib/api"
+import { axiosInstance } from '../../../lib/api';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from "next/router";
 import qs from 'qs';
@@ -17,13 +17,14 @@ export default function MchangePassword() {
   const [passwordViewOld, setPasswordViewOld] = useState(false);
   const [passwordView, setPasswordView] = useState(false);
   const [passwordViewRep, setPasswordViewRep] = useState(false);
-  // const userSelector = useSelector((state) => state.auth)
+  const userSelector = useSelector((state) => state.auth)
   const router = useRouter()
 
   const formik = useFormik({
     initialValues: {
       password: "",
       repassword: "",
+      oldpassword: "",
     },
     validationSchema: Yup.object().shape({
       password: Yup.string().required("Password is required")
@@ -37,17 +38,19 @@ export default function MchangePassword() {
     }),
     validateOnChange: false,
     onSubmit: async () => {
-      const { password } = formik.values
+      const { password, oldpassword } = formik.values
+
       const { restoken } = router.query
       try {
         let body = {
           password: password,
+          oldpassword: oldpassword
         };
-        const res = await axiosInstance.patch(`/user/changePassword/${restoken}`, qs.stringify(body));
-        console.log(res);
-        console.log(restoken);
+        const res = await axiosInstance.patch(`/user/editUserPassword/${userSelector.id}`, qs.stringify(body));
+        // console.log(res);
+        // console.log(restoken);
 
-        router.push('/')
+        router.push('/home')
       } catch (err) {
         console.log(err);
       }
@@ -59,7 +62,7 @@ export default function MchangePassword() {
 
 
       {/* ---------- Old Password Input ---------- */}
-      <FormControl marginTop={'20px'} isInvalid={formik.errors.oldpassword}>
+      <FormControl marginTop={'20px'} isInvalid={formik.errors.word}>
         <InputGroup >
           <Input required className="inputText" maxLength={'30'}
             type={passwordViewOld ? "text" : "password"}

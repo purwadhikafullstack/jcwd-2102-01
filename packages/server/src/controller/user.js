@@ -223,7 +223,54 @@ const userController = {
     }
   },
 
-  // -------------------- Change / Reset password User -------------------- //
+    // -------------------- Change password User -------------------- //
+  editUserPassword: async (req, res) => {
+    try {
+      const {id} = req.params
+      const { password, oldpassword } = req.body;
+      
+      
+      const oldpas = await User.findOne({
+        where: {
+          // [Op.or]: [{ password }], // disin ga butuh or
+          id,
+        },
+      });
+      const hashedPassword = bcrypt.hashSync(password, 5);
+      // console.log(hashedPassword)
+      // console.log(oldpassword)
+      // console.log(oldpas.password)
+      const check = await bcrypt.compare(oldpassword, oldpas.password);
+      console.log(check)
+      if (!check) {
+        console.log(oldpassword)
+
+        throw new Error("old password not match");
+      }
+       const user = await User.update(
+        { 
+          password: hashedPassword,
+        },
+        {
+          where: {
+            id,
+          },
+        }
+      )
+
+      return res.status(200).json({
+        message: "User Password has been changed.",
+        user : user
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({
+        message: err.toString(),
+      });
+    }
+  },
+
+  // -------------------- Reset password User -------------------- //
   changePassword: async (req,res) => {
     try{
       const { restoken } = req.params;
@@ -375,7 +422,7 @@ const userController = {
       throw new Error("token is invalid")
       }
 
-    await User.update({verified_status: true}, {where: {
+    await User.update({is_verified: true}, {where: {
       id: isTokenVerified.id
     }})
     return res.status(200).json({
@@ -391,31 +438,6 @@ const userController = {
       })
     }
   },
-
-  // -------------------- Add Address Controller -------------------- //
-  //   addAddress: async (req, res) => {
-  //   try {
-  //     const { caption, location, user_id } = req.body;
-
-  //     const newPost = await Post.create({
-  //       image_url: `${uploadFileDomain}/${filePath}/${filename}`,
-  //       caption,
-  //       location,
-  //       user_id,
-  //     });
-
-  //     return res.status(201).json({
-  //       message: "Post created",
-  //       result: newPost,
-  //     });
-  //   } catch (err) {
-  //     console.log(err);
-  //     return res.status(500).json({
-  //       message: "Server error",
-  //     });
-  //   }
-  // },
-
 
 };
 

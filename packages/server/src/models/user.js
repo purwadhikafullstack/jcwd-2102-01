@@ -25,7 +25,7 @@ const User = (sequelize) => {
       defaultValue: false,
     },
     full_name: {
-      type: DataTypes.STRING(120),
+      type: DataTypes.STRING(50),
       allowNull: false,
     },
     birth: {

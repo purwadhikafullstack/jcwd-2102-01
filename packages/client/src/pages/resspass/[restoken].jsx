@@ -4,12 +4,13 @@ import { useRouter } from 'next/router';
 import { useState, useRef, useEffect } from "react";
 import { AiOutlineHome } from "react-icons/ai";
 import Image from 'next/image'
-import invalidToken from '../../assets/imgs/invalid.gif'
-import ChangePassForm from '../../components/changepassform/ChangePassForm'
+// import invalidToken from '../../assets/imgs/invalid.gif'
+import ResetPassForm from '../../components/resetpassword/ResetPassForm';
 import NavBar from '../../components/navbar/NavBar'
 import Page from '../../components/metatag/Metatag';
+// import { axiosInstance } from '../../lib/api';
 
-export default function changePass() {
+export default function ChangePass() {
   const [verified, setVerified] = useState(false)
   const router = useRouter()
   const { restoken } = router.query
@@ -34,18 +35,24 @@ export default function changePass() {
     <>
       <Page title={"Reset Password"} description={"Reset password form"}
         url={url} type="website">
-        <Flex minH={'80vh'} minW='480px' justifyContent={'center'} padding={'30px'}>
+        <Flex minH={'80vh'} justifyContent='center'
+          backgroundPosition="center"
+          backgroundSize='cover'
+          backgroundRepeat="no-repeat"
+          backgroundImage="url(/bg.jpg)"
+          h='100vh'>
           {router.isReady ?
             <>
-              {verified ? <ChangePassForm /> :
+              {verified ? <ResetPassForm /> :
                 <Box align="center">
-                  <Image src={invalidToken} width='460px' height='460px' />
+                  {/* <Image src={invalidToken} width='460px' height='460px' /> */}
                   <Text fontSize='5xl'>Invalid Token</Text>
-                  <Link href='/' style={{ textDecoration: "none" }}>
+                  <Link href='/home' style={{ textDecoration: "none" }}>
                     <Button colorScheme='green' href='/home'> <Icon boxSize='6' as={AiOutlineHome} mr='5px' />
                       <Text >Back To Home</Text> </Button>
                   </Link>
-                </Box>}
+                </Box>
+              }
             </>
             :
             <>

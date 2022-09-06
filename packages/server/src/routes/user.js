@@ -15,6 +15,8 @@ router.patch("/edit/:id",userController.editUser);
 
 router.post("/getUserId/:id", userController.getUserId);
 
+router.patch("/editUserPassword/:id",userController.editUserPassword)
+
 router.patch(
   "/uploadProfile/:id",
   fileUploader({

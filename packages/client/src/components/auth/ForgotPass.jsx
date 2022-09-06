@@ -4,10 +4,10 @@ import {
   FormLabel, Input, Box, useToast
 } from '@chakra-ui/react'
 import { useDisclosure } from '@chakra-ui/react'
-// import qs from 'qs';
+import qs from 'qs';
 import * as Yup from "yup";
 import { useFormik } from "formik";
-// import { axiosInstance } from '../../lib/api';
+import { axiosInstance } from '../../lib/api';
 
 export default function ForgotPass() {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -18,7 +18,9 @@ export default function ForgotPass() {
       email: "",
     },
     validationSchema: Yup.object().shape({
-      email: Yup.string().matches(/@/, "Please inclue an '@' in the email address"),
+      email: Yup.string()
+        .matches(/@/, "Please inclue an '@' in the email address")
+        .matches(/.com/, "Please inclue an '.com' in the email address"),
     }),
     validateOnChange: false,
     onSubmit: async () => {

@@ -41,6 +41,22 @@ export default function MaddAddress(props) {
       postal_code: "",
       type: "",
     },
+    validationSchema: Yup.object().shape({
+      receiver_name: Yup.string().required("Nama penerima wajib diisi").
+        min(3, 'Nama penerima terlalu pendek!').
+        max(50, 'Nama tidak boleh lebih dari 50 karakter').
+        matches(/^[aA-zZ\s]+$/, "hanya boleh diisi huruf").trim(),
+      receiver_phone: Yup.string().required("Nomor Hp penerima wajib diisi").
+        min(10, 'Nomor handphone salah atau kurang dari 12 angka').
+        max(12, 'Nomor handphone salah atau lebih dari 12 angka'),
+      address: Yup.string().required("Alamat wajib diisi").
+        min(10, 'Alamat minimal 10 karakter').
+        max(350, 'Alamat maksimal 350 karakter').trim(),
+      province: Yup.string().required("Provinsi wajib diisi"),
+      city_name: Yup.string().required("Nama Kota wajib diisi"),
+      postal_code: Yup.string().required("Kode Post wajib diisi"),
+    }),
+    validateOnChange: false,
     onSubmit: async () => {
       const { receiver_name, receiver_phone, address, province_id, city_id, postal_code } = formik.values
       try {
@@ -192,7 +208,7 @@ export default function MaddAddress(props) {
               placeholder='Nama Penerima'
               required
               type="text"
-              maxLength={"120"}
+              maxLength={"50"}
               onChange={(event) =>
                 formik.setFieldValue("receiver_name", event.target.value)
               }
@@ -211,7 +227,6 @@ export default function MaddAddress(props) {
               placeholder='Nomor HP'
               required
               type="number"
-              maxLength={"120"}
               onChange={(event) =>
                 formik.setFieldValue("receiver_phone", event.target.value)
               }
@@ -231,7 +246,7 @@ export default function MaddAddress(props) {
           placeholder='ex: jl. Hangtuah'
           required
           type="text"
-          maxLength={"300"}
+          maxLength={"350"}
           onChange={(event) =>
             formik.setFieldValue("address", event.target.value)
           }
@@ -244,7 +259,7 @@ export default function MaddAddress(props) {
       {/* -------------------- Province -------------------- */}
       <FormControl isInvalid={formik.errors.province_id} marginTop={"10px"}>
         <FormLabel display='flex'>Provinsi<Text color='red'>*</Text></FormLabel>
-        {/* {formik.values.province_id} */}
+        {formik.values.province_id}
         <Select onChange={(event) => formik.setFieldValue("province_id", event.target.value)}
         // defaultValue={userSelector.city_name}
         >

@@ -34,8 +34,11 @@ export default function ProfileSetting() {
   const toast = useToast();
   const dispatch = useDispatch()
   const router = useRouter();
-
   const image = userSelector.image_url;
+
+  let todayYear = new Date().getFullYear()
+  let minYear = todayYear - 100;
+  let maxYear = todayYear - 10
 
   const formik = useFormik({
     initialValues: {
@@ -49,8 +52,13 @@ export default function ProfileSetting() {
     },
     validationSchema: Yup.object().shape({
       // username: Yup.string().required("Username is required"),
-      full_name: Yup.string().required("full name is required"),
-      email: Yup.string().required("email is required and must email format"),
+      full_name: Yup.string().required("Nama wajib diisi").min(3, 'Nama anda terlalu pendek!').
+        max(50, 'Nama tidak boleh lebih dari 50 karakter').
+        matches(/^[aA-zZ\s]+$/, "hanya boleh diisi huruf").trim(),
+      birth: Yup.date().required("tanggal wajib diisi").
+        max(`${maxYear}-12-12`, `Tanggal lahir tidak bisa lewat dari tahun ${maxYear}`).
+        min(`${minYear}-01-01`, `Tanggal lahir tidak bisa dibawah dari tahun ${minYear}`),
+      email: Yup.string().required("email wajib diisi").email('Format harus email')
     }),
     validateOnChange: false,
     onSubmit: async () => {
@@ -100,7 +108,7 @@ export default function ProfileSetting() {
   // ---------- Fetching Address ---------- //
   async function fetchAddress() {
     try {
-      // axiosInstance.get(`/comment/post/${id}?page=${startComment}&limit=${5}`)
+      // axiosInstance.get(`/ comment / post / ${ id } ? page = ${ startComment } & limit=${ 5}`)
       axiosInstance.get(`address/user/` + userSelector.id)
         .then((res) => {
           setAddressFetch(res.data.result)
@@ -159,12 +167,12 @@ export default function ProfileSetting() {
                 backgroundRepeat="no-repeat"
                 backgroundImage="url(/iconcp.jpg)" />
             </Link>
-          </Avatar>
+          </Avatar >
           <Modal isOpen={isOpenProfile} onClose={onCloseProfile} size='md'>
             <ModalOverlay />
             <ModalProfPicture onClose={onCloseProfile} />
           </Modal>
-        </Box>
+        </Box >
         <Box display='flex' justifyContent="center" alignContent='center' mt='20px' >
           <Box display='flex' borderBottomWidth='1px' justifyContent="center">
             <Text color='#0778a3' fontWeight='bold' fontSize='lg' >{userSelector.full_name}</Text>
@@ -196,10 +204,10 @@ export default function ProfileSetting() {
           <Text alignSelf='center' fontWeight='semibold' color='#4c4c4d'>Transaksi Batal</Text>
           <Text alignSelf='center' fontWeight='semibold' color='#4c4c4d'>0</Text>
         </Box>
-      </Box>
+      </Box >
 
       {/* -------------------- User Profile Setting -------------------- */}
-      <Flex wrap={'wrap'} alignContent='center' justifyContent='space-evenly' boxShadow='md' maxW='700px' bg='#ffffff' borderWidth='1px' borderRadius="10px" p='10px' >
+      <Flex Flex wrap={'wrap'} alignContent='center' justifyContent='space-evenly' boxShadow='md' maxW='700px' bg='#ffffff' borderWidth='1px' borderRadius="10px" p='10px' >
         <Box w='280px' mt='0px'>
           <Text fontWeight='bold' color='#0778a3' fontSize='xl' my='7px'>
             Pengaturan Profil
@@ -214,7 +222,7 @@ export default function ProfileSetting() {
           </Text>
           {/* {formik.values.full_name} */}
           <FormControl isInvalid={formik.errors.full_name}>
-            <Input type='text'
+            <Input type='text' maxLength='50'
               defaultValue={userSelector.full_name}
               onChange={(event) => formik.setFieldValue("full_name", event.target.value)}></Input>
             <FormHelperText color='red'>{formik.errors.full_name}</FormHelperText>
@@ -241,7 +249,7 @@ export default function ProfileSetting() {
           <Text fontWeight='bold' my='7px' color='#4c4c4d'>
             Tanggal Lahir
           </Text>
-          {/* {formik.values.birth} */}
+          {formik.values.birth}
           <FormControl isInvalid={formik.errors.birth}>
             <Input
               placeholder="Select Date and Time"
@@ -260,7 +268,7 @@ export default function ProfileSetting() {
             E-mail
           </Text>
           <FormControl isInvalid={formik.errors.email}>
-            <Input type='email'
+            <Input type='email' maxLength='120'
               defaultValue={userSelector.email}
               onChange={(event) => formik.setFieldValue("email", event.target.value)}
             />
@@ -369,7 +377,6 @@ export default function ProfileSetting() {
           </Modal>
         </Box>
 
-
         <Box w='280px' mt='10px' mb='15px'>
         </Box>
         <Box w='280px' mt='10px' mb='15px'>
@@ -403,7 +410,7 @@ export default function ProfileSetting() {
         </Modal>
         <Box w='280px' mt='10px'>
         </Box>
-      </Flex>
+      </Flex >
     </>
   )
 }

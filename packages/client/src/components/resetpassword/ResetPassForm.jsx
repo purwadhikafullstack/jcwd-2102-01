@@ -9,7 +9,7 @@ import { IoMdEye, IoMdEyeOff } from 'react-icons/io';
 // import logogambar from '../../assets/imgs/ChicStorylogo.png'
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-// import { axiosInstance } from "../../lib/api"
+import { axiosInstance } from "../../lib/api"
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from "next/router";
 import qs from 'qs';
@@ -47,7 +47,7 @@ export default function ResetPassForm() {
         console.log(res);
         console.log(restoken);
 
-        router.push('/')
+        router.push('/login')
       } catch (err) {
         console.log(err);
       }
