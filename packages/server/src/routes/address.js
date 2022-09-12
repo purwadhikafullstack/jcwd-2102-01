@@ -6,6 +6,9 @@ const { addressController } = require("../controller");
 // -------------------- get address dari user id
 router.get("/user/:id", addressController.getAddressUser);
 
+// -------------------- get address dari address id (default address)
+router.get("/addressid/:id", addressController.getAddressId);
+
 // -------------------- add address
 router.post("/add/:idUser", addressController.addAddress);
 

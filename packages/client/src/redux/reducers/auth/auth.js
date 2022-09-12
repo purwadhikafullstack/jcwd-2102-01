@@ -2,13 +2,15 @@ const init_state = {
   id: 0,
   username: "",
   email: "",
-  full_name: "",
-  is_verified: 0,
-  roles: 0,
-  birth: "",
+  first_name: "",
+  last_name: "",
+  is_verified: "",
+  roles: "",
+  birthdate: "",
   phone_no: "",
   gender: "",
   image_url: "",
+  default_address: 0,
 };
 import auth_types from "./type";
 
@@ -19,13 +21,16 @@ function auth_reducer(state = init_state, action) {
       id: action.payload.id,
       username: action.payload.username,
       email: action.payload.email,
-      full_name: action.payload.full_name,
+      first_name: action.payload.first_name,
+      last_name: action.payload.last_name,
       is_verified: action.payload.is_verified,
       roles: action.payload.roles,
-      birth: action.payload.birth,
+      birthdate: action.payload.birthdate,
       phone_no: action.payload.phone_no,
       gender: action.payload.gender,
       image_url: action.payload.image_url,
+      default_address: action.payload.default_address,
+      
     };
   } else if (action.type === auth_types.AUTH_LOGOUT) {
     return init_state;

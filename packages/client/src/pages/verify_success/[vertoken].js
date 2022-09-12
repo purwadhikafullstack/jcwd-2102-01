@@ -59,7 +59,7 @@ export default function verify_success() {
     </Box>
     
     <Box>
-      <Link href='/home'>
+      <Link href='/'>
      <Button colorScheme='green' > <Icon boxSize='6' as={AiOutlineHome} mr='5px' /> 
      <Text style={{textDecoration:"none"}}>Back To Home
       </Text> </Button>
@@ -71,7 +71,7 @@ export default function verify_success() {
      <Image src={invalidToken}/>
      <Text fontSize='5xl'>Invalid Token</Text>
      <Link href='/' style={{textDecoration:"none"}}>
-     <Button colorScheme='green' href='/home'> <Icon boxSize='6' as={AiOutlineHome} mr='5px' /> 
+     <Button colorScheme='green' href='/'> <Icon boxSize='6' as={AiOutlineHome} mr='5px' /> 
      <Text >Back To Home</Text> </Button>
      </Link>
      </>

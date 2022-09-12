@@ -42,20 +42,24 @@ export default function ProfileSetting() {
 
   const formik = useFormik({
     initialValues: {
-      full_name: `${userSelector.full_name}`,
+      first_name: `${userSelector.first_name}`,
+      last_name: `${userSelector.last_name}`,
       username: `${userSelector.username}`,
       email: `${userSelector.email}`,
-      birth: `${userSelector.birth}`,
+      birthdate: `${userSelector.birthdate}`,
       gender: `${userSelector.gender}`,
       // phone_no: `${userSelector.phone_no}`,
       id: userSelector.id,
     },
     validationSchema: Yup.object().shape({
       // username: Yup.string().required("Username is required"),
-      full_name: Yup.string().required("Nama wajib diisi").min(3, 'Nama anda terlalu pendek!').
+      first_name: Yup.string().required("Nama wajib diisi").min(3, 'Nama anda terlalu pendek!').
         max(50, 'Nama tidak boleh lebih dari 50 karakter').
         matches(/^[aA-zZ\s]+$/, "hanya boleh diisi huruf").trim(),
-      birth: Yup.date().required("tanggal wajib diisi").
+      last_name: Yup.string().required("Nama wajib diisi").min(3, 'Nama anda terlalu pendek!').
+        max(50, 'Nama tidak boleh lebih dari 50 karakter').
+        matches(/^[aA-zZ\s]+$/, "hanya boleh diisi huruf").trim(),
+      birthdate: Yup.date().required("tanggal wajib diisi").
         max(`${maxYear}-12-12`, `Tanggal lahir tidak bisa lewat dari tahun ${maxYear}`).
         min(`${minYear}-01-01`, `Tanggal lahir tidak bisa dibawah dari tahun ${minYear}`),
       email: Yup.string().required("email wajib diisi").email('Format harus email')
@@ -63,15 +67,16 @@ export default function ProfileSetting() {
     validateOnChange: false,
     onSubmit: async () => {
       // dispatch(userEdit(values, formik.setSubmitting))
-      const { full_name, email, birth, gender, phone_no } = formik.values
+      const { first_name, last_name, email, birthdate, gender, phone_no } = formik.values
 
       let msg = ""
       try {
         let body = {
-          full_name: full_name,
+          first_name: first_name,
+          last_name: last_name,
           // username: username,
           email: email,
-          birth: birth,
+          birthdate: birthdate,
           gender: gender,
           // phone_no: phone_no,
         };
@@ -133,6 +138,7 @@ export default function ProfileSetting() {
           provinsiId={val.province_id}
           city={val.city_name}
           city_id={val.city_id}
+          kecamatan={val.districts}
           postalCode={val.postal_code}
           defaultAddress={val.User?.default_address}
         />
@@ -149,8 +155,8 @@ export default function ProfileSetting() {
       <Box maxH='400px' w={'375px'} m='30px' mt='0px' mb='20px' justifyContent={'center'} boxShadow='md' bg='#ffffff' borderWidth='1px' borderRadius="10px">
         {/* -------------------- User Profile Picture and data -------------------- */}
         <Box display='flex' justifyContent='center' m='5px' mt='20px'>
-          <Avatar name={userSelector.full_name} size='xl' src={`http://${userSelector.image_url}`} >
-            <Link onClick={userSelector.is_verified == 0 ?
+          <Avatar name={userSelector.first_name + userSelector.last_name} size='xl' src={`http://${userSelector.image_url}`} >
+            <Link onClick={userSelector.is_verified == 'no' ?
               () =>
                 toast({
                   title: `Pembatasan Akses`,
@@ -175,9 +181,9 @@ export default function ProfileSetting() {
         </Box >
         <Box display='flex' justifyContent="center" alignContent='center' mt='20px' >
           <Box display='flex' borderBottomWidth='1px' justifyContent="center">
-            <Text color='#0778a3' fontWeight='bold' fontSize='lg' >{userSelector.full_name}</Text>
+            <Text color='#0778a3' fontWeight='bold' fontSize='lg' >{userSelector.first_name} {userSelector.last_name}</Text>
             {
-              userSelector.is_verified == 0 ? null : <Icon ml='5px' boxSize={4} alignSelf='center' color='#00ACEE' as={GoVerified} />
+              userSelector.is_verified == 'no' ? null : <Icon ml='5px' boxSize={4} alignSelf='center' color='#00ACEE' as={GoVerified} />
             }
           </Box>
         </Box>
@@ -215,17 +221,31 @@ export default function ProfileSetting() {
         </Box >
         <Box h='0px' w='280px'></Box>
 
-        {/* -------------------- Full Name -------------------- */}
+        {/* -------------------- First Name -------------------- */}
         <Box w='280px' mt='10px'>
           <Text fontWeight='bold' color='#4c4c4d' my='7px'>
-            Nama Lengkap
+            Nama Depan
           </Text>
-          {/* {formik.values.full_name} */}
-          <FormControl isInvalid={formik.errors.full_name}>
+          {/* {formik.values.first_name} */}
+          <FormControl isInvalid={formik.errors.first_name}>
             <Input type='text' maxLength='50'
-              defaultValue={userSelector.full_name}
-              onChange={(event) => formik.setFieldValue("full_name", event.target.value)}></Input>
-            <FormHelperText color='red'>{formik.errors.full_name}</FormHelperText>
+              defaultValue={userSelector.first_name}
+              onChange={(event) => formik.setFieldValue("first_name", event.target.value)}></Input>
+            <FormHelperText color='red'>{formik.errors.first_name}</FormHelperText>
+          </FormControl>
+        </Box>
+
+        {/* -------------------- Last Name -------------------- */}
+        <Box w='280px' mt='10px'>
+          <Text fontWeight='bold' color='#4c4c4d' my='7px'>
+            Nama Belakang
+          </Text>
+          {/* {formik.values.last_name} */}
+          <FormControl isInvalid={formik.errors.last_name}>
+            <Input type='text' maxLength='50'
+              defaultValue={userSelector.last_name}
+              onChange={(event) => formik.setFieldValue("last_name", event.target.value)}></Input>
+            <FormHelperText color='red'>{formik.errors.last_name}</FormHelperText>
           </FormControl>
         </Box>
 
@@ -249,16 +269,16 @@ export default function ProfileSetting() {
           <Text fontWeight='bold' my='7px' color='#4c4c4d'>
             Tanggal Lahir
           </Text>
-          {formik.values.birth}
-          <FormControl isInvalid={formik.errors.birth}>
+          {/* {formik.values.birthdate} */}
+          <FormControl isInvalid={formik.errors.birthdate}>
             <Input
               placeholder="Select Date and Time"
               size="md"
               type="date"
-              defaultValue={userSelector.birth}
-              onChange={(event) => formik.setFieldValue("birth", event.target.value)}
+              defaultValue={userSelector.birthdate}
+              onChange={(event) => formik.setFieldValue("birthdate", event.target.value)}
             />
-            <FormHelperText color='red'>{formik.errors.birth}</FormHelperText>
+            <FormHelperText color='red'>{formik.errors.birthdate}</FormHelperText>
           </FormControl>
         </Box>
 
@@ -313,6 +333,9 @@ export default function ProfileSetting() {
           </FormControl>
         </Box>
 
+        <Box w='280px' mt='10px'>
+        </Box>
+
         {/* -------------------- Address -------------------- */}
         <Box w='88%' mt='10px'>
           <Box display='flex' justifyContent='space-between' borderBottomWidth='2px'>
@@ -335,7 +358,14 @@ export default function ProfileSetting() {
               </ModalContent>
             </Modal>
           </Box>
-          {renderAddress()}
+          {!addressLength ?
+            <Box display='flex' justifyContent={'center'}>
+              <Text fontWeight='semibold' fontSize='sm' color='#737A8D' mt='15px' >
+                Anda belum memiliki alamat pengiriman segera tambah alamat pengiriman anda
+              </Text>
+            </Box>
+            :
+            renderAddress()}
         </Box>
         {/* <Box w='280px' mt='10px'>
         </Box> */}

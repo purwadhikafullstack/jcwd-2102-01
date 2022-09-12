@@ -117,7 +117,7 @@ const userController = {
   // -------------------- User Register Controller -------------------- //
   register: async (req, res) => {
     try {
-      const { username, email, password, full_name } = req.body;
+      const { username, email, password, first_name, phone_no } = req.body;
 
       const findUser = await User.findOne({
         where: {
@@ -135,7 +135,8 @@ const userController = {
         username,
         email,
         password: hashedPassword,
-        full_name,
+        first_name,
+        phone_no,
       });
 
       const token = generateToken({id: user.id, isEmailVerification: true});
@@ -305,7 +306,7 @@ const userController = {
   editUser: async (req, res) => {
     try {
       const { id } = req.params;
-      const {  email, birth, full_name, gender, default_address } = req.body;
+      const {  email, birth, first_name, last_name, gender, default_address } = req.body;
       // const { username, email, birth, full_name, gender, phone_no } = req.body;
       
     const findUser = await User.findOne({

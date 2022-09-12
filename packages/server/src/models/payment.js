@@ -2,7 +2,7 @@ const { DataTypes } = require("sequelize");
 
 const Payment = (sequelize) => {
   return sequelize.define("Payment", {
-    img_payment: {
+    image_url: {
       type: DataTypes.STRING(255),
       allowNull: false,
     },

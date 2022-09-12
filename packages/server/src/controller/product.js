@@ -1,11 +1,11 @@
-const { Category, Product_category, Product, Product_stock, Stock_history, Product_description, Product_img, Unit } = require("../lib/sequelize");
+const { Category, Product_category, Product, Product_stock, Stock_history, Product_description, Product_image, Unit } = require("../lib/sequelize");
 const { Op } = require("sequelize");
 
 const productController = {
   // -------------------- get all product untuk mengambil semua data product yang akan ditampilkan di home perlimit -------------------- //
   getProductPaging: async (req, res) => {
     try {
-      const { limit = 16, page = 1, search, category, category2, category3, sort, orderby } = req.query;
+      const { limit , page = 1, search, category, category2, category3, sort, orderby } = req.query;
       
       let findProduct
 
@@ -26,16 +26,18 @@ const productController = {
           { model : Product_stock,
             include: [{model: Unit}],
             where: {
-            converted: {[Op.notIn]:[1]}
+            converted: {[Op.notIn]:['yes']}
             }
           },
-          { model : Product_img,
+          { model : Product_image,
           },
         ],
         order: orderby == 'product_name' && sort ? [[`${orderby}`, `${sort}`]] : 
         orderby == 'selling_price' && sort ? [[Product_stock, `${orderby}`, `${sort}`]]
         :[],
-        
+        where: {
+            is_deleted: {[Op.notIn]:['yes']}
+            }
       });
       } else {
         findProduct= await Product.findAll({
@@ -59,15 +61,18 @@ const productController = {
           { model : Product_stock,
             include: [{model: Unit}],
             where: {
-            converted: {[Op.notIn]:[1]}
+            converted: {[Op.notIn]:['yes']}
             }
           },
-          { model : Product_img,
+          { model : Product_image,
           },
         ],
         order: orderby == 'product_name' && sort ? [[`${orderby}`, `${sort}`]] : 
         orderby == 'selling_price' && sort ? [[Product_stock, `${orderby}`, `${sort}`]]
         :[],
+        where: {
+            is_deleted: {[Op.notIn]:['yes']}
+            }
       });
       }
 
@@ -83,6 +88,7 @@ const productController = {
       });
     }
   },
+
   // // -------------------- get all product untuk mengambil semua data product yang akan ditampilkan di home perlimit -------------------- //
   // getProductPaging: async (req, res) => {
   //   try {
@@ -135,14 +141,22 @@ const productController = {
             include: Category
           },
           { model : Product_stock,
-            include: Unit
+            include: Unit,
+            where: {
+            converted: {[Op.notIn]:['yes']}
+            }
           },
-          { model : Product_img,
+          { model : Product_image,
           },
         ],
         where: {
-          product_code: code,
+          [Op.and]: [
+            {is_deleted: {[Op.notIn]:['yes']}},
+            { product_code: code, }
+          ]
+          
         },
+        
       });
 
       return res.status(200).json({
@@ -163,7 +177,7 @@ const productController = {
     try {
       const { id } = req.params;
 
-      const findProductImage= await Product_img.findAll({
+      const findProductImage= await Product_image.findAll({
         include: [
           {
             model: Product,

@@ -1,5 +1,5 @@
 import {
-  Box, Input, Flex, Avatar, HStack, Link, IconButton, Button, Menu, Tooltip,
+  Box, Input, Flex, Avatar, AvatarBadge, HStack, Link, IconButton, Button, Menu, Tooltip,
   MenuButton, MenuList, MenuItem, MenuDivider, useDisclosure,
   Stack, Icon, Text, Accordion, AccordionIcon, AccordionPanel, AccordionItem, AccordionButton,
   Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerOverlay, DrawerFooter, DrawerHeader, Center
@@ -17,8 +17,12 @@ import { RiLoginCircleLine, RiLoginCircleFill, RiHistoryLine } from "react-icons
 import { IoSettingsOutline, IoNotificationsOutline, IoLogOutOutline, IoStorefrontOutline, IoStorefrontSharp } from "react-icons/io5"
 import { BiAddToQueue, BiHelpCircle } from "react-icons/bi";
 import { IoCartOutline } from "react-icons/io5";
+import { axiosInstance } from '../../lib/api';
+import { useState, useEffect } from "react";
 import { useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
+import CartUser from './cartuser/CartUser';
+import SideFilterCategory from '../productlisting/filter/filtercategory/SideFilterCategory';
 
 export default function NavBarSignIn() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -26,6 +30,11 @@ export default function NavBarSignIn() {
   const dispatch = useDispatch();
   const router = useRouter();
   const userSelector = useSelector((state) => state.auth);
+  const autoRender = useSelector((state) => state.automateRendering)
+  const [category, setCategory] = useState([])
+  const [cart, setCart] = useState([])
+  const [cartLength, setCartLength] = useState([])
+  const [cartSubTotal, setCartSubTotal] = useState(0)
 
   // -------------------- Untuk Logout -------------------- //
   function btnlogout() {
@@ -35,6 +44,107 @@ export default function NavBarSignIn() {
     })
     router.push("/")
   }
+
+  // --------------- Fetching Category --------------- //
+  async function fetchCategory() {
+    try {
+      axiosInstance.get(`/category`)
+        .then((res) => {
+          setCategory(res.data.result)
+        })
+    } catch (err) {
+      console.log(err)
+    }
+  };
+
+  const renderCategoryMobile = () => {
+    return category.map((val, index) => {
+      return (
+        <>
+          <Link href={`/productlist?category1=` + val.category} style={{ textDecoration: "none" }}>
+            <HStack _hover={{ background: '#ccdefc' }}>
+              <Center display='flex' justifyContent='center' h='40px' w='58px'>
+              </Center>
+              <Box display='flex' w='full' fontWeight='semibold'>
+                <SideFilterCategory key={index}
+                  idcategory={val.id}
+                  category={val.category}
+                />
+              </Box>
+            </HStack>
+          </Link>
+        </>
+      )
+    })
+  }
+
+  const renderCategoryWeb = () => {
+    return category.map((val, index) => {
+      return (
+        <>
+          <Link href={`/productlist?category1=` + val.category} style={{ textDecoration: "none" }}>
+            <MenuItem>
+              <SideFilterCategory key={index}
+                idcategory={val.id}
+                category={val.category}
+              /></MenuItem>
+          </Link>
+        </>
+      )
+    })
+  }
+
+  // --------------- Fetching Cart --------------- //
+  async function fetchCart() {
+    try {
+      axiosInstance.get(`/transaction/getCart/${userSelector.id}`)
+        .then((res) => {
+          setCart(res.data.result)
+          // console.log(res.data.result);
+          console.log(res.data.result.length);
+          setCartLength(res.data.result.length)
+        })
+    } catch (err) {
+      console.log(err)
+    }
+  };
+
+  let a = 0;
+  useEffect(() => {
+    // alert(a)
+    setCartSubTotal(a);
+  }, [cart])
+
+  const renderCartNavbar = () => {
+    return cart.map((val, index) => {
+      a += val.total_price;
+      console.log(a)
+      return (
+        <>
+          <CartUser key={index}
+            image={val.Product.Product_images[0].image_url}
+            productName={val.Product.product_name}
+            qtyBuy={val.buy_quantity}
+            price={val.price}
+            totalPrice={val.total_price}
+            idCart={val.id}
+            idProduct={val.Product.product_code}
+            idUser={val.id_user}
+          />
+        </>
+      )
+    })
+  }
+
+  useEffect(() => {
+    fetchCategory()
+    fetchCart()
+
+  }, [router.isReady]);
+
+  useEffect(() => {
+    fetchCart()
+  }, [autoRender]);
 
   return (
     <>
@@ -70,14 +180,14 @@ export default function NavBarSignIn() {
                 </Button>
               </LinkNext>
 
-              <LinkNext href='/productlist' className='Button-Navbar' style={{ textDecoration: "none" }}>
+              <Link href='/productlist' className='Button-Navbar' style={{ textDecoration: "none" }}>
                 <Button background='white'
                   style={router.pathname == '/productlist' ? { textDecoration: "none", borderBottomWidth: '3px', borderBottomColor: '#3B9AE1' }
                     : { textDecoration: "none" }}
                   _hover={{ background: '#E8F5FD', color: '#00ACEE', borderBottomWidth: '3px', borderBottomColor: '#3B9AE1' }} borderRadius={0} h={16}>
                   Produk
                 </Button>
-              </LinkNext>
+              </Link>
 
               <Menu>
                 <MenuButton as={Button}
@@ -85,15 +195,7 @@ export default function NavBarSignIn() {
                   Kategori
                 </MenuButton>
                 <MenuList>
-                  <LinkNext href="/">
-                    <MenuItem><Text size='sm' ml='5px' fontWeight='semibold'>Obat Sakit Kepala</Text></MenuItem>
-                  </LinkNext>
-                  <LinkNext href="/Obat Sakit Perut">
-                    <MenuItem><Text size='sm' ml='5px' fontWeight='semibold'>Obat Sakit Perut</Text></MenuItem>
-                  </LinkNext>
-                  <LinkNext href="/Nutrisi">
-                    <MenuItem><Text size='sm' ml='5px' fontWeight='semibold'>Nutrisi</Text></MenuItem>
-                  </LinkNext>
+                  {renderCategoryWeb()}
                 </MenuList>
               </Menu>
 
@@ -113,7 +215,22 @@ export default function NavBarSignIn() {
 
               <Link onClick={onOpenCart} >
                 <Button background='white' _hover={{ background: '#E8F5FD', color: '#00ACEE', borderBottomWidth: '3px', borderBottomColor: '#3B9AE1' }} borderRadius={0} h={16} mr='8px'>
-                  <Icon boxSize='6' as={IoCartOutline} />
+                  {/* <Icon boxSize='6' as={IoCartOutline} /> */}
+                  <Avatar _hover={{ color: '#00ACEE' }} icon={<Icon boxSize='6' as={IoCartOutline} />} bg='white'>
+                    {cartLength <= 0 ? (
+                      <></>
+                    ) : (
+                      <AvatarBadge
+                        boxSize="1.5rem"
+                        bg={'teal.400'}
+                        color="white"
+                        p="4px"
+                        fontSize={'0.7rem'}
+                      >
+                        {cartLength}
+                      </AvatarBadge>
+                    )}
+                  </Avatar>
                 </Button>
               </Link>
               <Drawer isOpen={isOpenCart} placement='right' onClose={onCloseCart}>
@@ -122,13 +239,25 @@ export default function NavBarSignIn() {
                   <DrawerCloseButton />
                   <DrawerHeader>Keranjang</DrawerHeader>
                   <DrawerBody>
-                    <Input placeholder='Type here...' />
+                    <Box maxH='450px' className='scrollCart'>
+                      {/* <CartUser />
+                      <CartUser />
+                      <CartUser /> */}
+                      {renderCartNavbar()}
+                    </Box >
+                    <Box display='flex' mt='10px' justifyContent='space-between'>
+                      <Text fontWeight='bold'>
+                        Total Belanja :
+                      </Text>
+                      <Text fontWeight='semibold'>
+                        Rp {cartSubTotal.toLocaleString()}
+                      </Text>
+                    </Box>
                   </DrawerBody>
                   <DrawerFooter>
-                    <Button variant='outline' mr={3} onClick={onClose}>
-                      Cancel
-                    </Button>
-                    <Button colorScheme='blue'>Save</Button>
+                    <LinkNext href='/transactions/mycart'>
+                      <Button colorScheme='blue'>Order Sekarang</Button>
+                    </LinkNext>
                   </DrawerFooter>
                 </DrawerContent>
               </Drawer>
@@ -203,27 +332,7 @@ export default function NavBarSignIn() {
                     </AccordionButton>
                   </h2>
                   <AccordionPanel pb={2} p='0px'>
-                    <HStack _hover={{ background: '#ccdefc' }}>
-                      <Center display='flex' justifyContent='center' h='40px' w='58px'>
-                      </Center>
-                      <Box display='flex' w='full' fontWeight='semibold'>
-                        Obat Sakit Kepala
-                      </Box>
-                    </HStack>
-                    <HStack _hover={{ background: '#ccdefc' }}>
-                      <Center display='flex' justifyContent='center' h='40px' w='58px'>
-                      </Center>
-                      <Box display='flex' w='full' fontWeight='semibold'>
-                        Obat Sakit Pinggang
-                      </Box>
-                    </HStack>
-                    <HStack _hover={{ background: '#ccdefc' }}>
-                      <Center display='flex' justifyContent='center' h='40px' w='58px'>
-                      </Center>
-                      <Box display='flex' w='full' fontWeight='semibold'>
-                        Obat Sakit Perut
-                      </Box>
-                    </HStack>
+                    {renderCategoryMobile()}
                   </AccordionPanel>
                 </AccordionItem>
               </Accordion>
@@ -239,7 +348,7 @@ export default function NavBarSignIn() {
                 </HStack>
               </Link>
 
-              <Link href='./' borderRadius={5} style={{ textDecoration: "none" }} _hover={{ background: '#E8F5FD' }}>
+              <Link href='./transactions/mycart' borderRadius={5} style={{ textDecoration: "none" }} _hover={{ background: '#E8F5FD' }}>
                 <HStack color='#4c4c4d'>
                   <Center display='flex' justifyContent='center' h='50px' w='50px'>
                     <Icon boxSize='6' as={router.pathname == '/register' ? MdPersonAdd : IoCartOutline} />

@@ -2,13 +2,13 @@ import {
   Flex, Box, Input, InputGroup, InputRightElement, Button, useDisclosure,
   Select, Icon, Text, Center, CheckboxGroup, Checkbox, Stack, useMediaQuery,
   Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerHeader, FormControl,
-  DrawerBody, Link, Spinner, SelectField
+  DrawerBody, Link, Spinner, SelectField, Tooltip
 } from '@chakra-ui/react';
 import { useDispatch, useSelector } from 'react-redux'
 import { useFormik } from "formik";
 import { useState, useEffect } from "react";
 import { axiosInstance } from '../../lib/api';
-import { BiSearchAlt } from 'react-icons/bi';
+import { BiSearchAlt, BiReset } from 'react-icons/bi';
 import { RiListCheck } from 'react-icons/ri';
 import { BsFilterLeft } from 'react-icons/bs';
 import { IoCartOutline } from "react-icons/io5";
@@ -28,27 +28,21 @@ export default function ProductListing() {
   const [category, setCategory] = useState([])
   const [product, setProduct] = useState([])
 
-  // ---------- for Filtering -----------//
+  // --------------- for Filtering --------------- //
   const [pageStart, setPageStart] = useState(1)
   const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(3)
+  const [limit, setLimit] = useState(16)
   const [totalProduct, setTotalProduct] = useState(0)
   const [totalPage, setTotalPage] = useState(0)
-  const [orderBy, setOrderBy] = useState()
-  const [sortBy, setSortBy] = useState()
-  const [fillterCategory1, setFillterCategory1] = useState()
-  const [fillterCategory2, setFillterCategory2] = useState()
-  const [fillterCategory3, setFillterCategory3] = useState()
+  let routerQuery = router.query
 
   const formik = useFormik({
     initialValues: {
       searchName: ``,
-      sortByProduct: ``,
-      limiter: ``
     }
   })
 
-  // ---------- Fetching Category ---------- //
+  // --------------- Fetching Category --------------- //
   async function fetchCategory() {
     try {
       axiosInstance.get(`/category`)
@@ -61,31 +55,67 @@ export default function ProductListing() {
       console.log(err)
     }
   };
+
+  // --------------- Filtering Category Product --------------- //
+  const setTheParams = async (category) => {
+    if (routerQuery.category1 == category && routerQuery.category2 != category) {
+      await router.push(`?category1&category2=${!routerQuery.category2 ? '' : routerQuery.category2}`);
+    } else if (routerQuery.category1 != category && routerQuery.category2 == category) {
+      await router.push(`?category1=${routerQuery.category1}&category2=`);
+    } else if (!routerQuery.category1 && !routerQuery.category2) {
+      await router.push(`?category1=${category}`);
+    } else if (!routerQuery.category1 && routerQuery.category2) {
+      await router.push(`?category1=${category}&category2=${routerQuery.category2}`);
+    } else if (routerQuery.category1 && !routerQuery.category2) {
+      await router.push(`?category1=${routerQuery.category1}&category2=${category}`);
+    }
+    // else if (routerQuery.category1 && routerQuery.category2) {
+
+    // }
+    if (!category) {
+      await router.push(`/productlist`);
+      routerQuery = {}
+    }
+    dispatch({
+      type: "FETCH_RENDER",
+      payload: { value: !autoRender.value }
+    })
+  }
+  // console.log(router.query);
+  // console.log(routerQuery.category1);
+  // console.log(routerQuery.category2);
+  // console.log(routerQuery.category3);
+  // console.log(routerQuery);
+
   const renderCategory = () => {
     return category.map((val, index) => {
       return (
-        <SideFilterCategory key={index}
-          idcategory={val.id}
-          category={val.category}
-        />
+        <>
+          <Button variant='link' onClick={() => setTheParams(val.category)}
+            style={{ textDecoration: 'none' }} my='3px' w='full'>
+            <Checkbox onClick={setTheParams}
+              // checked={routerQuery.category1 || routerQuery.category2 || routerQuery.category3 == val.category ? true : false}
+              colorScheme='green' my='3px' w='full'>
+              <SideFilterCategory key={index}
+                idcategory={val.id}
+                category={val.category}
+              />
+            </Checkbox>
+          </Button>
+        </>
       )
     })
   }
 
-  // ---------- Fetching Product ---------- //
+  // --------------- Fetching Product --------------- //
   async function fetchProduct(filter) {
-    const { category1, category2, category3 } = router.query
-    // setFillterCategory1(category)
+    const { category1, category2, category3, pages } = router.query
     let order = "";
     let sort = "";
 
     if (filter == 'product_asc') {
       order = 'product_name';
       sort = "ASC"
-      // setOrderBy('product_name');
-      // setSortBy('DESC');
-      // console.log(orderBy)
-      // console.log(sortBy)
     } else if (filter == 'product_des') {
       order = 'product_name';
       sort = "DESC"
@@ -103,21 +133,24 @@ export default function ProductListing() {
     try {
       // axiosInstance.get(`/comment/post/${id}?page=${startComment}&limit=${5}`)
       // get all product length
-      axiosInstance.get(`/products?limit=&page=`)
+      axiosInstance.get(`/products?search=${formik.values.searchName}&sort&orderby&category=${category1}&category2=${category2}&category3=${category3}
+      &limit=${limit}&page=${page}`)
         .then((res) => {
           const temp = res.data.result
           setTotalProduct(temp.length)
+          // console.log(temp);
         })
 
       if (category1 || category2 || category3) {
-        axiosInstance.get(`/products?search=${formik.values.searchName}&sort=${sort}&orderby=${order}&category=${category1}&category2=${category2}&category3=${category3}&limit=16&page=${page}`)
+        axiosInstance.get(`/products?search=${formik.values.searchName}&sort=${sort}&orderby=${order}&category=${category1}&category2=${category2}&category3=${category3}
+        &limit=${limit}&page=${page}`)
           .then((res) => {
             setProduct(res.data.result)
             const temp = res.data.result
             // console.log(temp)
           })
       } else {
-        axiosInstance.get(`/products?search=${formik.values.searchName}&sort=${sort}&orderby=${order}&category=&category2=&category3=&limit=16&page=${page}`)
+        axiosInstance.get(`/products?search=${formik.values.searchName}&sort=${sort}&orderby=${order}&category&category2&category3&limit=${limit}&page=${page}`)
           .then((res) => {
             setProduct(res.data.result)
             const temp = res.data.result
@@ -138,7 +171,7 @@ export default function ProductListing() {
           productName={val.product_name}
           isiPerkemasan={val.isi_perkemasan}
           isDeleted={val.is_deleted}
-          productImage={val.Product_imgs[0]?.img_product}
+          productImage={val.Product_images[0]?.image_url}
           stock={val.Product_stocks[0]?.stock}
           unit={val.Product_stocks[0]?.Unit?.unit_name}
           firstPrice={val.Product_stocks[0]?.first_price}
@@ -159,7 +192,8 @@ export default function ProductListing() {
 
   console.log('total produk ' + totalProduct)
   console.log('total page ' + totalPage)
-  console.log(page)
+  console.log(limit);
+  // console.log(page)
 
   const renderButton = () => {
     const array = [...Array(totalPage)]
@@ -181,7 +215,7 @@ export default function ProductListing() {
 
   useEffect(() => {
     fetchProduct()
-  }, [formik.values.searchName], [page], [autoRender]);
+  }, [formik.values.searchName]);
 
   useEffect(() => {
     fetchProduct()
@@ -189,7 +223,7 @@ export default function ProductListing() {
 
   useEffect(() => {
     fetchProduct()
-  }, [page]);
+  }, [limit]);
 
   return (
     <>
@@ -240,6 +274,13 @@ export default function ProductListing() {
                   Filter Kategori
                 </Text>
               </Box>
+              <Box h='25px' ml='5px'>
+                <Tooltip label='reset filter' fontSize='sm'>
+                  <Button variant='link' onClick={() => setTheParams('')}>
+                    <Icon boxSize='6' as={BiReset} color='white' />
+                  </Button>
+                </Tooltip>
+              </Box>
             </Box>
             <Box px='20px' py='10px'>
               {renderCategory()}
@@ -254,9 +295,8 @@ export default function ProductListing() {
             <Box display='flex' alignSelf='center' ml='10px'>
               <Text alignSelf='center' mr='10px'>Show</Text>
               {formik.values.limiter}
-              <Select size='sm' bg='white' borderRadius='5px' onChange={(event) => formik.setFieldValue("limiter", event.target.value)}
-              // defaultValue={userSelector.gender}
-              >
+              <Select size='sm' bg='white' borderRadius='5px'
+                onChange={(event) => { setLimit(event.target.value) }}>
                 <option value='16'>16</option>
                 <option value='24'>24</option>
               </Select>

@@ -18,23 +18,18 @@ const Courier = require("../models/courier")(sequelize);
 const Transaction_list = require("../models/transaction_list")(sequelize);
 const Transaction = require("../models/transaction")(sequelize);
 const Product_description = require("../models/product_description")(sequelize);
-const Product_img = require("../models/product_img")(sequelize);
+const Product_image = require("../models/product_image")(sequelize);
 const Product_stock = require("../models/product_stock")(sequelize);
 const Product = require("../models/product")(sequelize);
 const Product_category = require("../models/product_category")(sequelize);
 const Unit = require("../models/unit")(sequelize);
-const Status_transaction = require("../models/status_transaction")(sequelize);
 const Stock_history = require("../models/stock_history")(sequelize);
-const Token = require("../models/token")(sequelize);
 const Upload_recipe = require("../models/upload_recipe")(sequelize);
 const User = require("../models/user")(sequelize);
 
 // 1 : M
-User.hasMany(Token, { foreignKey: "id_user" });
-Token.belongsTo(User, { foreignKey: "id_user" });
-
-User.hasMany(Payment, { foreignKey: "id_user" });
-Payment.belongsTo(User, { foreignKey: "id_user" });
+// User.hasMany(Payment, { foreignKey: "id_user" });
+// Payment.belongsTo(User, { foreignKey: "id_user" });
 
 User.hasMany(Address, { foreignKey: "id_user" });
 Address.belongsTo(User, { foreignKey: "id_user" });
@@ -63,8 +58,8 @@ Transaction.belongsTo(Payment, { foreignKey: "id_payment" });
 Product_description.hasOne(Product, { foreignKey: "id_produk_description" });
 Product.belongsTo(Product_description, { foreignKey: "id_produk_description" });
 
-Product.hasMany(Product_img, { foreignKey: "id_product" });
-Product_img.belongsTo(Product, { foreignKey: "id_product" });
+Product.hasMany(Product_image, { foreignKey: "id_product" });
+Product_image.belongsTo(Product, { foreignKey: "id_product" });
 
 Product.hasMany(Product_stock, { foreignKey: "id_product" });
 Product_stock.belongsTo(Product, { foreignKey: "id_product" });
@@ -83,8 +78,8 @@ Stock_history.belongsTo(Unit, { foreignKey: "id_unit" });
 Unit.hasMany(Product_stock, { foreignKey: "id_unit" });
 Product_stock.belongsTo(Unit, { foreignKey: "id_unit" });
 
-Status_transaction.hasOne(Transaction, { foreignKey: "id_stat_transaction" });
-Transaction.belongsTo(Status_transaction, { foreignKey: "id_stat_transaction" });
+// Status_transaction.hasOne(Transaction, { foreignKey: "id_stat_transaction" });
+// Transaction.belongsTo(Status_transaction, { foreignKey: "id_stat_transaction" });
 
 // Transaction.hasMany(Cart, { foreignKey: "id_transaction" });
 // Cart.belongsTo(Transaction, { foreignKey: "id_transaction" });
@@ -112,14 +107,12 @@ module.exports = {
   Transaction_list,
   Transaction,
   Product_description,
-  Product_img,
+  Product_image,
   Product_stock,
   Product,
   Product_category,
   Unit,
-  Status_transaction,
   Stock_history,
-  Token,
   Upload_recipe,
   User,
 };

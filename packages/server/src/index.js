@@ -20,7 +20,7 @@ const {
   addressRoutes,
   categoryRoutes,
   productRoutes,
-  transactionRoutes,
+  transactionsRoutes,
   userRoutes,
 } = require("./routes");
 
@@ -37,7 +37,7 @@ app.use(bodyParser.json());
 app.use("/address", addressRoutes);
 app.use("/category", categoryRoutes);
 app.use("/products", productRoutes);
-// app.use("/transaction", transactionRoutes);
+app.use("/transaction", transactionsRoutes);
 app.use("/user", userRoutes);
 
 app.use("/payment_images", express.static(`${__dirname}/public/payment_images`));

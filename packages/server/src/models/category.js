@@ -6,8 +6,8 @@ const Category = (sequelize) => {
       type: DataTypes.STRING(100),
       allowNull: false,
     },
-    img_category: {
-      type: DataTypes.STRING(255),
+    image_url: {
+      type: DataTypes.STRING(200),
       allowNull: true,
     },
   });

@@ -11,7 +11,7 @@ import Metatag from '../components/metatag/Metatag'
 const NotFound = () => {
  const userSelector = useSelector((state) => state.auth);
  const router = useRouter()
- const url = "http://localhost:3000" + router.pathname;
+ const url = "http://localhost:3000";
 
  return (
   <>

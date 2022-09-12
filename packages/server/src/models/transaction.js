@@ -12,16 +12,25 @@ const Transaction = (sequelize) => {
       defaultValue: 0,
     },
     total_transaction: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.FLOAT,
       defaultValue: 0,
     },
+    courier: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+    },
     shipping_cost: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.FLOAT,
       defaultValue: 0,
     },
     total_paid: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.FLOAT,
       defaultValue: 0,
+    },
+    transaction_status: {
+      type: DataTypes.ENUM('Menunggu Pembayaran', 'Menunggu Konfirmasi Pembayaran','Diproses','Dibatalkan','Dikirim','Pesanan Dikonfirmasi'),
+      defaultValue: 'Menunggu Pembayaran',
+      allowNull: true,
     },
     cancel_description: {
       type: DataTypes.STRING(300),

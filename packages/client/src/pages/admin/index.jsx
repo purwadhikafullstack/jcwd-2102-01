@@ -13,12 +13,22 @@ export default function dashboard() {
    <SideBar />
    <Box >
     <AdminNavBar />
-    <Flex flexWrap={'wrap'} p='15px'>
+    <Flex flexWrap={'wrap'} p='30px'>
+     <Box>
+      <Text fontWeight='bold' fontSize='2xl' mb='20px'>
+       Data Produk
+      </Text>
+      <Button>Tambah Produk</Button>
+     </Box>
+     <Box>
 
-     <Box m='10px' h='300px' w='300px'> Dashboard </Box>
-     <Box m='10px' h='300px' w='300px'> Dashboard </Box>
-     <Box m='10px' h='300px' w='300px'> Dashboard </Box>
-     <Box m='10px' h='300px' w='300px'> Dashboard </Box>
+     </Box>
+
+     <Box m='10px' w='300px'></Box>
+     <Box m='10px' w='300px'></Box>
+     <Box m='10px' w='300px'></Box>
+     <Box m='10px' w='300px'></Box>
+
     </Flex>
     <AdmFooter />
 

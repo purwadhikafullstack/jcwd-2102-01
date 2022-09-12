@@ -28,7 +28,7 @@ export default function RegisterForm() {
     initialValues: {
       email: "",
       username: "",
-      full_name: "",
+      first_name: "",
       password: "",
       repassword: "",
       phone_no: "",
@@ -41,7 +41,7 @@ export default function RegisterForm() {
         .email('Format harus email'),
       // .matches(/.com/, "Please include an '.com' in the email address"),
       username: Yup.string().required("Username is required"),
-      full_name: Yup.string()
+      first_name: Yup.string()
         .required("Nama wajib diisi")
         .min(3, 'Nama anda terlalu pendek!')
         .matches(/^[aA-zZ\s]+$/, "hanya boleh diisi huruf").trim(),
@@ -63,10 +63,10 @@ export default function RegisterForm() {
     // ------------------------------- code setelah register tidak login
     onSubmit: async () => {
       const formData = new FormData();
-      const { email, username, full_name, password, phone_no, roles } = formik.values;
+      const { email, username, first_name, password, phone_no, roles } = formik.values;
       formData.append("email", email);
       formData.append("username", username);
-      formData.append("fullname", full_name);
+      formData.append("first_name", first_name);
       formData.append("password", password);
       formData.append("phone_no", phone_no);
       formData.append("roles", roles);
@@ -92,7 +92,7 @@ export default function RegisterForm() {
   );
   useEffect(() => {
     if (userSelector?.id) {
-      router.push("/home");
+      router.push("/");
     }
   }, [userSelector?.id])
 
@@ -127,6 +127,7 @@ export default function RegisterForm() {
           <Stack align={"center"}>
             <Box m={"10px 20px"} width={"250px"}>
               {/* ---------- Email Input ---------- */}
+              {/* {formik.values.email} */}
               <FormControl id="email" isInvalid={formik.errors.email}>
                 <Input
                   required
@@ -142,6 +143,7 @@ export default function RegisterForm() {
               </FormControl>
 
               {/* ---------- Username Input ---------- */}
+              {formik.values.username}
               <FormControl
                 id="username"
                 isInvalid={formik.errors.username}
@@ -166,8 +168,8 @@ export default function RegisterForm() {
 
               {/* ---------- Fullname Input ----------*/}
               <FormControl
-                id="full_name"
-                isInvalid={formik.errors.full_name}
+                id="first_name"
+                isInvalid={formik.errors.first_name}
                 marginTop={"20px"}
               >
                 <Input
@@ -176,14 +178,14 @@ export default function RegisterForm() {
                   type="text"
                   maxLength={"40"}
                   onChange={(event) =>
-                    formik.setFieldValue("full_name", event.target.value)
+                    formik.setFieldValue("first_name", event.target.value)
                   }
                 />
                 <FormLabel className="labelText">
-                  &nbsp; Full name &nbsp;
+                  &nbsp; First name &nbsp;
                 </FormLabel>
                 <FormHelperText color="red">
-                  {formik.errors.full_name}
+                  {formik.errors.first_name}
                 </FormHelperText>
               </FormControl>
 
@@ -210,10 +212,7 @@ export default function RegisterForm() {
                   {formik.errors.phone_no}
                 </FormHelperText>
               </FormControl>
-              <FormLabel classname="labelText">
-
-
-
+              <FormLabel className="labelText">
               </FormLabel>
 
               {/* ---------- Password Input ---------- */}

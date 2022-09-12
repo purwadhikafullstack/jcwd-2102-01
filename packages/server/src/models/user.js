@@ -3,7 +3,7 @@ const { DataTypes } = require("sequelize");
 const User = (sequelize) => {
   return sequelize.define("User", {
     username: {
-      type: DataTypes.STRING(25),
+      type: DataTypes.STRING(50),
       allowNull: false,
       unique: true
     },
@@ -13,22 +13,26 @@ const User = (sequelize) => {
       unique: true
     },
     password: {
-      type: DataTypes.STRING(200),
+      type: DataTypes.STRING(255),
       allowNull: false,
     },
     roles: {
-      type: DataTypes.STRING(20),
-      defaultValue: false,
+      type: DataTypes.ENUM('Admin', 'User'),
+      defaultValue: 'User',
     },
     is_verified: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
+      type: DataTypes.ENUM('yes', 'no'),
+      defaultValue: 'no',
     },
-    full_name: {
-      type: DataTypes.STRING(50),
+    first_name: {
+      type: DataTypes.STRING(100),
       allowNull: false,
     },
-    birth: {
+    last_name: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+    },
+    birthdate: {
       type: DataTypes.DATEONLY,
       allowNull: true,
     },
@@ -37,7 +41,8 @@ const User = (sequelize) => {
       allowNull: true,
     },
     gender: {
-      type: DataTypes.STRING(10),
+      type: DataTypes.ENUM('Laki-laki', 'Perempuan', 'Lainnya'),
+      defaultValue: 'Lainnya',
       allowNull: true,
     },
     image_url: {

@@ -46,7 +46,7 @@ export default function productdetails() {
           isiPerkemasan={val.isi_perkemasan}
           isDeleted={val.is_deleted}
           // productCategory={ }
-          productImage={val.Product_imgs[0]?.img_product}
+          productImage={val.Product_images[0]?.image_url}
           stock={val.Product_stocks[0]?.stock}
           unit={val.Product_stocks[0]?.Unit?.unit_name}
           firstPrice={val.Product_stocks[0]?.first_price}
@@ -68,7 +68,7 @@ export default function productdetails() {
 
   useEffect(() => {
     fetchProduct()
-  }, []);
+  }, [router.isReady]);
 
   return (
     <>

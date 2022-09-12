@@ -28,11 +28,38 @@ const addressController = {
     }
   },
 
+  // -------------------- Get Address-------------------- //
+  getAddressId: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const findAddress = await Address.findAll({
+        include: [ User ],
+        // order: [["default_address", "DESC"]],
+        where: {
+          id: id,
+        },
+      });
+
+      return res.status(200).json({
+        message: "fetching data",
+        result: findAddress,
+      });
+    } catch (err) {
+      console.log(err);
+
+      res.status(400).json({
+        message: err.toString(),
+      });
+    }
+  },
+
+
   // -------------------- Add Address -------------------- //
   addAddress: async (req, res) => {
     try {
       const { idUser } = req.params;
-      const { receiver_name, receiver_phone, address, province, province_id, city_name,city_id, type, postal_code, default_address, id_user } = req.body;
+      const { receiver_name, receiver_phone, address, province, province_id, city_name,city_id, type,districts, postal_code, id_user } = req.body;
       
       const findUserAddress = await Address.findAll({
         include: [ User ],
@@ -50,7 +77,7 @@ const addressController = {
       } 
 
       const newAddress = await Address.create({
-        receiver_name,receiver_phone, address, province, province_id, city_name,city_id, type, postal_code, default_address, id_user
+        receiver_name,receiver_phone, address, province, province_id, city_name,city_id,districts, type, postal_code, id_user
       });
 
       return res.status(201).json({

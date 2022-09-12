@@ -3,7 +3,7 @@ const { DataTypes } = require("sequelize");
 const Product_description = (sequelize) => {
   return sequelize.define("Product_description", {
     weight: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.FLOAT,
       defaultValue: 0,
       allowNull: false,
     },
@@ -20,11 +20,11 @@ const Product_description = (sequelize) => {
       allowNull: true,
     },
     golongan: {
-      type: DataTypes.STRING(300),
+      type: DataTypes.STRING(500),
       allowNull: true,
     },
     cara_simpan: {
-      type: DataTypes.STRING(300),
+      type: DataTypes.STRING(500),
       allowNull: true,
     },
     nomor_ijin_edar: {
@@ -32,11 +32,11 @@ const Product_description = (sequelize) => {
       allowNull: true,
     },
     cara_pakai: {
-      type: DataTypes.STRING(300),
+      type: DataTypes.STRING(500),
       allowNull: true,
     },
     peringatan: {
-      type: DataTypes.STRING(300),
+      type: DataTypes.STRING(500),
       allowNull: true,
     },
   });

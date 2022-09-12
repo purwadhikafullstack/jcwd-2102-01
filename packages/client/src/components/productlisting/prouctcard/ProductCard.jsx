@@ -1,15 +1,55 @@
 import {
   Flex, Box, Input, InputGroup, InputRightElement, InputLeftElement, Button,
-  Select, Icon, Text, Center, CheckboxGroup, Checkbox, Stack, Image
+  Select, Icon, Text, useToast, Center, CheckboxGroup, Checkbox, Stack, Image
 } from '@chakra-ui/react';
 import { IoCartOutline } from "react-icons/io5";
 import { HiMinusSm, HiPlusSm } from "react-icons/hi";
+import { useDispatch, useSelector } from 'react-redux';
 import NextLink from 'next/link';
+import { axiosInstance } from '../../../lib/api';
+import qs from 'qs';
 // import Image from 'next/image'
 
 export default function ProductCard(props) {
   const { productId, productCode, productName, isiPerkemasan, isDeleted, productCategory, productImage, stock, firstPrice, sellingPrice, converted, unit } = props
   const percentage = parseInt((firstPrice - sellingPrice) / firstPrice * 100);
+  const userSelector = useSelector((state) => state.auth)
+  const autoRender = useSelector((state) => state.automateRendering)
+  const toast = useToast();
+  const dispatch = useDispatch()
+
+  // ---------- Add to cart ---------- //
+  async function addToCart() {
+    let res
+    try {
+      let body = {
+        buy_quantity: parseInt(1),
+        price: parseFloat(sellingPrice),
+        total_price: parseFloat(sellingPrice),
+        // note : "", 
+        id_user: userSelector.id,
+        id_product: productId
+      }
+      res = await axiosInstance.post(`/transaction/addCart/${userSelector.id}`, qs.stringify(body))
+      console.log(res)
+      dispatch({
+        type: "FETCH_RENDER",
+        payload: { value: !autoRender.value }
+      })
+      toast({
+        title: `Berhasil Menambah 1 ${unit} Produk ${productName} ke keranjang`,
+        status: "success",
+        isClosable: true,
+      })
+    } catch (err) {
+      toast({
+        title: `Quantity beli Produk ${productName} di keranjang anda sudah melebihi stok / stok tiak mencukupi`,
+        status: "error",
+        isClosable: true,
+      })
+      console.log(err)
+    }
+  };
 
   return (
     <>
@@ -42,9 +82,11 @@ export default function ProductCard(props) {
 
         <Box pb='12px' px='10px' h='40px'>
           <Button w='full' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px' size='sm' my='5px'
-            _hover={{ bg: '#009B90', color: 'white' }}>
+            _hover={{ bg: '#009B90', color: 'white' }} disabled={userSelector.id ? false : true}
+            onClick={() => addToCart()}>
             <Icon boxSize='4' as={IoCartOutline} mr='5px' />
-            Keranjang</Button>
+            Keranjang
+          </Button>
 
           {/* <InputGroup size='sm'>
       <InputLeftElement bg='#009B90' borderLeftRadius='9px' color='white'>

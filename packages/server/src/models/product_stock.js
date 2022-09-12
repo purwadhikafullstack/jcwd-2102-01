@@ -2,36 +2,40 @@ const { DataTypes } = require("sequelize");
 
 const Product_stock = (sequelize) => {
   return sequelize.define("Product_stock", {
+    isi_perkemasan: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
     stock: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
-    qty_sold: {
-      type: DataTypes.INTEGER,
+    total_sold: {
+      type: DataTypes.FLOAT,
       defaultValue: 0,
     },
     capital_price: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.FLOAT,
       defaultValue: 0,
       allowNull: false,
     },
     first_price: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.FLOAT,
       defaultValue: 0,
     },
     selling_price: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.FLOAT,
       defaultValue: 0,
       allowNull: false,
     },
-    profit: {
-      type: DataTypes.INTEGER,
+    margin: {
+      type: DataTypes.FLOAT,
       defaultValue: 0,
       allowNull: false,
     },
     converted: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
+      type: DataTypes.ENUM('yes', 'no'),
+      defaultValue: 'no',
     },
   });
 };

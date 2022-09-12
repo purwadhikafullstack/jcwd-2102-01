@@ -7,14 +7,14 @@ import Image from 'next/image'
 // import invalidToken from '../../assets/imgs/invalid.gif'
 import ResetPassForm from '../../components/resetpassword/ResetPassForm';
 import NavBar from '../../components/navbar/NavBar'
-import Page from '../../components/metatag/Metatag';
+import Metatag from '../../components/metatag/Metatag';
 // import { axiosInstance } from '../../lib/api';
 
 export default function ChangePass() {
   const [verified, setVerified] = useState(false)
   const router = useRouter()
   const { restoken } = router.query
-  const url = "http://localhost:3000" + router.pathname;
+  const url = "http://localhost:3000";
 
   useEffect(() => {
     async function checkToken() {
@@ -33,7 +33,7 @@ export default function ChangePass() {
 
   return (
     <>
-      <Page title={"Reset Password"} description={"Reset password form"}
+      <Metatag title={"Reset Password"} description={"Reset password form"}
         url={url} type="website">
         <Flex minH={'80vh'} justifyContent='center'
           backgroundPosition="center"
@@ -64,7 +64,7 @@ export default function ChangePass() {
             </>
           }
         </Flex>
-      </Page>
+      </Metatag>
     </>
   )
 }

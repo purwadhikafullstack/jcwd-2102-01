@@ -2,12 +2,12 @@ const { DataTypes } = require("sequelize");
 
 const Stock_history = (sequelize) => {
   return sequelize.define("Stock_history", {
-    qty: {
+    quantity: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
     type: {
-      type: DataTypes.STRING(100),
+      type: DataTypes.ENUM('Penjualan', 'Unit Convertion','Update Stock'),
       allowNull: false,
     },
     description: {

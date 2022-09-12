@@ -21,7 +21,7 @@ import MeditAddress from './maddressedit/meditaddress';
 import MchangePassword from './mchangepassword/MchangePassword';
 
 export default function ShowAddress(props) {
-  const { idalamat, namaPenerima, phonePenerima, alamat, provinsi, provinsiId, city, city_id, postalCode, defaultAddress } = props
+  const { idalamat, namaPenerima, phonePenerima, alamat, provinsi, kecamatan, provinsiId, city, city_id, postalCode, defaultAddress } = props
   const { isOpen: isOpenAlamatEdit, onOpen: onOpenAlamatEdit, onClose: onCloseAlamatEdit } = useDisclosure()
   const { isOpen: isOpenDelete, onOpen: onOpenDelete, onClose: onCloseDelete } = useDisclosure()
   const userSelector = useSelector((state) => state.auth)
@@ -34,6 +34,10 @@ export default function ShowAddress(props) {
   // -------------------- Delete Adress -------------------- //
   async function deleteAddress() {
     try {
+      // if (userSelector.default_address == idalamat) {
+      //   await axiosInstance.delete("/address/" + idalamat)
+      // } else {
+      // }
       await axiosInstance.delete("/address/" + idalamat)
       dispatch({
         type: "FETCH_RENDER",
@@ -58,10 +62,8 @@ export default function ShowAddress(props) {
 
   useEffect(() => {
     addressId
-    console.log(addressId);
+    // console.log(addressId);
   }, [addressId]);
-
-
 
 
   // -------------------- Edit Address -------------------- //
@@ -162,9 +164,10 @@ export default function ShowAddress(props) {
                       provinsiIdEd={provinsiId}
                       cityEd={city}
                       city_idEd={city_id}
+                      kecamatanEd={kecamatan}
                       postalCodeEd={postalCode}
                       defaultAddressEd={defaultAddress}
-                      onClose={isOpenAlamatEdit} />
+                      onClose={onCloseAlamatEdit} />
                   </ModalBody>
                 </ModalContent>
               </Modal>
@@ -174,7 +177,6 @@ export default function ShowAddress(props) {
                   <Icon boxSize={4} as={FaTrashAlt} />
                 </Button>
               </Tooltip>
-              {/* ---------- Simpan Post ---------- */}
               <Modal isOpen={isOpenDelete} onClose={onCloseDelete} size='sm'>
                 <ModalOverlay />
                 <ModalContent>
@@ -220,6 +222,11 @@ export default function ShowAddress(props) {
             <Box display='flex' fontSize='sm'>
               <Text fontWeight='semibold' w='90px' >Kota/Kab:</Text>
               <Text >{city}</Text>
+            </Box>
+
+            <Box display='flex' fontSize='sm'>
+              <Text fontWeight='semibold' w='90px' >Kecamatan:</Text>
+              <Text >{kecamatan}</Text>
             </Box>
 
             <Box display='flex' justifyContent='space-between'>

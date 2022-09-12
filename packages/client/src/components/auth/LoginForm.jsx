@@ -32,8 +32,8 @@ export default function LoginForm() {
     },
     validationSchema: Yup.object().shape({
       emailusername: Yup.string().required("Username or Email is required"),
-      password: Yup.string().required("Password is required").
-        min(8, 'Password should be of minimum 8 characters length'),
+      password: Yup.string().required("Password is required"),
+      // min(8, 'Password should be of minimum 8 characters length'),
     }),
     validateOnChange: false,
     onSubmit: async () => {

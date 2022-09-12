@@ -27,7 +27,6 @@ export default function MaddAddress(props) {
   const toast = useToast();
   const dispatch = useDispatch()
 
-
   // --------------- Simpan data Alamat Baru --------------- //
   const formik = useFormik({
     initialValues: {
@@ -38,7 +37,8 @@ export default function MaddAddress(props) {
       province_id: "",
       city_name: "",
       city_id: "",
-      postal_code: "",
+      districts: "",
+      postal_code: postalCode,
       type: "",
     },
     validationSchema: Yup.object().shape({
@@ -49,16 +49,20 @@ export default function MaddAddress(props) {
       receiver_phone: Yup.string().required("Nomor Hp penerima wajib diisi").
         min(10, 'Nomor handphone salah atau kurang dari 12 angka').
         max(12, 'Nomor handphone salah atau lebih dari 12 angka'),
+      districts: Yup.string().required("Kecamatan wajib diisi").
+        min(3, 'Kecamatan terlalu pendek!').
+        max(200, 'Kecamatan tidak boleh lebih dari 200 karakter').
+        matches(/^[aA-zZ\s]+$/, "hanya boleh diisi huruf").trim(),
       address: Yup.string().required("Alamat wajib diisi").
         min(10, 'Alamat minimal 10 karakter').
         max(350, 'Alamat maksimal 350 karakter').trim(),
-      province: Yup.string().required("Provinsi wajib diisi"),
-      city_name: Yup.string().required("Nama Kota wajib diisi"),
-      postal_code: Yup.string().required("Kode Post wajib diisi"),
+      // province: Yup.string().required("Provinsi wajib diisi"),
+      // city_name: Yup.string().required("Nama Kota wajib diisi"),
+      // postal_code: Yup.string().required("Kode Post wajib diisi"),
     }),
     validateOnChange: false,
     onSubmit: async () => {
-      const { receiver_name, receiver_phone, address, province_id, city_id, postal_code } = formik.values
+      const { receiver_name, receiver_phone, address, province_id, districts, city_id, postal_code } = formik.values
       try {
         let body = {
           receiver_name: receiver_name,
@@ -68,10 +72,15 @@ export default function MaddAddress(props) {
           province_id: province_id,
           city_name: city,
           city_id: city_id,
+          districts: districts,
           type: typeCity,
           postal_code: postal_code,
           id_user: userSelector.id,
+          // receiver_name, receiver_phone, address, province, province_id, city_name, city_id, districts, type, postal_code, id_user
         }
+
+        // console.log(city);
+        // console.log(province);
 
         await axiosInstance.post("/address/add/" + userSelector.id, qs.stringify(body))
         dispatch({
@@ -159,13 +168,13 @@ export default function MaddAddress(props) {
     })
   }
 
-  const renderPostCodeRajaOngkir = () => {
-    return cityRajaOngkir.map((val, index) => {
-      return (
-        <option value={val.postal_code}>{val.postal_code}</option>
-      )
-    })
-  }
+  // const renderPostCodeRajaOngkir = () => {
+  //   return cityRajaOngkir.map((val, index) => {
+  //     return (
+  //       <option value={val.postal_code}>{val.postal_code}</option>
+  //     )
+  //   })
+  // }
 
   // ---------- Buat ambil nama Kota ---------- //
   async function setTheCityName() {
@@ -177,6 +186,7 @@ export default function MaddAddress(props) {
       setTypeCity(res.data.rajaongkir.results.type)
       setPostalCode(res.data.rajaongkir.results.postal_code)
       // console.log(res.data.rajaongkir.results.province)
+      console.log(res.data.rajaongkir.results.postal_code)
     } catch (err) {
       console.log(err)
     }
@@ -199,8 +209,8 @@ export default function MaddAddress(props) {
   return (
     <>
       <Box display='flex'>
+        {/* -------------------- receiver_name -------------------- */}
         <Box>
-          {/* -------------------- receiver_name -------------------- */}
           <FormControl isInvalid={formik.errors.receiver_name}>
             {/* {formik.values.receiver_name} */}
             <FormLabel display='flex'>Nama Penerima<Text color='red'>*</Text></FormLabel>
@@ -218,8 +228,8 @@ export default function MaddAddress(props) {
             </FormHelperText>
           </FormControl>
         </Box>
+        {/* -------------------- receiver_name -------------------- */}
         <Box ml='10px'>
-          {/* -------------------- receiver_name -------------------- */}
           <FormControl isInvalid={formik.errors.receiver_phone}>
             {/* {formik.values.receiver_phone} */}
             <FormLabel display='flex'>Nomor HP penerima<Text color='red'>*</Text></FormLabel>
@@ -256,49 +266,80 @@ export default function MaddAddress(props) {
         </FormHelperText>
       </FormControl>
 
-      {/* -------------------- Province -------------------- */}
-      <FormControl isInvalid={formik.errors.province_id} marginTop={"10px"}>
-        <FormLabel display='flex'>Provinsi<Text color='red'>*</Text></FormLabel>
-        {formik.values.province_id}
-        <Select onChange={(event) => formik.setFieldValue("province_id", event.target.value)}
-        // defaultValue={userSelector.city_name}
-        >
-          <option value=''>Pilih Provinsi</option>
-          {renderProvinceRajaOngkir()}
-        </Select>
-        <FormHelperText color="red">
-          {formik.errors.province_id}
-        </FormHelperText>
-      </FormControl>
+      <Box display={'flex'}>
+        {/* -------------------- Province -------------------- */}
+        <Box w='220px'>
+          <FormControl isInvalid={formik.errors.province_id} marginTop={"10px"}>
+            <FormLabel display='flex'>Provinsi<Text color='red'>*</Text></FormLabel>
+            {/* {formik.values.province_id} */}
+            {/* <Select w='195px' mr='10px' onChange={(event) => formik.setFieldValue("province_id", event.target.value)} */}
+            <Select onChange={(event) => formik.setFieldValue("province_id", event.target.value)}
+            // defaultValue={userSelector.city_name}
+            >
+              <option value=''>Pilih Provinsi</option>
+              {renderProvinceRajaOngkir()}
+            </Select>
+            <FormHelperText color="red">
+              {formik.errors.province_id}
+            </FormHelperText>
+          </FormControl>
+        </Box>
 
-      {/* -------------------- City -------------------- */}
-      <FormControl isInvalid={formik.errors.city_id} marginTop={"10px"} >
-        <FormLabel display='flex'>Kota / Kabupaten <Text color='red'>*</Text></FormLabel>
-        {/* {formik.values.city_id} */}
-        <Select onChange={(event) => formik.setFieldValue("city_id", event.target.value)}
-        // defaultValue={userSelector.city_name}
-        >
-          <option value=''>Pilih Kota / Kabupaten</option>
-          {renderCityRajaOngkir()}
-        </Select>
-        <FormHelperText color="red">
-          {formik.errors.city_id}
-        </FormHelperText>
-      </FormControl>
+        {/* -------------------- City -------------------- */}
+        <Box ml='10px' w='210px'>
+          <FormControl isInvalid={formik.errors.city_id} marginTop={"10px"} >
+            <FormLabel display='flex'>Kota / Kabupaten <Text color='red'>*</Text></FormLabel>
+            {/* {formik.values.city_id} */}
+            <Select onChange={(event) => formik.setFieldValue("city_id", event.target.value)}
+            // defaultValue={userSelector.city_name}
+            >
+              <option value=''>Pilih Kota / Kabupaten</option>
+              {renderCityRajaOngkir()}
+            </Select>
+            <FormHelperText color="red">
+              {formik.errors.city_id}
+            </FormHelperText>
+          </FormControl>
+        </Box>
+      </Box>
 
-      {/* -------------------- Postal Code -------------------- */}
-      <FormControl isInvalid={formik.errors.postal_code} marginTop={"10px"}>
-        <FormLabel display='flex'>Kode Post<Text color='red'>*</Text></FormLabel>
-        {/* {formik.values.postal_code} */}
-        <Select onChange={(event) => formik.setFieldValue("postal_code", event.target.value)}>
-          <option value=''>Pilih Kode Pos</option>
-          {renderPostCodeRajaOngkir()}
-        </Select>
-        <FormHelperText color="red">
-          {formik.errors.postal_code}
-        </FormHelperText>
-      </FormControl>
-
+      <Box display={'flex'}>
+        {/* -------------------- Districts -------------------- */}
+        <Box w='220px'>
+          <FormControl isInvalid={formik.errors.districts} marginTop={"10px"}>
+            {/* {formik.values.districts} */}
+            <FormLabel display='flex'>Kecamatan<Text color='red'>*</Text></FormLabel>
+            <Input w='195px' mr='10px'
+              placeholder='Kecamatan'
+              type="text"
+              maxLength={"200"}
+              onChange={(event) =>
+                formik.setFieldValue("districts", event.target.value)
+              }
+            />
+            <FormHelperText color="red">
+              {formik.errors.districts}
+            </FormHelperText>
+          </FormControl>
+        </Box>
+        {/* -------------------- Postal Code -------------------- */}
+        <Box w='210px'>
+          <FormControl isInvalid={formik.errors.postal_code} marginTop={"10px"}>
+            <FormLabel display='flex'>Kode Post<Text color='red'>*</Text></FormLabel>
+            {/* {formik.values.postal_code} */}
+            <Select onChange={(event) => formik.setFieldValue("postal_code", event.target.value)}>
+              <option value=''>Pilih Kode Pos</option>
+              {postalCode ?
+                <option value={postalCode}>{postalCode}</option>
+                :
+                null}
+            </Select>
+            <FormHelperText color="red">
+              {formik.errors.postal_code}
+            </FormHelperText>
+          </FormControl>
+        </Box>
+      </Box>
       <Button
         onClick=
         {() => {
@@ -310,7 +351,7 @@ export default function MaddAddress(props) {
         }}
         // onClick={formik.handleSubmit}
         disabled={formik.values.address && formik.values.province_id
-          && formik.values.city_id ? false : true}
+          && formik.values.city_id && formik.values.districts.length > 3 ? false : true}
         colorScheme='twitter' mt={'10px'}>Simpan Perubahan</Button>
     </>
   )

@@ -19,7 +19,7 @@ const Address = (sequelize) => {
       allowNull: false,
     },
     province_id: {
-      type: DataTypes.STRING(20),
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     city_name: {
@@ -27,7 +27,12 @@ const Address = (sequelize) => {
       allowNull: false,
     },
     city_id: {
-      type: DataTypes.STRING(250),
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    // Kecamatan
+    districts: {
+      type: DataTypes.STRING(200),
       allowNull: false,
     },
     // Jenis Daerah Tingkat II. Berisi "Kota" atau "Kabupaten" from raja ongkir

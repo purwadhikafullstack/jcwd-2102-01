@@ -9,14 +9,70 @@ import { MdOutlineCategory, MdCategory, MdPersonAddAlt, MdPersonAdd } from 'reac
 import { AiOutlineHome, AiFillHome } from "react-icons/ai";
 import { RiLoginCircleLine, RiLoginCircleFill } from "react-icons/ri";
 import { IoStorefrontOutline, IoStorefrontSharp } from "react-icons/io5"
+import { axiosInstance } from '../../lib/api';
+import { useState, useEffect } from "react";
+import { useRouter } from 'next/router';
 import Image from 'next/image';
 import logo from '../../assets/img/healthymedLogo.png'
-import { useRouter } from 'next/router';
+import SideFilterCategory from '../productlisting/filter/filtercategory/SideFilterCategory';
 
 export default function NavBar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const router = useRouter();
+  const [category, setCategory] = useState([])
+  // --------------- Fetching Category --------------- //
+  async function fetchCategory() {
+    try {
+      axiosInstance.get(`/category`)
+        .then((res) => {
+          setCategory(res.data.result)
+        })
+    } catch (err) {
+      console.log(err)
+    }
+  };
 
+  const renderCategoryMobile = () => {
+    return category.map((val, index) => {
+      return (
+        <>
+          <Link href={`/productlist?category1=` + val.category} style={{ textDecoration: "none" }}>
+            <HStack _hover={{ background: '#ccdefc' }}>
+              <Center display='flex' justifyContent='center' h='40px' w='58px'>
+              </Center>
+              <Box display='flex' w='full' fontWeight='semibold'>
+                <SideFilterCategory key={index}
+                  idcategory={val.id}
+                  category={val.category}
+                />
+              </Box>
+            </HStack>
+          </Link>
+        </>
+      )
+    })
+  }
+
+  const renderCategoryWeb = () => {
+    return category.map((val, index) => {
+      return (
+        <>
+          <Link href={`/productlist?category1=` + val.category} style={{ textDecoration: "none" }}>
+            <MenuItem>
+              <SideFilterCategory key={index}
+                idcategory={val.id}
+                category={val.category}
+              /></MenuItem>
+          </Link>
+        </>
+      )
+    })
+  }
+
+  useEffect(() => {
+    fetchCategory()
+
+  }, [router.isReady]);
   return (
     <>
       <Box bg='#ffffff' borderBottomWidth='1px' boxShadow='md' px={4} className='topnavbar' zIndex={111}>
@@ -50,14 +106,14 @@ export default function NavBar() {
                 </Button>
               </LinkNext>
 
-              <LinkNext href='/productlist' className='Button-Navbar' style={{ textDecoration: "none" }}>
+              <Link href='/productlist' className='Button-Navbar' style={{ textDecoration: "none" }}>
                 <Button background='white'
                   style={router.pathname == '/productlist' ? { textDecoration: "none", borderBottomWidth: '3px', borderBottomColor: '#3B9AE1' }
                     : { textDecoration: "none" }}
                   _hover={{ background: '#E8F5FD', color: '#00ACEE', borderBottomWidth: '3px', borderBottomColor: '#3B9AE1' }} borderRadius={0} h={16}>
                   Produk
                 </Button>
-              </LinkNext>
+              </Link>
 
               <Menu>
                 <MenuButton as={Button}
@@ -65,15 +121,7 @@ export default function NavBar() {
                   Kategori
                 </MenuButton>
                 <MenuList>
-                  <LinkNext href="/">
-                    <MenuItem><Text size='sm' ml='5px' fontWeight='semibold'>Obat Sakit Kepala</Text></MenuItem>
-                  </LinkNext>
-                  <LinkNext href="/Obat Sakit Perut">
-                    <MenuItem><Text size='sm' ml='5px' fontWeight='semibold'>Obat Sakit Perut</Text></MenuItem>
-                  </LinkNext>
-                  <LinkNext href="/Nutrisi">
-                    <MenuItem><Text size='sm' ml='5px' fontWeight='semibold'>Nutrisi</Text></MenuItem>
-                  </LinkNext>
+                  {renderCategoryWeb()}
                 </MenuList>
               </Menu>
 
@@ -135,27 +183,7 @@ export default function NavBar() {
                     </AccordionButton>
                   </h2>
                   <AccordionPanel pb={2} p='0px'>
-                    <HStack _hover={{ background: '#ccdefc' }}>
-                      <Center display='flex' justifyContent='center' h='40px' w='58px'>
-                      </Center>
-                      <Box display='flex' w='full' fontWeight='semibold'>
-                        Obat Sakit Kepala
-                      </Box>
-                    </HStack>
-                    <HStack _hover={{ background: '#ccdefc' }}>
-                      <Center display='flex' justifyContent='center' h='40px' w='58px'>
-                      </Center>
-                      <Box display='flex' w='full' fontWeight='semibold'>
-                        Obat Sakit Pinggang
-                      </Box>
-                    </HStack>
-                    <HStack _hover={{ background: '#ccdefc' }}>
-                      <Center display='flex' justifyContent='center' h='40px' w='58px'>
-                      </Center>
-                      <Box display='flex' w='full' fontWeight='semibold'>
-                        Obat Sakit Perut
-                      </Box>
-                    </HStack>
+                    {renderCategoryMobile()}
                   </AccordionPanel>
                 </AccordionItem>
               </Accordion>
