@@ -14,10 +14,7 @@ const Transaction_list = (sequelize) => {
       type: DataTypes.FLOAT,
       defaultValue: 0,
     },
-    note: {
-      type: DataTypes.STRING(300),
-      allowNull: true,
-    },
+
   });
 };
 

@@ -21,6 +21,7 @@ export default function ProductCard(props) {
   // ---------- Add to cart ---------- //
   async function addToCart() {
     let res
+    let msg = ''
     try {
       let body = {
         buy_quantity: parseInt(1),
@@ -30,23 +31,31 @@ export default function ProductCard(props) {
         id_user: userSelector.id,
         id_product: productId
       }
-      res = await axiosInstance.post(`/transaction/addCart/${userSelector.id}`, qs.stringify(body))
-      console.log(res)
+      let res = await axiosInstance.post(`/transaction/addCart/${userSelector.id}`, qs.stringify(body))
+      msg = res.data.message;
+      console.log(res.data.message);
+      // console.log(res)
+
       dispatch({
         type: "FETCH_RENDER",
         payload: { value: !autoRender.value }
       })
-      toast({
-        title: `Berhasil Menambah 1 ${unit} Produk ${productName} ke keranjang`,
-        status: "success",
-        isClosable: true,
-      })
+
+      if (msg == "Error: Maaf data keranjang anda melebihi produk stok" || msg == "Maaf produk stok tidak mencukupi") {
+        toast({
+          title: `Quantity beli Produk ${productName} di keranjang anda sudah melebihi stok / stok tiak mencukupi`,
+          status: "error",
+          isClosable: true,
+        })
+      } else {
+        toast({
+          title: `Berhasil Menambah 1 ${unit} Produk ${productName} ke keranjang`,
+          status: "success",
+          isClosable: true,
+        })
+      }
+
     } catch (err) {
-      toast({
-        title: `Quantity beli Produk ${productName} di keranjang anda sudah melebihi stok / stok tiak mencukupi`,
-        status: "error",
-        isClosable: true,
-      })
       console.log(err)
     }
   };

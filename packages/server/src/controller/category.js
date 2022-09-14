@@ -56,6 +56,28 @@ const categoryController = {
     }
   },
 
+  // -------------------- Add Category -------------------- //
+  addCategory: async (req, res) => {
+    try {
+      const { category } = req.body;
+
+      const newCategory = await Category.create({
+        category
+      });
+
+      return res.status(201).json({
+        message: "Category created",
+        result: newCategory,
+      });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({
+        message: err.toString(),
+      });
+    }
+  },
+
+  
 
 };
 

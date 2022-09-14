@@ -83,6 +83,21 @@ export default function LoginForm() {
     },
   });
 
+  useEffect(() => {
+    if (!userSelector?.id) {
+      router.push("/login")
+    }
+    else if (userSelector.roles == "Admin") {
+      router.push("/admin/dashboard")
+    }
+    else if (userSelector.roles == "User") {
+      router.push("/home")
+    }
+    else {
+      // setIsLoading(false);
+    }
+  }, [userSelector?.value]);
+
   return (
     <>
       <Box display='flex' borderRadius='15px' boxShadow='md' bg='#ffffff' borderWidth='1px' height='530px'>

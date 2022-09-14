@@ -1,6 +1,6 @@
 import {
   Flex, Box, Text, Button, InputGroup, InputLeftElement, Icon, Modal, ModalCloseButton, ModalContent,
-  ModalOverlay, ModalHeader, ModalBody, useDisclosure,
+  ModalOverlay, ModalHeader, ModalBody, useDisclosure, FormControl, FormLabel, FormHelperText,
   InputRightElement, Input, Tooltip, Divider, Select
 } from '@chakra-ui/react';
 import Footer from '../../../components/footer/Footer';
@@ -11,10 +11,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { FaTrashAlt, FaEdit } from "react-icons/fa";
-import ProductCartList from './ProductCartList';
+import { useFormik } from "formik";
 import { axiosInstance } from '../../../lib/api';
 import MaddAddress from '../../profilesetting/maddressadd/maddaddress';
 import ShowAddress from '../../profilesetting/ShowAddress';
+import ProductCartList from '../CartTransactions/ProductCartList';
 import axios from 'axios';
 import qs from 'qs';
 import * as Yup from "yup";
@@ -31,10 +32,12 @@ export default function OrderTrasanctions() {
   const [cartWeight, setCartWeight] = useState(0)
   const [addressFetch, setAddressFetch] = useState([])
   const [addressFetchById, setAddressFetchById] = useState([])
-  const [getAddressId, setGetCityId] = useState()
+  const [getCityId, setGetCityId] = useState()
   const [addressLength, setAddressLength] = useState()
   const [costRajaOngkir, setCostRajaOngkir] = useState([])
+  const [totalSeluruh, setTotalSeluruh] = useState()
   const { isOpen: isOpenAlamat, onOpen: onOpenAlamat, onClose: onCloseAlamat } = useDisclosure()
+  const { isOpen: isOpenPayment, onOpen: onOpenPayment, onClose: onClosePayment } = useDisclosure()
   const { isOpen: isOpenChangeAddress, onOpen: onOpenChangeAddress, onClose: onCloseChangeAddress } = useDisclosure()
 
   // ---------- Fetching Address by User ---------- //
@@ -82,6 +85,7 @@ export default function OrderTrasanctions() {
           setGetCityId(res.data.result[0].city_id)
           const temp = res.data.result
           console.log(res.data.result[0].city_id)
+          console.log(getCityId)
           // console.log('address length' + temp.length)
         })
     } catch (err) {
@@ -115,7 +119,7 @@ export default function OrderTrasanctions() {
         .then((res) => {
           setCart(res.data.result)
           setCartLength(res.data.result.length)
-          console.log(res.data.result);
+          // console.log(res.data.result);
           // console.log(res.data.result[1].Product.Product_stocks[0].Unit.unit_name);
         })
 
@@ -131,6 +135,7 @@ export default function OrderTrasanctions() {
 
   useEffect(() => {
     // alert(a)
+    setTotalSeluruh(parseFloat(subTotal) + parseFloat(formik.values.service))
     setCartWeight(totalWeight)
     setCartSubTotal(subTotal);
   }, [cart])
@@ -168,14 +173,14 @@ export default function OrderTrasanctions() {
       axiosInstance.get(`/transaction/getCouriers`)
         .then((res) => {
           setCouriers(res.data.result)
-          console.log(res.data.result);
+          // console.log(res.data.result);
         })
     } catch (err) {
       console.log(err)
     }
   };
   const renderCouriers = () => {
-    return couriers.map((val, index) => {
+    return couriers.map((val) => {
       return (
         <option value={val.courier_code}> {val.courier}</option>
       )
@@ -194,16 +199,73 @@ export default function OrderTrasanctions() {
   async function fetchCostRajaOngkir() {
     try {
       const res = await axios.post('https://api.rajaongkir.com/starter/cost',
-        { "origin": "455", "destination": `${getAddressId}`, "weight": `${cartWeight}`, "courier": "jne" },
+        { "origin": "455", "destination": `${getCityId}`, "weight": `${cartWeight}`, "courier": `${formik.values.courier}` },
         {
           headers: { 'key': '461415f8b280e7996178dd23957c633e' },
         })
-      // setCostRajaOngkir(res)
-      console.log(res)
+      setCostRajaOngkir(res.data.rajaongkir.results[0].costs)
+      setlamaPengiriman()
+      setCostPengirimanRO()
+      // console.log(res)
+      // console.log(res.data.rajaongkir.results[0].costs)
     } catch (err) {
       console.log(err)
     }
   };
+
+  const renderCostRajaOngkir = () => {
+    return costRajaOngkir.map((val, index) => {
+      return (
+        <option value={val.cost[0].value}>{val.service} &nbsp; ={'>'}  &nbsp; Estimasi pengiriman :&nbsp;
+          {val.service == 'ECO' || val.service == 'REG' || val.service == 'ONS' || val.service == 'CTC' || val.service == 'OKE' ? val.cost[0].etd + ' HARI'
+            : val.service == 'CTCYES' ? '1 HARI' : val.cost[0].etd}</option>
+      )
+    })
+  }
+
+  // --------------- Simpan data ke Order --------------- //
+  const formik = useFormik({
+    initialValues: {
+      courier: "",
+      service: "",
+    },
+    validationSchema: Yup.object().shape({
+      courier: Yup.string().required("Pilih Kurir"),
+      service: Yup.string().required("Wajib pilih Service")
+    }),
+    validateOnChange: false,
+    onSubmit: async () => {
+      const { courier, service } = formik.values
+      try {
+        let body = {
+          total_transaction: cartSubTotal,
+          courier: courier,
+          shipping_cost: service,
+          total_paid: totalSeluruh,
+          cancel_description: "",
+          transaction_status: "Menunggu Pembayaran",
+          id_user: userSelector.id,
+          id_address: userSelector.default_address,
+          id_upload_recipe: "1",
+          id_payment: "1"
+        }
+
+        await axiosInstance.post("/address/add/" + userSelector.id, qs.stringify(body))
+        dispatch({
+          type: "FETCH_RENDER",
+          payload: { value: !autoRender.value }
+        })
+        toast({
+          title: `Berhasil Menambah alamat baru`,
+          status: "success",
+          isClosable: true,
+        })
+      } catch (err) {
+        console.log(err);
+      }
+      formik.setSubmitting(false)
+    }
+  });
 
   useEffect(() => {
     fetchCart()
@@ -225,8 +287,18 @@ export default function OrderTrasanctions() {
     fetchAddress()
     fetchAddressbyId()
     fetchCostRajaOngkir()
+    formik.values.service = ''
+    formik.values.courier = ''
   }, [userSelector.default_address]);
 
+  useEffect(() => {
+    fetchCostRajaOngkir()
+    formik.values.service = ''
+  }, [formik.values.courier]);
+
+  useEffect(() => {
+    setTotalSeluruh(parseFloat(subTotal) + parseFloat(formik.values.service))
+  }, [formik.values.service]);
 
   return (
     <Box>
@@ -281,23 +353,38 @@ export default function OrderTrasanctions() {
             <Text alignSelf='center' fontWeight='semibold' fontSize='sm' mb='5px'>
               Pilih Kurir :
             </Text>
-            <Select>
-              <option value="">- Pilih Kurir -</option>
-              {renderCouriers()}
-            </Select>
+            <FormControl isInvalid={formik.errors.courier} marginTop={"10px"}>
+              {formik.values.courier}
+              <Select onChange={(event) => formik.setFieldValue("courier", event.target.value)}>
+                <option value="">- Pilih Kurir -</option>
+                {renderCouriers()}
+              </Select>
+              <FormHelperText color="red">
+                {formik.errors.courier}
+              </FormHelperText>
+            </FormControl>
           </Box>
           {/* ----- Pilih Service ----- */}
           <Box mt='10px'>
             <Text alignSelf='center' fontWeight='semibold' fontSize='sm' mb='5px'>
               Pilih Service :
             </Text>
-            <Select>
-              <option value="">- Pilih Service -</option>
-            </Select>
+            {formik.values.service}
+            <FormControl isInvalid={formik.errors.service} marginTop={"10px"}>
+              <Select onChange={(event) => formik.setFieldValue("service", event.target.value)}>
+                {/* {formik.values.service == '' ? <option value="">- Pilih Service -</option>
+                  : <>
+                  {renderCostRajaOngkir()}
+                  </>
+                } */}
+                <option value="">- Pilih Service -</option>
 
-            <Text alignSelf='center' fontSize='sm' mb='5px'>
-              lama pengiriman :
-            </Text>
+                {formik.values.courier ? renderCostRajaOngkir() : null}
+              </Select>
+              <FormHelperText color="red">
+                {formik.errors.service}
+              </FormHelperText>
+            </FormControl>
           </Box>
         </Box>
 
@@ -319,7 +406,7 @@ export default function OrderTrasanctions() {
               Biaya Pengiriman
             </Text>
             <Text fontWeight='semibold'>
-              Rp 1000.000
+              Rp {formik.values.service ? formik.values.service.toLocaleString() : 0}
             </Text>
           </Box>
           <Divider my='20px' />
@@ -328,12 +415,26 @@ export default function OrderTrasanctions() {
               Total Belanja
             </Text>
             <Text fontWeight='bold'>
-              Rp 1000.0000
+              Rp {totalSeluruh ? totalSeluruh.toLocaleString() : cartSubTotal.toLocaleString()}
             </Text>
           </Box>
-          <Text fontWeight='semibold' mb='5px' mt='15px' fontSize='sm' >
-            Metode pembayaran
-          </Text>
+          <Button variant='link' onClick={onOpenPayment}>
+            <Text fontWeight='semibold' color='#213360' mb='5px' mt='15px' fontSize='sm' >
+              Metode pembayaran
+            </Text>
+          </Button>
+          <Modal isOpen={isOpenPayment} onClose={onClosePayment} size='md'>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>Payment Method</ModalHeader>
+              <ModalCloseButton />
+              <ModalBody pb={6}>
+                <Text fontWeight='semibold'>Untuk Saat ini pembayaran hanya bisa melalui transfer bank BCA.</Text>
+                <Text fontWeight='semibold'>REK BCA: 80777082261130123 </Text>
+                <Text fontWeight='semibold'>PT. HEALTHYMED INDONESIA </Text>
+              </ModalBody>
+            </ModalContent>
+          </Modal>
           <Box display='flex' justifyContent='flex-end' >
             <Button w='full' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
               _hover={{ bg: '#009B90', color: 'white' }} disabled={userSelector.id ? false : true}

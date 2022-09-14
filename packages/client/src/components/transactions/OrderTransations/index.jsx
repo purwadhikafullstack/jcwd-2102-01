@@ -11,11 +11,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { FaTrashAlt, FaEdit } from "react-icons/fa";
-import ProductCartList from './ProductCartList';
 import { useFormik } from "formik";
 import { axiosInstance } from '../../../lib/api';
 import MaddAddress from '../../profilesetting/maddressadd/maddaddress';
 import ShowAddress from '../../profilesetting/ShowAddress';
+import ProductCartList from '../CartTransactions/ProductCartList';
 import axios from 'axios';
 import qs from 'qs';
 import * as Yup from "yup";
@@ -37,6 +37,7 @@ export default function OrderTrasanctions() {
   const [costRajaOngkir, setCostRajaOngkir] = useState([])
   const [totalSeluruh, setTotalSeluruh] = useState()
   const { isOpen: isOpenAlamat, onOpen: onOpenAlamat, onClose: onCloseAlamat } = useDisclosure()
+  const { isOpen: isOpenPayment, onOpen: onOpenPayment, onClose: onClosePayment } = useDisclosure()
   const { isOpen: isOpenChangeAddress, onOpen: onOpenChangeAddress, onClose: onCloseChangeAddress } = useDisclosure()
 
   // ---------- Fetching Address by User ---------- //
@@ -134,6 +135,7 @@ export default function OrderTrasanctions() {
 
   useEffect(() => {
     // alert(a)
+    setTotalSeluruh(parseFloat(subTotal) + parseFloat(formik.values.service))
     setCartWeight(totalWeight)
     setCartSubTotal(subTotal);
   }, [cart])
@@ -185,14 +187,6 @@ export default function OrderTrasanctions() {
     })
   }
 
-  const orderNow = async () => {
-    if (addressLength == 0) {
-      await router.push(`/transactions/mycart/addAddress`);
-    } else {
-      await router.push(`/transactions/myorder`);
-    }
-  }
-
   // ---------- Fetching Cost Raja Ongkir ---------- //
   async function fetchCostRajaOngkir() {
     try {
@@ -202,10 +196,7 @@ export default function OrderTrasanctions() {
           headers: { 'key': '461415f8b280e7996178dd23957c633e' },
         })
       setCostRajaOngkir(res.data.rajaongkir.results[0].costs)
-      setlamaPengiriman()
-      setCostPengirimanRO()
       // console.log(res)
-      console.log(res.data.rajaongkir.results[0].costs)
       // console.log(res.data.rajaongkir.results[0].costs)
     } catch (err) {
       console.log(err)
@@ -222,7 +213,7 @@ export default function OrderTrasanctions() {
     })
   }
 
-  // --------------- Simpan data ke Order --------------- //
+  // --------------- Simpan data ke Transaction --------------- //
   const formik = useFormik({
     initialValues: {
       courier: "",
@@ -234,31 +225,26 @@ export default function OrderTrasanctions() {
     }),
     validateOnChange: false,
     onSubmit: async () => {
-      const { receiver_name, receiver_phone, address, province_id, districts, city_id, postal_code } = formik.values
+      const { courier, service } = formik.values
       try {
         let body = {
-          receiver_name: receiver_name,
-          receiver_phone: receiver_phone,
-          address: address,
-          province: province,
-          province_id: province_id,
-          city_name: city,
-          city_id: city_id,
-          districts: districts,
-          type: typeCity,
-          postal_code: postal_code,
+          total_transaction: cartSubTotal,
+          courier: courier,
+          shipping_cost: service,
+          total_paid: totalSeluruh,
+          cancel_description: "",
+          transaction_status: "Menunggu Pembayaran",
           id_user: userSelector.id,
+          id_address: userSelector.default_address,
+          id_upload_recipe: "1",
+          id_payment: "1"
         }
 
-        await axiosInstance.post("/address/add/" + userSelector.id, qs.stringify(body))
+        await axiosInstance.post("transaction/newTrasanction", qs.stringify(body))
+
         dispatch({
           type: "FETCH_RENDER",
           payload: { value: !autoRender.value }
-        })
-        toast({
-          title: `Berhasil Menambah alamat baru`,
-          status: "success",
-          isClosable: true,
         })
       } catch (err) {
         console.log(err);
@@ -266,6 +252,25 @@ export default function OrderTrasanctions() {
       formik.setSubmitting(false)
     }
   });
+
+  // ---------- Render cart list ke Transaction list ---------- //
+  // const renderTransactionList = () => {
+  //   return cart.map((val, index) => {
+  //     try {
+  //       let body = {
+  //         buy_quantity: val.buy_quantity,
+  //         price: val.price,
+  //         total_price: val.total_price,
+  //         id_user: userSelector.id,
+  //       }
+  //       res = axiosInstance.post(`transaction/newTrasanctionList/${userSelector.id}/product/${val.id_product}`, qs.stringify(body))
+  //       router.push(`/transactions/payment`);
+  //       console.log(res)
+  //     } catch (err) {
+  //       console.log(err)
+  //     }
+  //   })
+  // }
 
   useEffect(() => {
     fetchCart()
@@ -418,13 +423,32 @@ export default function OrderTrasanctions() {
               Rp {totalSeluruh ? totalSeluruh.toLocaleString() : cartSubTotal.toLocaleString()}
             </Text>
           </Box>
-          <Text fontWeight='semibold' color='#213360' mb='5px' mt='15px' fontSize='sm' >
-            Metode pembayaran
-          </Text>
+          <Button variant='link' onClick={onOpenPayment}>
+            <Text fontWeight='semibold' color='#213360' mb='5px' mt='15px' fontSize='sm' >
+              Metode pembayaran
+            </Text>
+          </Button>
+          <Modal isOpen={isOpenPayment} onClose={onClosePayment} size='md'>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>Payment Method</ModalHeader>
+              <ModalCloseButton />
+              <ModalBody pb={6}>
+                <Text fontWeight='semibold'>Untuk Saat ini pembayaran hanya bisa melalui transfer bank BCA.</Text>
+                <Text fontWeight='semibold'>REK BCA: 80777082261130123 </Text>
+                <Text fontWeight='semibold'>PT. HEALTHYMED INDONESIA </Text>
+              </ModalBody>
+            </ModalContent>
+          </Modal>
           <Box display='flex' justifyContent='flex-end' >
             <Button w='full' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
               _hover={{ bg: '#009B90', color: 'white' }} disabled={userSelector.id ? false : true}
-              onClick={() => orderNow()}>
+              onClick={() => {
+                async function submit() {
+                  formik.handleSubmit();
+                }
+                submit()
+              }}>
               Bayar
             </Button>
           </Box>

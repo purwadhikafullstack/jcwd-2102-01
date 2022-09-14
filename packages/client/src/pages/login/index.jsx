@@ -13,14 +13,29 @@ export default function LoginPage() {
   const router = useRouter();
   const url = "http://localhost:3000" + router.pathname;
 
+  // useEffect(() => {
+  //   if (userSelector?.id) {
+  //     // setIsLoading(true);
+  //     router.push("/");
+  //   } else {
+  //     setIsLoading(false);
+  //   }
+  // }, [userSelector?.id]);
+
   useEffect(() => {
-    if (userSelector?.id) {
-      // setIsLoading(true);
-      router.push("/");
-    } else {
+    if (!userSelector?.id) {
+      router.push("/login")
+    }
+    else if (userSelector.roles == "Admin") {
+      router.push("/admin/dashboard")
+    }
+    else if (userSelector.roles == "User") {
+      router.push("/home")
+    }
+    else {
       setIsLoading(false);
     }
-  }, [userSelector?.id]);
+  }, [userSelector?.value]);
 
   return (
     <Metatag title={"Login Healthymed"} description={"Healthymed Login Page"}

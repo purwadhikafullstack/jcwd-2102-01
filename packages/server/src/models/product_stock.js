@@ -11,7 +11,7 @@ const Product_stock = (sequelize) => {
       defaultValue: 0,
     },
     total_sold: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.INTEGER,
       defaultValue: 0,
     },
     capital_price: {

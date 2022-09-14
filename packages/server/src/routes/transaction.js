@@ -12,8 +12,11 @@ router.get("/getCart/:id", transactionsController.getCartUser);
 // -------------------- Show all couriers
 router.get("/getCouriers", transactionsController.getAllCouriers);
 
-// -------------------- edit address
-router.patch("/:id", transactionsController.editAddress);
+// -------------------- Create new Transaction
+router.post("/newTrasanction/:id_user", transactionsController.newTransaction);
+
+// -------------------- Create new Transaction Transaction List
+// router.post("/newTrasanctionList/:id_user/product/:id_product", transactionsController.newTransactionList);
 
 // -------------------- delete address
 router.delete("/:id", transactionsController.deleteCart);
