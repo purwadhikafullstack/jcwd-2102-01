@@ -28,7 +28,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           port: ${{ secrets.SSH_PORT }}
-          source: './packages/client, ./packages/server, ./deploy-be.config.js, ./package*.json, ./deploy-fe.config.js, ./lerna.json'
+          source: './packages/client/.next, ./packages/client/public, ./packages/client/.env.production, ./packages/client/package.json, ./packages/server, ./deploy.config.js, ./package*.json, ./lerna.json'
           target: '${{ secrets.SSH_FOLDER }}'
       - name: Run App
         uses: appleboy/ssh-action@master
@@ -40,6 +40,4 @@ jobs:
           script: |
             cd ${{ secrets.SSH_FOLDER }}
             npm install
-            pm2 start deploy-be.config.js
-            cd /packages/client
-            pm2 start deploy-fe.config.js
+            pm2 start deploy.config.js
