@@ -39,7 +39,7 @@ export default function ModalProfPicture(props) {
 
     // then((res) => {
     msg = res.data.message;
-    console.log(res.data.message);
+    // console.log(res.data.message);
 
     dispatch({
      type: "FETCH_RENDER",

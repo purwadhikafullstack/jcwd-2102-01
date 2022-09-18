@@ -6,9 +6,10 @@ import Metatag from '../../../components/metatag/Metatag';
 import { useSelector } from 'react-redux';
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
-import OrderTrasanctions from '../../../components/transactions/OrderTransations';
+import CartTrasanctions from '../../../components/transactions/CartTransactions';
+import TransactionList from '../../../components/transactions/TransacitonsList/TransactionList';
 
-export default function myorder() {
+export default function allTransactions() {
   const userSelector = useSelector((state) => state.auth);
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter();
@@ -37,8 +38,8 @@ export default function myorder() {
         <Metatag title={"Daftar Produk Healthymed"} description={"Daftar Produk Healthymed"}
           url={url} type="website">
           {userSelector.id ? <NavBarSignIn /> : <NavBar />}
-          <Flex flexWrap={'wrap'} minH={'80vh'} justifyContent={'center'} py='20px' bgGradient='linear(to-t, #ffffff 50%, #ddf1f9 )' >
-            <OrderTrasanctions />
+          <Flex flexWrap={'wrap'} minH={'80vh'} justifyContent={'center'} py='20px'>
+            <TransactionList />
           </Flex >
           <Footer />
         </Metatag>

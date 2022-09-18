@@ -1,7 +1,7 @@
 import {
-  Box, Input, Flex, Avatar, AvatarBadge, HStack, Link, IconButton, Button, Menu, Tooltip,
-  MenuButton, MenuList, MenuItem, MenuDivider, useDisclosure,
-  Stack, Icon, Text, Accordion, AccordionIcon, AccordionPanel, AccordionItem, AccordionButton,
+  Box, Input, Flex, Avatar, AvatarBadge, HStack, Stack, Link, IconButton, Button, Menu, Tooltip,
+  MenuButton, MenuList, MenuItem, MenuDivider, useDisclosure, Modal, ModalCloseButton, ModalOverlay, ModalHeader, ModalBody, ModalContent
+  , Icon, Text, Accordion, AccordionIcon, AccordionPanel, AccordionItem, AccordionButton,
   Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerOverlay, DrawerFooter, DrawerHeader, Center
 } from '@chakra-ui/react';
 import LinkNext from 'next/link';
@@ -23,10 +23,12 @@ import { useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
 import CartUser from './cartuser/CartUser';
 import SideFilterCategory from '../productlisting/filter/filtercategory/SideFilterCategory';
+import AddRecipe from '../addrecipes/AddRecipe';
 
 export default function NavBarSignIn() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isOpenCart, onOpen: onOpenCart, onClose: onCloseCart } = useDisclosure()
+  const { isOpen: isOpenRecipe, onOpen: onOpenRecipe, onClose: onCloseRecipe } = useDisclosure()
   const dispatch = useDispatch();
   const router = useRouter();
   const userSelector = useSelector((state) => state.auth);
@@ -97,7 +99,7 @@ export default function NavBarSignIn() {
   // --------------- Fetching Cart --------------- //
   async function fetchCart() {
     try {
-      axiosInstance.get(`/transaction/getCart/${userSelector.id}`)
+      axiosInstance.get(`/transaction/api/v1/Carts/${userSelector.id}`)
         .then((res) => {
           setCart(res.data.result)
           // console.log(res.data.result);
@@ -205,13 +207,27 @@ export default function NavBarSignIn() {
                 </Button>
               </Link>
 
-              <Link onClick={onOpen}>
+              <Link onClick={onOpenRecipe}>
                 <Tooltip label='Upload Resep'>
                   <Button background='white' _hover={{ background: '#E8F5FD', color: '#00ACEE', borderBottomWidth: '3px', borderBottomColor: '#3B9AE1' }} borderRadius={0} h={16}>
                     <Icon boxSize='6' as={MdUploadFile} />
                   </Button>
                 </Tooltip>
               </Link>
+              <Modal isOpen={isOpenRecipe} onClose={onCloseRecipe} size='lg'>
+                <ModalOverlay />
+                <ModalContent>
+                  <ModalHeader>Unggah Resep Dokter</ModalHeader>
+                  <ModalCloseButton />
+                  <ModalBody pb={6}>
+                    <Box mb='10px'>
+                      <Text fontSize='sm' fontWeight='bold' color='#213360'>Tak perlu antri dan obat akan dikirimkan langsung ke lokasi anda</Text>
+                      <Text fontSize='sm' color='#213360'>Foto tidak boleh lebih dari 1mb</Text>
+                    </Box>
+                    <AddRecipe />
+                  </ModalBody>
+                </ModalContent>
+              </Modal>
 
               <Link onClick={onOpenCart} >
                 <Button background='white' _hover={{ background: '#E8F5FD', color: '#00ACEE', borderBottomWidth: '3px', borderBottomColor: '#3B9AE1' }} borderRadius={0} h={16} mr='8px'>
@@ -275,7 +291,9 @@ export default function NavBarSignIn() {
                 </MenuItem>
 
                 <MenuDivider />
-                <MenuItem><Icon boxSize='6' as={RiHistoryLine} /><Text ml='10px'>History Transaksi</Text></MenuItem>
+                <LinkNext href="/transactions/alltransactions">
+                  <MenuItem><Icon boxSize='6' as={RiHistoryLine} /><Text ml='10px'>Pembelian</Text></MenuItem>
+                </LinkNext>
                 <LinkNext href="/profilesetting">
                   <MenuItem>
                     <Icon boxSize='6' as={router.pathname == "/profilesetting" ? AiFillSetting : IoSettingsOutline} />
@@ -337,7 +355,7 @@ export default function NavBarSignIn() {
                 </AccordionItem>
               </Accordion>
 
-              <Link href='./' borderRadius={5} style={{ textDecoration: "none" }} _hover={{ background: '#E8F5FD' }}>
+              <Link onClick={onOpenRecipe} borderRadius={5} style={{ textDecoration: "none" }} _hover={{ background: '#E8F5FD' }}>
                 <HStack color='#4c4c4d'>
                   <Center display='flex' justifyContent='center' h='50px' w='50px'>
                     <Icon boxSize='6' as={MdUploadFile} />

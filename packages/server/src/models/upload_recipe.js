@@ -6,6 +6,10 @@ const Upload_recipe = (sequelize) => {
       type: DataTypes.STRING(255),
       allowNull: false,
     },
+    note: {
+      type: DataTypes.STRING(500),
+      allowNull: false,
+    },
     confirmed: {
       type: DataTypes.ENUM('yes', 'no'),
       defaultValue: 'no',

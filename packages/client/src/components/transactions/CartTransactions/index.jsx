@@ -40,7 +40,7 @@ export default function CartTrasanctions() {
   // --------------- Fetching Cart --------------- //
   async function fetchCart() {
     try {
-      axiosInstance.get(`/transaction/getCart/${userSelector.id}`)
+      axiosInstance.get(`/transaction/api/v1/Carts/${userSelector.id}`)
         .then((res) => {
           setCart(res.data.result)
           setCartLength(res.data.result.length)

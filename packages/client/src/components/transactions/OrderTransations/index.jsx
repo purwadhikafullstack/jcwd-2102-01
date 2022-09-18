@@ -115,7 +115,7 @@ export default function OrderTrasanctions() {
   // --------------- Fetching Cart --------------- //
   async function fetchCart() {
     try {
-      axiosInstance.get(`/transaction/getCart/${userSelector.id}`)
+      axiosInstance.get(`/transaction/api/v1/Carts/${userSelector.id}`)
         .then((res) => {
           setCart(res.data.result)
           setCartLength(res.data.result.length)
@@ -170,7 +170,7 @@ export default function OrderTrasanctions() {
   // --------------- Fetching courier --------------- //
   async function fetchCouriers() {
     try {
-      axiosInstance.get(`/transaction/getCouriers`)
+      axiosInstance.get(`/transaction/api/v1/Couriers`)
         .then((res) => {
           setCouriers(res.data.result)
           // console.log(res.data.result);
@@ -234,14 +234,16 @@ export default function OrderTrasanctions() {
           total_paid: totalSeluruh,
           cancel_description: "",
           transaction_status: "Menunggu Pembayaran",
-          id_user: userSelector.id,
           id_address: userSelector.default_address,
           id_upload_recipe: "1",
           id_payment: "1"
         }
+        let newTransaction = await axiosInstance.post("/transaction/api/v1/Trasanction/" + userSelector.id, qs.stringify(body))
+        let noInvoice = newTransaction.data.result[0].no_invoice
+        console.log(newTransaction.data.result);
+        console.log(newTransaction.data.result[0].no_invoice);
 
-        await axiosInstance.post("transaction/newTrasanction", qs.stringify(body))
-
+        router.push('/transactions/payment/' + noInvoice)
         dispatch({
           type: "FETCH_RENDER",
           payload: { value: !autoRender.value }
@@ -252,25 +254,6 @@ export default function OrderTrasanctions() {
       formik.setSubmitting(false)
     }
   });
-
-  // ---------- Render cart list ke Transaction list ---------- //
-  // const renderTransactionList = () => {
-  //   return cart.map((val, index) => {
-  //     try {
-  //       let body = {
-  //         buy_quantity: val.buy_quantity,
-  //         price: val.price,
-  //         total_price: val.total_price,
-  //         id_user: userSelector.id,
-  //       }
-  //       res = axiosInstance.post(`transaction/newTrasanctionList/${userSelector.id}/product/${val.id_product}`, qs.stringify(body))
-  //       router.push(`/transactions/payment`);
-  //       console.log(res)
-  //     } catch (err) {
-  //       console.log(err)
-  //     }
-  //   })
-  // }
 
   useEffect(() => {
     fetchCart()

@@ -31,7 +31,7 @@ export default function ProductCard(props) {
         id_user: userSelector.id,
         id_product: productId
       }
-      let res = await axiosInstance.post(`/transaction/addCart/${userSelector.id}`, qs.stringify(body))
+      let res = await axiosInstance.post(`/transaction/api/v1/Cart/${userSelector.id}`, qs.stringify(body))
       msg = res.data.message;
       console.log(res.data.message);
       // console.log(res)

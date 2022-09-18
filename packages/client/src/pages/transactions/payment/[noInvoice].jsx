@@ -6,13 +6,13 @@ import Metatag from '../../../components/metatag/Metatag';
 import { useSelector } from 'react-redux';
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
-import OrderTrasanctions from '../../../components/transactions/OrderTransations';
+import Payment from '../../../components/transactions/payment/Payment';
 
-export default function myorder() {
+export default function paymentPage() {
   const userSelector = useSelector((state) => state.auth);
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter();
-  const url = "http://localhost:3000/" + router.pathname;
+  const url = "http://localhost:3000" + router.pathname;
 
   useEffect(() => {
     if (userSelector.id) {
@@ -34,11 +34,11 @@ export default function myorder() {
             size='xl' /> &nbsp; loading...
         </Flex>
         :
-        <Metatag title={"Daftar Produk Healthymed"} description={"Daftar Produk Healthymed"}
+        <Metatag title={"Pembayaran Transaksi"} description={"Pembayaran Transaksi Healthymed"}
           url={url} type="website">
-          {userSelector.id ? <NavBarSignIn /> : <NavBar />}
+          <NavBarSignIn />
           <Flex flexWrap={'wrap'} minH={'80vh'} justifyContent={'center'} py='20px' bgGradient='linear(to-t, #ffffff 50%, #ddf1f9 )' >
-            <OrderTrasanctions />
+            <Payment />
           </Flex >
           <Footer />
         </Metatag>

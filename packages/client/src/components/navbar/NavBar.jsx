@@ -26,6 +26,7 @@ export default function NavBar() {
       axiosInstance.get(`/category`)
         .then((res) => {
           setCategory(res.data.result)
+          console.log(res.data.result)
         })
     } catch (err) {
       console.log(err)
@@ -71,8 +72,8 @@ export default function NavBar() {
 
   useEffect(() => {
     fetchCategory()
-
   }, [router.isReady]);
+
   return (
     <>
       <Box bg='#ffffff' borderBottomWidth='1px' boxShadow='md' px={4} className='topnavbar' zIndex={111}>
