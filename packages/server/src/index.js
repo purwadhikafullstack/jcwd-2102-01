@@ -2,10 +2,6 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
-require('dotenv/config');
-const { join } = require('path');
-
-const PORT = process.env.CUSTOM_PORT || 8000;
 const app = express();
 
 const http = require("http")
@@ -28,7 +24,7 @@ const {
   userRoutes,
 } = require("./routes");
 
-sequelize.sync({ alter: true }); 
+// sequelize.sync({ alter: true }); 
 // sintax diatas digunakan untuk mapping colom table untuk mencek dan update. jika sudah kita bisa commant agar tidak berat saat  running
 
 app.use(cors());

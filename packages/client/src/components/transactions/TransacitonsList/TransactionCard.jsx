@@ -1,5 +1,5 @@
 import {
-   Box, Text, Avatar, Link, AvatarBadge, Flex, Input, Select, InputLeftElement, InputGroup,
+   Box, Text, Avatar, Link, FormLabel, Textarea, AvatarBadge, Flex, Input, Select, InputLeftElement, InputGroup,
    Modal, ModalCloseButton, Icon, Tooltip, ModalOverlay, ModalHeader, ModalBody, useDisclosure, ModalFooter,
    FormControl, Button, useToast, FormHelperText, ModalContent, Center, useMediaQuery, Image,
    Divider, Tabs, TabList, TabPanel, TabPanels, Tab, InputRightElement, Drawer, DrawerBody, DrawerHeader, DrawerCloseButton, DrawerContent, DrawerOverlay
@@ -34,26 +34,41 @@ export default function TransactionCard(props) {
    const router = useRouter();
 
    // ----- cancel transaction
-   const cancelTransaction = async () => {
-      try {
-         let body = {
-            transaction_status: "Dibatalkan"
+   const formik = useFormik({
+      initialValues: {
+         note: ``,
+      },
+      validationSchema: Yup.object().shape({
+         note: Yup.string().required("Note wajib diisi").min(3, 'catatan anda terlalu pendek').
+            matches(/^[aA-zZ\s]+$/, "hanya boleh diisi huruf").trim(),
+      }),
+      validateOnChange: false,
+      onSubmit: async () => {
+         const { note } = formik.values
+         try {
+            let body = {
+               note: note,
+               transaction_status: "Dibatalkan"
+            };
+            const res = await axiosInstance.patch("/transaction/api/v1/invoice/" + noInvoice, qs.stringify(body))
+
+            dispatch({
+               type: "FETCH_RENDER",
+               payload: { value: !autoRender.value }
+            })
+            toast({
+               title: "Succes",
+               description: "berhasil membatalkan transaksi",
+               status: "warning",
+               isClosable: true,
+            })
+         } catch (err) {
+            console.log(err);
          }
-         await axiosInstance.patch("/transaction/api/v1/invoice/" + noInvoice, qs.stringify(body))
-         dispatch({
-            type: "FETCH_RENDER",
-            payload: { value: !autoRender.value }
-         })
-         toast({
-            title: "Succes",
-            description: "berhasil membatalkan transaksi",
-            status: "warning",
-            isClosable: true,
-         })
-      } catch (err) {
-         console.log(err);
+         formik.setSubmitting(false);
       }
-   }
+   })
+
    // ----- Transaction Confirmation
    const confirmTransaction = async () => {
       try {
@@ -172,9 +187,9 @@ export default function TransactionCard(props) {
                <ModalHeader>Unggah Bukti Pembayaran</ModalHeader>
                <ModalCloseButton />
                <ModalBody pb={6}>
-                  <UploadPayment 
-                  noInvoicePayment={noInvoice} 
-                     onClose={onClosePayment}/>
+                  <UploadPayment
+                     noInvoicePayment={noInvoice}
+                     onClose={onClosePayment} />
                </ModalBody>
             </ModalContent>
          </Modal>
@@ -189,14 +204,21 @@ export default function TransactionCard(props) {
                   <Box justifyContent={'space-between'}>
                      <Text>Apakah anda yakin ingin membatalakan pesanan ini?</Text>
                   </Box>
+                  <FormControl>
+                     <FormLabel my='10px' display='flex'>Catatan <Text textColor='red'>*</Text></FormLabel>
+                     <Textarea mb='20px' placeholder='Alasan membatalkan Transaksi . . .' maxLength='500'
+                        onChange={(e) => {
+                           formik.setFieldValue("note", e.target.value)
+                        }} />
+                  </FormControl>
                </ModalBody>
                <ModalFooter pt='5px'>
                   <Button colorScheme='blue' mr={3} onClick={onCloseCancel}>
                      Tidak
                   </Button>
-                  <Button mr={3} colorScheme='red' onClick={() => {
+                  <Button mr={3} colorScheme='red' disabled={formik.values.note.length < 4 ? true : false} onClick={() => {
                      async function submit() {
-                        await cancelTransaction();
+                        await formik.handleSubmit();
                         onCloseCancel();
                      }
                      submit()

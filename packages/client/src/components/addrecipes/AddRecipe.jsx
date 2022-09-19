@@ -1,6 +1,6 @@
 import {
-  Button, ModalBody, ModalHeader, Text,
-  ModalContent, ModalCloseButton, FormControl,
+  Button, Text, useDisclosure, Modal, ModalOverlay, ModalHeader, ModalCloseButton, ModalBody, ModalContent,
+  FormControl, Flex,
   FormLabel, Input, Box, Textarea, useToast, Image
 } from '@chakra-ui/react'
 import { useFormik } from "formik";
@@ -11,12 +11,15 @@ import { useRouter } from "next/router";
 import qs from 'qs'
 // import { Uploader } from "uploader";
 // import { UploadButton } from "react-uploader";
+import ShowAddress from '../profilesetting/ShowAddress';
+import ShowDefaultAddress from '../profilesetting/ShowDefAddress';
 import uploadLoading from '../../assets/img/Frame1.png'
 import NextImage from 'next/image'
 
 
 export default function AddRecipe(props) {
   const { onClose } = props
+  const { isOpen: isOpenChangeAddress, onOpen: onOpenChangeAddress, onClose: onCloseChangeAddress } = useDisclosure()
   const userSelector = useSelector((state) => state.auth)
   const autoRender = useSelector((state) => state.automateRendering)
   const dispatch = useDispatch()
@@ -25,12 +28,81 @@ export default function AddRecipe(props) {
   const target = useRef(null)
   const router = useRouter();
   const toast = useToast()
+  const [addressFetch, setAddressFetch] = useState([])
+  const [addressFetchById, setAddressFetchById] = useState([])
   const [imageShow, setImageShow] = useState(null)
 
-  // const uploader = new Uploader({
-  //   // Get production API keys from Upload.io
-  //   apiKey: "free"
-  // });
+  // ---------- Fetching Address by User ---------- //
+  async function fetchAddress() {
+    try {
+      // axiosInstance.get(`/ comment / post / ${ id } ? page = ${ startComment } & limit=${ 5}`)
+      axiosInstance.get(`address/user/` + userSelector.id)
+        .then((res) => {
+          setAddressFetch(res.data.result)
+          const temp = res.data.result
+          // console.log(temp)
+          // console.log('address length' + temp.length)
+        })
+    } catch (err) {
+      console.log(err)
+    }
+  };
+  const renderAddress = () => {
+    return addressFetch.map((val, index) => {
+      return (
+        <ShowAddress key={index}
+          idalamat={val.id}
+          namaPenerima={val.receiver_name}
+          phonePenerima={val.receiver_phone}
+          alamat={val.address}
+          provinsi={val.province}
+          provinsiId={val.province_id}
+          city={val.city_name}
+          city_id={val.city_id}
+          kecamatan={val.districts}
+          postalCode={val.postal_code}
+          defaultAddress={val.User?.default_address}
+        />
+      )
+    })
+  }
+
+  // ---------- Fetching Address by id Address ---------- //
+  async function fetchAddressbyId() {
+    try {
+      axiosInstance.get(`address/addressid/` + userSelector.default_address)
+        .then((res) => {
+          setAddressFetchById(res.data.result)
+          // setGetCityId(res.data.result[0].city_id)
+          const temp = res.data.result
+          // console.log(res.data.result[0].city_id)
+          // console.log(getCityId)
+          // console.log('address length' + temp.length)
+        })
+    } catch (err) {
+      console.log(err)
+    }
+  };
+  const renderAddressById = () => {
+    return addressFetchById.map((val, index) => {
+      return (
+        <ShowDefaultAddress key={index}
+          idalamat={val.id}
+          namaPenerima={val.receiver_name}
+          phonePenerima={val.receiver_phone}
+          alamat={val.address}
+          provinsi={val.province}
+          provinsiId={val.province_id}
+          city={val.city_name}
+          city_id={val.city_id}
+          kecamatan={val.districts}
+          postalCode={val.postal_code}
+          defaultAddress={val.User?.default_address}
+        />
+      )
+    })
+  }
+
 
   const formik = useFormik({
     initialValues: {
@@ -39,29 +111,39 @@ export default function AddRecipe(props) {
     onSubmit: async () => {
       const formData = new FormData();
       const { note } = formik.values
-
+      let msg = ""
       try {
         // ---------- form data for add to Post table ---------- //
-        formData.append("note", caption)
-        formData.append("user_id", userSelector.id)
+        formData.append("note", note)
+        formData.append("id_user", userSelector.id)
+        formData.append("id_address", userSelector.default_address)
         formData.append("image", selectedFile)
 
-        await axiosInstance.post("/post", formData).then(() => {
+        await axiosInstance.post("/transaction/api/v1/recipes/" + userSelector.id, formData).then(() => {
           dispatch({
             type: "FETCH_RENDER",
             payload: { value: !autoRender.value }
           })
 
-          toast({
-            title: `Post has been added`,
-            status: "success",
-            isClosable: true,
-          })
+          msg = res.data.message;
+          if (msg != "File image tidak boleh lebih dari 1MB")
+            toast({
+              title: `Berhasil upload resep dokter`,
+              status: "success",
+              isClosable: true,
+            });
+          else {
+            toast({
+              title: "File image tidak boleh lebih dari 1MB",
+              status: "error",
+              isClosable: true,
+            });
+          }
         })
       } catch (err) {
         console.log(err);
         toast({
-          title: 'ERROR',
+          title: 'File image tidak boleh lebih dari 1MB',
           status: "error",
           isClosable: true,
         })
@@ -69,20 +151,44 @@ export default function AddRecipe(props) {
     }
   })
 
-
   const handleFile = (event) => {
     setSelectedFile(event.target.files[0])
     const uploaded = event.target.files[0];
     setImageShow(URL.createObjectURL(uploaded))
     // console.log(event.target.files[0]);
   }
+  useEffect(() => {
+    fetchAddressbyId()
+    fetchAddress()
+  }, [router.isReady]);
+
+  useEffect(() => {
+    fetchAddressbyId()
+    fetchAddress()
+  }, [userSelector.default_address]);
 
   return (
     <>
       <Box>
+        <Flex mb='10px'>
+          <Text fontWeight='semibold'>Alamat Penerima</Text>
+          <Button colorScheme='twitter' size='xs' ml='5px' onClick={onOpenChangeAddress}>Ganti</Button>
+          <Modal isOpen={isOpenChangeAddress} onClose={onCloseChangeAddress} size='md'>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>Ganti alamat pengiriman</ModalHeader>
+              <ModalCloseButton />
+              <ModalBody pb={6}>
+                {renderAddress()}
+              </ModalBody>
+            </ModalContent>
+          </Modal>
+        </Flex>
+
+        {renderAddressById()}
         <FormControl>
-          <FormLabel>Catatan</FormLabel>
-          <Textarea placeholder='Tulis Catatan jika tidak ada ketik tidak ada . . .' maxLength='500'
+          <FormLabel my='10px'>Catatan</FormLabel>
+          <Textarea mb='20px' placeholder='Tulis Catatan jika tidak ada ketik tidak ada . . .' maxLength='500'
             onChange={(e) => {
               formik.setFieldValue("note", e.target.value)
             }} />
@@ -120,10 +226,11 @@ export default function AddRecipe(props) {
 
         <Box mt='10px'>
           <Box mt={'17px'} justifyContent='flex-end'>
-            <Button mr={3} colorScheme='twitter' disabled={imageShow == null ? true : false} onClick=
+            <Button mr={3} colorScheme='twitter'
+              disabled={imageShow != null && formik.values.note.length > 5 && userSelector.default_address != false ? false : true} onClick=
               {() => {
                 async function submit() {
-                  await formik.handleSubmit();
+                  formik.handleSubmit();
                   onClose();
                 }
                 submit()

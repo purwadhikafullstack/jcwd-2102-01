@@ -2,7 +2,9 @@ import {
   Box, Text, Avatar, Link, AvatarBadge, Flex, Input, Select, InputLeftElement, InputGroup,
   Modal, ModalCloseButton, Icon, Tooltip, ModalOverlay, ModalHeader, ModalBody, useDisclosure,
   FormControl, Button, useToast, FormHelperText, ModalContent, Center, useMediaQuery,
-  Divider, Tabs, TabList, TabPanel, TabPanels, Tab, InputRightElement, Drawer, DrawerBody, DrawerHeader, DrawerCloseButton, DrawerContent, DrawerOverlay
+  Divider, Tabs, TabList, TabPanel, TabPanels, Tab, InputRightElement, Drawer,
+  DrawerBody, DrawerHeader, DrawerCloseButton, DrawerContent, DrawerOverlay,
+  Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverCloseButton, PopoverHeader, PopoverBody,
 } from '@chakra-ui/react';
 import { useDispatch, useSelector } from 'react-redux'
 import { useState, useEffect } from "react";
@@ -16,18 +18,18 @@ import { GoVerified } from "react-icons/go";
 import { BiSearchAlt, BiReset } from 'react-icons/bi';
 import { axiosInstance } from '../../../lib/api';
 // import ModalProfPicture from './mchangepicture/ModalProfPict';
+import moment from 'moment';
 import * as Yup from "yup";
 import qs from 'qs';
 import TransactionCard from './TransactionCard';
+import 'react-date-range/dist/styles.css'; // main style file
+import 'react-date-range/dist/theme/default.css'; // theme css file
+import { DateRange } from 'react-date-range';
 
 export default function TransactionList() {
   const { isOpen: isOpenStatus, onOpen: onOpenStatus, onClose: onCloseStatus } = useDisclosure()
-  const { isOpen: isOpenProfile, onOpen: onOpenProfile, onClose: onCloseProfile } = useDisclosure()
-  const { isOpen: isOpenAlamat, onOpen: onOpenAlamat, onClose: onCloseAlamat } = useDisclosure()
-  const { isOpen: isOpenChangePass, onOpen: onOpenChangePass, onClose: onCloseChangePass } = useDisclosure()
-  const { isOpen: isOpenEditProf, onOpen: onOpenEditProf, onClose: onCloseEditProf } = useDisclosure()
   const [filtermobile] = useMediaQuery('(min-width: 1059px)')
-  const [filtermobile2] = useMediaQuery('(min-width: 565px)')
+  const [filtermobile2] = useMediaQuery('(min-width: 670px)')
   const [transactionFetch, setTransactionFetch] = useState([])
   const [transactionLength, setTransactionLength] = useState()
   const userSelector = useSelector((state) => (state.auth))
@@ -37,85 +39,66 @@ export default function TransactionList() {
   const router = useRouter();
   const image = userSelector.image_url;
 
-  let todayYear = new Date().getFullYear()
-  let minYear = todayYear - 100;
-  let maxYear = todayYear - 10
+  // ------ for filter
+  const [pageStart, setPageStart] = useState(1)
+  const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(16)
+  const [totalProduct, setTotalProduct] = useState(0)
+  const [searchInvNo, setSearchInvNo] = useState('')
+  const [statusTransaction, setStatusTransaction] = useState('')
+  const [dateRange, setDateRange] = useState([
+    {
+      startDate: new Date(),
+      endDate: null,
+      key: 'selection'
+    }
+  ]);
 
+
+
+  // ----- Search
   const formik = useFormik({
     initialValues: {
-      first_name: `${userSelector.first_name}`,
-      last_name: `${userSelector.last_name}`,
-      username: `${userSelector.username}`,
-      email: `${userSelector.email}`,
-      birthdate: `${userSelector.birthdate}`,
-      gender: `${userSelector.gender}`,
-      // phone_no: `${userSelector.phone_no}`,
-      id: userSelector.id,
+      searchInvoice: ``,
     },
     validationSchema: Yup.object().shape({
-      // username: Yup.string().required("Username is required"),
-      first_name: Yup.string().required("Nama wajib diisi").min(3, 'Nama anda terlalu pendek!').
-        max(50, 'Nama tidak boleh lebih dari 50 karakter').
-        matches(/^[aA-zZ\s]+$/, "hanya boleh diisi huruf").trim(),
-      last_name: Yup.string().required("Nama wajib diisi").min(3, 'Nama anda terlalu pendek!').
-        max(50, 'Nama tidak boleh lebih dari 50 karakter').
-        matches(/^[aA-zZ\s]+$/, "hanya boleh diisi huruf").trim(),
-      birthdate: Yup.date().required("tanggal wajib diisi").
-        max(`${maxYear}-12-12`, `Tanggal lahir tidak bisa lewat dari tahun ${maxYear}`).
-        min(`${minYear}-01-01`, `Tanggal lahir tidak bisa dibawah dari tahun ${minYear}`),
-      email: Yup.string().required("email wajib diisi").email('Format harus email')
+      note: Yup.string().required("Kolom pencarian masih kosong")
     }),
     validateOnChange: false,
-    onSubmit: async () => {
-      // dispatch(userEdit(values, formik.setSubmitting))
-      const { first_name, last_name, email, birthdate, gender, phone_no } = formik.values
-
-      let msg = ""
-      try {
-        let body = {
-          first_name: first_name,
-          last_name: last_name,
-          // username: username,
-          email: email,
-          birthdate: birthdate,
-          gender: gender,
-          // phone_no: phone_no,
-        };
-        const res = await axiosInstance.patch(`/user/edit/${userSelector.id}`, qs.stringify(body));
-
-        // msg = res.data.message
-        // console.log(res.data.message);
-        // console.log(res.data.user);
-        // dispatch({
-        //   type: "AUTH_LOGIN",
-        //   payload: res.data.user
-        // })
-        dispatch({
-          type: "FETCH_RENDER",
-          payload: { value: !autoRender.value }
-        })
-        toast({
-          title: "Berhasil mengedit user profil",
-          status: "success",
-          isClosable: true,
-        })
-      } catch (err) {
-        console.log(err);
-        toast({
-          title: "maaf email sudah dipakai pengguna lain",
-          status: "error",
-          isClosable: true,
-        })
-      }
-      formik.setSubmitting(false);
-    }
   })
 
+  let dateNow = moment(new Date()).format('YYYY-MM-DD')
+  let startDate2 = moment(dateRange[0].startDate).format('YYYY-MM-DD') + 'T00:00:00.000Z'
+  let endDate2 = dateRange[0].endDate ? moment(dateRange[0].endDate).format('YYYY-MM-DD') + 'T00:00:00.000Z' : ''
+  // console.log('sekarang ' + dateNow);
+  // console.log(moment(dateRange[0].startDate).format('YYYY-MM-DD'));
+  // console.log(moment(dateRange[0].endDate).format('YYYY-MM-DD'));
+  console.log(startDate2);
+  console.log(endDate2);
+
   // ---------- Fetching Transaction ---------- //
-  async function fetchTransaction() {
+  async function fetchTransaction(filter) {
+    let order = "";
+    let sort = "";
+    if (filter == 'no_invoice_asc') {
+      order = 'no_invoice';
+      sort = "ASC"
+    } else if (filter == 'no_invoice_desc') {
+      order = 'no_invoice';
+      sort = "DESC"
+    } else if (filter == 'createdAt_desc') {
+      order = 'createdAt';
+      sort = "DESC"
+    } else if (filter == 'createdAt_asc') {
+      order = 'createdAt';
+      sort = "ASC"
+    } else {
+      order = '';
+      sort = ""
+    }
+
     try {
-      // axiosInstance.get(`/ comment / post / ${ id } ? page = ${ startComment } & limit=${ 5}`)
-      axiosInstance.post(`/transaction/api/v1/Trasanction/User/${userSelector.id}?page=1&limit=15&search=&startDate=&endDate=&status=&sort=&orderby=`)
+      axiosInstance.post(`/transaction/api/v1/Trasanction/User/${userSelector.id}?page=1&limit=15&search=${searchInvNo}&startDate${startDate2 == dateNow && !endDate2 ? null : '=' + startDate2}&endDate=${endDate2}&status=${statusTransaction}&sort=${sort}&orderby=${order}`)
         .then((res) => {
           setTransactionFetch(res.data.result)
           const temp = res.data.result
@@ -148,10 +131,41 @@ export default function TransactionList() {
       )
     })
   }
+
+  async function handleEvent(event, picker) {
+
+    console.log(picker.startDate);
+    console.log(picker.endDate);
+    // console.log('testing ' + newEnd);
+  }
+  async function handleCallback(start, end, label) {
+    console.log(start, end, label);
+  }
+
+  useEffect(() => {
+    fetchTransaction()
+    // console.log(addressLength)
+  }, [router.isReady]);
+
   useEffect(() => {
     fetchTransaction()
     // console.log(addressLength)
   }, [autoRender]);
+
+  useEffect(() => {
+    fetchTransaction()
+    // console.log(addressLength)
+  }, [searchInvNo],);
+
+  useEffect(() => {
+    fetchTransaction()
+    // console.log(addressLength)
+  }, [statusTransaction]);
+
+  useEffect(() => {
+    fetchTransaction()
+    // console.log(addressLength)
+  }, [dateRange]);
 
   return (
     <>
@@ -199,16 +213,17 @@ export default function TransactionList() {
 
         <Box mt="10px" display='flex' flexWrap='wrap'>
           <Box w='170px' m='3px'>
-            {/* {formik.values.searchName} */}
-            <FormControl isInvalid={formik.errors.searchName}>
+            {/* {formik.values.searchInvoice} */}
+            <FormControl isInvalid={formik.errors.searchInvoice}>
               <InputGroup size='sm' >
                 <Input placeholder="Cari Nama Produk" type='text' bg='white' borderRadius='8px'
-                  onChange={(event) => formik.setFieldValue("searchName", event.target.value)} />
+                  onChange={(event) => formik.setFieldValue("searchInvoice", event.target.value)} />
                 <InputRightElement>
                   <Icon
                     fontSize="xl"
                     as={BiSearchAlt}
                     sx={{ _hover: { cursor: "pointer" } }}
+                    onClick={() => setSearchInvNo(`${formik.values.searchInvoice}`)}
                   />
                 </InputRightElement>
               </InputGroup>
@@ -219,13 +234,15 @@ export default function TransactionList() {
             {formik.values.sortByProduct}
             <FormControl isInvalid={formik.errors.sortByProduct}>
               <Select size='sm' borderRadius='8px'
-              // onChange={(event) => {
-              //   fetchProduct(event.target.value)
-              // }}
+                onChange={(event) => {
+                  fetchTransaction(event.target.value)
+                }}
               >
                 <option value='' color='grey'>Urut Berdasarkan</option>
-                <option value='no_invoice'>No Invoice</option>
-                <option value='createdAt'>Tanggal Transaksi</option>
+                <option value='no_invoice_asc'>No Invoice A-Z</option>
+                <option value='no_invoice_desc'>No Invoice Z-A</option>
+                <option value='createdAt_desc'>Tanggal Transaksi Terbaru</option>
+                <option value='createdAt_asc'>Tanggal Transaksi Lama</option>
               </Select>
             </FormControl>
           </Box>
@@ -252,33 +269,80 @@ export default function TransactionList() {
           </Box>
 
           <Box m='3px' w='170px'>
-            {formik.values.sortByProduct}
-            <FormControl isInvalid={formik.errors.sortByProduct}>
-              <Select size='sm' borderRadius='8px'
-              // onChange={(event) => {
-              //   fetchProduct(event.target.value)
-              // }}
-              >
-                <option value='' color='grey'>Urut Berdasarkan</option>
-                <option value='no_invoice'>No Invoice</option>
-                <option value='createdAt'>Tanggal Transaksi</option>
-              </Select>
-            </FormControl>
+            <Popover>
+              <PopoverTrigger>
+                <Button size='sm' borderWidth='1px' borderRadius='8px' bg='white'>
+                  {moment(dateRange[0].startDate).format('YYYY-MM-DD')}  &nbsp; to &nbsp;
+                  {dateRange[0].endDate ? moment(dateRange[0].endDate).format('YYYY-MM-DD') : moment(dateRange[0].startDate).format('YYYY-MM-DD')}</Button>
+              </PopoverTrigger>
+              <PopoverContent w='360px'>
+                <PopoverArrow />
+                <PopoverCloseButton />
+                <PopoverHeader bg='#009B90' color='white' borderTopRadius='5px'>
+                  <Text fontWeight='bold'>Pilih tanggal</Text>
+                </PopoverHeader>
+                <PopoverBody>
+                  <DateRange
+                    editableDateInputs={true}
+                    onChange={item => setDateRange([item.selection])}
+                    moveRangeOnFirstSelection={false}
+                    ranges={dateRange}
+                  />
+
+                </PopoverBody>
+              </PopoverContent>
+            </Popover>
+
+            {/* <DateRange
+                editableDateInputs={true}
+                onChange={item => setDateRange([item.selection])}
+                moveRangeOnFirstSelection={false}
+                ranges={dateRange}
+              /> */}
           </Box>
         </Box>
 
         <Box hidden={filtermobile2 ? false : true}>
           <Tabs>
             <TabList>
-              <Tab py='15px'><Text fontSize='sm' fontWeight='semibold'>Semua</Text></Tab>
-              <Tab py='15px'><Text fontSize='sm' fontWeight='semibold'>Menunggu</Text></Tab>
-              <Tab py='15px'><Text fontSize='sm' fontWeight='semibold'>Diproses</Text></Tab>
-              <Tab py='15px'><Text fontSize='sm' fontWeight='semibold'>Dikirim</Text></Tab>
-              <Tab py='15px'><Text fontSize='sm' fontWeight='semibold'>Selesai</Text></Tab>
-              <Tab py='15px'><Text fontSize='sm' fontWeight='semibold'>Dibatalkan</Text></Tab>
+              <Tab py='15px' onClick={() => setStatusTransaction(``)}>
+                <Text fontSize='sm' fontWeight='semibold'>Semua</Text>
+              </Tab>
+              <Tab py='15px' onClick={() => setStatusTransaction(`Menunggu Pembayaran`)}>
+                <Text fontSize='sm' fontWeight='semibold'>Menunggu</Text>
+              </Tab>
+              <Tab py='15px' onClick={() => setStatusTransaction(`Menunggu Konfirmasi Pembayaran`)}>
+                <Text fontSize='sm' fontWeight='semibold'>Menunggu Konfirmasi</Text>
+              </Tab>
+              <Tab py='15px' onClick={() => setStatusTransaction(`Diproses`)}>
+                <Text fontSize='sm' fontWeight='semibold'>Diproses</Text>
+              </Tab>
+              <Tab py='15px' onClick={() => setStatusTransaction(`Dikirim`)}>
+                <Text fontSize='sm' fontWeight='semibold'>Dikirim</Text>
+              </Tab>
+              <Tab py='15px' onClick={() => setStatusTransaction(`Pesanan Dikonfirmasi`)}>
+                <Text fontSize='sm' fontWeight='semibold'>Selesai</Text>
+              </Tab>
+              <Tab py='15px' onClick={() => setStatusTransaction(`Dibatalkan`)}>
+                <Text fontSize='sm' fontWeight='semibold'>Dibatalkan</Text>
+              </Tab>
             </TabList>
           </Tabs>
         </Box>
+
+        {!searchInvNo ?
+          null
+          :
+          <Box mt='10px' display='flex'>
+            <Text mr='5px'>
+              Hasil Pencarian :
+            </Text>
+            <Text fontWeight='semibold'>
+              {searchInvNo}
+            </Text>
+          </Box>
+        }
+
 
         <Box my='15px'>
           {renderTransaction()}

@@ -5,9 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start -p 3201",
-    "lint": "next lint",
-    "pm2": "pm2"  },
+    "start": "next start",
+    "lint": "next lint"
+  },
   "dependencies": {
     "@chakra-ui/icons": "^2.0.8",
     "@chakra-ui/react": "^2.2.8",
@@ -22,6 +22,7 @@
     "next": "12.2.5",
     "qs": "^6.11.0",
     "react": "18.2.0",
+    "react-date-range": "^1.4.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.4.0",
     "react-redux": "^8.0.2",

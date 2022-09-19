@@ -224,7 +224,7 @@ export default function NavBarSignIn() {
                       <Text fontSize='sm' fontWeight='bold' color='#213360'>Tak perlu antri dan obat akan dikirimkan langsung ke lokasi anda</Text>
                       <Text fontSize='sm' color='#213360'>Foto tidak boleh lebih dari 1mb</Text>
                     </Box>
-                    <AddRecipe />
+                    <AddRecipe onClose={onCloseRecipe} />
                   </ModalBody>
                 </ModalContent>
               </Modal>
@@ -366,7 +366,7 @@ export default function NavBarSignIn() {
                 </HStack>
               </Link>
 
-              <Link href='./transactions/mycart' borderRadius={5} style={{ textDecoration: "none" }} _hover={{ background: '#E8F5FD' }}>
+              <Link href='/transactions/mycart' borderRadius={5} style={{ textDecoration: "none" }} _hover={{ background: '#E8F5FD' }}>
                 <HStack color='#4c4c4d'>
                   <Center display='flex' justifyContent='center' h='50px' w='50px'>
                     <Icon boxSize='6' as={router.pathname == '/register' ? MdPersonAdd : IoCartOutline} />

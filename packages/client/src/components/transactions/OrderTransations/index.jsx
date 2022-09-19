@@ -15,6 +15,7 @@ import { useFormik } from "formik";
 import { axiosInstance } from '../../../lib/api';
 import MaddAddress from '../../profilesetting/maddressadd/maddaddress';
 import ShowAddress from '../../profilesetting/ShowAddress';
+import ShowDefaultAddress from '../../profilesetting/ShowDefAddress';
 import ProductCartList from '../CartTransactions/ProductCartList';
 import axios from 'axios';
 import qs from 'qs';
@@ -95,7 +96,7 @@ export default function OrderTrasanctions() {
   const renderAddressById = () => {
     return addressFetchById.map((val, index) => {
       return (
-        <ShowAddress key={index}
+        <ShowDefaultAddress key={index}
           idalamat={val.id}
           namaPenerima={val.receiver_name}
           phonePenerima={val.receiver_phone}

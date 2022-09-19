@@ -335,7 +335,7 @@ const transactionsController = {
             },
             order: orderby == 'no_invoice' && sort ? [[`${orderby}`, `${sort}`]] : 
             orderby == 'createdAt' && sort ? [[`${orderby}`, `${sort}`]]
-            :[],
+            : [["createdAt", "DESC"]],
         });
 
       return res.status(200).json({
@@ -397,7 +397,7 @@ const transactionsController = {
   uploadRecipe: async (req, res) => {
     try {
       const { idUser } = req.params;
-      const { note } = req.body;
+      const { note, id_address } = req.body;
       const uploadFileDomain = process.env.UPLOAD_FILE_DOMAIN;
       const filePath = "recipes_images";
       const { filename } = req.file;
@@ -406,6 +406,7 @@ const transactionsController = {
         { 
           image_recipe: `${uploadFileDomain}/${filePath}/${filename}`,
           id_user: idUser,
+          id_address,
           note,
         },
       )
