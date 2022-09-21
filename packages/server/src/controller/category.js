@@ -58,26 +58,75 @@ const categoryController = {
 
   // -------------------- Add Category -------------------- //
   addCategory: async (req, res) => {
-    try {
+    try{
       const { category } = req.body;
+      const uploadFileDomain = process.env.UPLOAD_FILE_DOMAIN;
+            const filePath = "category_images";
+            const { filename } = req.file;
 
-      const newCategory = await Category.create({
-        category
-      });
-
-      return res.status(201).json({
-        message: "Category created",
-        result: newCategory,
-      });
-    } catch (err) {
-      console.log(err);
-      return res.status(500).json({
+            const newCategory = await Category.create({
+              image_url: `${uploadFileDomain}/${filePath}/${filename}`,
+                category,
+            });
+            return res.status(200).json({
+              message:"Kategori terbuatkan",
+              result: newCategory,
+            });
+        }catch(err){
+       console.log(err);
+       return res.status(500).json({
         message: err.toString(),
-      });
-    }
-  },
+      })
+        }
+      },
+      
+      // -------------------- Edit Category -------------------- //
+      editCategory: async (req, res) => {
+        try {
+          const { id } = req.params;
+          // const { category } = req.body
+          console.log(req.body);
+                await Category.update(
+                  {
+                    ...req.body,
+                  },
+                  {
+                    where: {
+                      id,
+                    },
+                  }
+                );
+          
+                return res.status(200).json({
+                  message: "Category sudah diedit",
+                });
+              } catch (err) {
+                console.log(err);
+                res.status(500).json({
+                  message: err.toString(),
+                });
+              }
+    },
 
-  
+    // -------------------- Delete Category -------------------- //
+    deleteCategory: async (req, res) => {
+        try {
+                const { id } = req.params;
+          
+                await Category.destroy({
+                  where: { id },
+                });
+          
+                return res.status(200).json({
+                  message: "Category sudah dideleted",
+                });
+              } catch (err) {
+                console.log(err);
+                res.status(500).json({
+                  message: err.toString(),
+                });
+              }
+    },
 
 };
 
