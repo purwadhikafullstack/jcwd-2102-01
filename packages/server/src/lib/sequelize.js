@@ -37,6 +37,9 @@ Address.belongsTo(User, { foreignKey: "id_user" });
 User.hasMany(Upload_recipe, { foreignKey: "id_user" });
 Upload_recipe.belongsTo(User, { foreignKey: "id_user" });
 
+Address.hasMany(Upload_recipe, { foreignKey: "id_address" });
+Upload_recipe.belongsTo(Address, { foreignKey: "id_address" });
+
 User.hasMany(Cart, { foreignKey: "id_user" });
 Cart.belongsTo(User, { foreignKey: "id_user" });
 

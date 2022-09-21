@@ -1,4 +1,5 @@
-const { Transaction, Transaction_list, Cart,Courier,Stock_history, Product,Product_stock,Product_image,Category, Product_description, Product_category, Unit, User } = require("../lib/sequelize");
+const { Transaction, Transaction_list, Cart,Address,Courier,Stock_history, Product,Product_stock,Product_image,
+  Category, Product_description, Product_category, Unit, User, Payment, Upload_recipe } = require("../lib/sequelize");
 const { Op } = require("sequelize");
 
 const transactionsController = {
@@ -81,7 +82,7 @@ const transactionsController = {
   // -------------------- Show the Cart User -------------------- //
   getCartUser: async (req, res) => {
     try {
-      const { id } = req.params;
+      const { idUser } = req.params;
 
       const findCart = await Cart.findAll({
         include: [
@@ -100,7 +101,7 @@ const transactionsController = {
           },
         ],
         where: {
-          id_user: id,
+          id_user: idUser,
         },
       });
       return res.status(200).json({
@@ -134,23 +135,19 @@ const transactionsController = {
   // -------------------- Create new Transaction -------------------- //
   newTransaction: async (req, res) => {
     try {
-      const { id_user } = req.params;
-      const { total_transaction, courier, shipping_cost, total_paid, cancel_description, transaction_status , id_address,id_upload_recipe, id_payment } = req.body;
+      const { idUser } = req.params;
+      const { total_transaction, courier, shipping_cost, total_paid, cancel_description, transaction_status , 
+        id_address,id_upload_recipe, id_payment } = req.body;
       
       // ---------- get the Inv Number ---------- //
       // get month and year 
       var datenow= new Date() ;
-      var day = datenow.getDate() ;
+      var day = datenow.getDate();
       var month = datenow.getMonth() + 1 ;
       var year = datenow.getFullYear();
       if(month <= 10) {
         month = '0'+ (datenow.getMonth() + 1)
       }
-      // get user ID
-      var noIdUser = id_user
-      if(id_user < 10) {noIdUser = '000' + id_user } 
-      else if(id_user < 100)  {noIdUser = '00' + id_user } 
-      else if(id_user < 1000)  {noIdUser = '0' + id_user } 
       // get transaction id
       const gettransactionId =  await Transaction.max('id');
       var newTransactionId = gettransactionId + 1;
@@ -158,17 +155,35 @@ const transactionsController = {
       else if(newTransactionId < 100) {newTransactionId = '00'+ (gettransactionId + 1)}
       else if(newTransactionId < 1000) {newTransactionId = '0'+ (gettransactionId + 1)}
       // no Invoice
-      var noInvoice = 'HM-' + month.toString()+ year.toString().substr(-2) + noIdUser + newTransactionId 
+      var noInvoice = 'HM/INV/' + month.toString() + year.toString().substr(-2)  + newTransactionId 
 
       const newTransaction = await Transaction.create({
-        no_invoice: noInvoice, total_transaction, courier, shipping_cost, total_paid, cancel_description, transaction_status,id_user, id_address,id_upload_recipe, id_payment
+        no_invoice: noInvoice, total_transaction, courier, shipping_cost, total_paid, cancel_description, transaction_status,id_user : idUser, id_address,id_upload_recipe, id_payment
       });
 
       // Mengambil data cart 
       const findCartProduct = await Cart.findAll({
-        where: {id_user: id_user },
+        include: [
+          { model : User },
+          { model : Product,
+            include : [
+              { model: Product_stock,
+                include : [{model: Unit}],
+                where: {
+                converted: {[Op.notIn]:['yes']}
+                }
+              }, 
+              ],
+          },
+        ],
+        where: {id_user: idUser },
       });
 
+      if(!findCartProduct) {
+        throw new Error("Keranjang anda kosong");
+      }
+
+      let findProduct
       const renderTransactionList = () => {
         return findCartProduct.map((val) => {
         // Mapping memasukkan data ke table transaction List
@@ -176,46 +191,35 @@ const transactionsController = {
         buy_quantity:val.buy_quantity, 
         price:val.price, 
         total_price:val.total_price, 
-        note:"",
         id_user:val.id_user,
         id_product:val.id_product,
         id_transaction:newTransactionId});
 
         // Mapping Panggil Product Stock untuk diupdate
-        const findProduct = Product_stock.findOne({
-          where: {
-            [Op.and]: [
-              { converted: {[Op.notIn]:['yes']} },
-              { id_product: val.id_product }
-            ]
-          },
-        });
-
-        let newStokUpdate = findProduct.stock - val.buy_quantity
-        let newTotalSold = val.buy_quantity + findProduct.total_sold
-        console.log('tes find ' + findProduct.stock);
-        console.log('tes val cart ' + val.buy_quantity);
-        console.log('tes val id prod ' + val.id_product);
-        console.log('tes find prod' + findProduct.id);
+        // let newStokUpdate = val.Product.Product_stocks[0].stock - val.buy_quantity
+        // let newTotalSold = val.buy_quantity + val.Product.Product_stocks[0].total_sold
+        // console.log('tes find ' +  val.Product.Product_stocks[0].stock);
+        // console.log('tes find ' +  val.Product.Product_stocks[0].Unit.id);
+        // console.log('tes val cart ' + val.buy_quantity);
         
-        Product_stock.update({stock: newStokUpdate, total_sold:newTotalSold}, {
-        where: {
-          [Op.and]: [
-            { converted: {[Op.notIn]:['yes']} },
-            { id_product: val.id_product, }
-          ]
-        },});
+        // Product_stock.update({stock: newStokUpdate, total_sold:newTotalSold}, {
+        // where: {
+        //   [Op.and]: [
+        //     { converted: {[Op.notIn]:['yes']} },
+        //     { id_product: val.id_product, }
+        //   ]
+        // },});
         
         // tambah data stock history
-        Stock_history.create({
-        type: 'Penjualan', description: 'pengurangan', quantity : val.buy_quantity, id_product: val.id_product, id_unit: findProduct.id_unit , 
-        });
+        // Stock_history.create({
+        // type: 'Penjualan', description: 'pengurangan', quantity : val.buy_quantity, id_product: val.id_product, id_unit: val.Product.Product_stocks[0].Unit.id, 
+        // });
 
         // delete data cart
         Cart.destroy({
         where: {
           [Op.and]: [
-          { id_user: id_user, },
+          { id_user: idUser, },
           { id_product: val.id_product, }
           ]
         },});
@@ -235,11 +239,12 @@ const transactionsController = {
       });
     }
   },
+
   // -------------------- Delete Cart -------------------- //
   deleteCart: async (req, res) => {
     try {
       const { id } = req.params;
-
+      
       await Cart.destroy({
         where: { id },
       });
@@ -254,6 +259,202 @@ const transactionsController = {
       });
     }
   },
+
+    // -------------------- Show the Cart User "Menunggu Pembayaran" -------------------- //
+    getUserTransactionOrder: async (req, res) => {
+    try {
+      const { idUser, noInvoice } = req.params;
+
+      const findOrderList = await Transaction.findOne({
+        include: [
+          { model : User },
+          { model : Address },
+          { model : Transaction_list,
+            include: [{ model : Product,
+            include : [
+              { model: Product_stock,
+                include : [{model: Unit}],
+              }, 
+              { model : Product_image},
+              { model : Product_description},
+              ],
+            },]
+           },
+          
+        ],
+        where: {
+          [Op.and]: [{id_user: idUser},{no_invoice: noInvoice},{transaction_status: "Menunggu Pembayaran"} ]
+        },
+      });
+
+      return res.status(200).json({
+        message: "fetching data Transaksi Order",
+        result: [findOrderList],
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({
+        message: err.toString(),
+      });
+    }
+  },
+
+      // -------------------- Get all transaction list -------------------- //
+    getAllTransaction: async (req, res) => {
+    try {
+      const { limit , page = 1, search, startDate, endDate, status, sort, orderby } = req.query;
+      const { idUser } = req.params;
+
+        const findTransaction = await Transaction.findAll({
+          offset: (page - 1) * limit,
+          limit: limit ? parseInt(limit) : undefined,
+          include: [
+            { model : User },
+            { model : Address },
+            { model : Transaction_list,
+              include: [{ model : Product,
+              include : [
+                { model: Product_stock,
+                  include : [{model: Unit}],
+                }, 
+                { model : Product_image},
+                { model : Product_description},
+                ],
+              },]
+            },
+            { model : Upload_recipe },
+            { model : Payment },
+          ],
+          where: {
+            [Op.and]: [{id_user: idUser},
+              search ? {no_invoice:{[Op.substring]: `${search}`}} : null,
+              status ? {transaction_status: status} : null,
+              startDate && endDate ? {createdAt: 
+                {[Op.between]: [startDate, endDate]}} : null, 
+              ]
+            },
+            order: orderby == 'no_invoice' && sort ? [[`${orderby}`, `${sort}`]] : 
+            orderby == 'createdAt' && sort ? [[`${orderby}`, `${sort}`]]
+            : [["createdAt", "DESC"]],
+        });
+
+      return res.status(200).json({
+        message: "fetching data Transaksi",
+        result: findTransaction,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({
+        message: err.toString(),
+      });
+    }
+  },
+
+  // -------------------- Upload Payment -------------------- //
+  uploadPayment: async (req, res) => {
+    try {
+      const { noInvoice } = req.params;
+      const uploadFileDomain = process.env.UPLOAD_FILE_DOMAIN;
+      const filePath = "payment_images";
+      const { filename } = req.file;
+      
+      // get payments id
+      const getpaymentId =  await Payment.max('id');
+      var newPaymentId = getpaymentId + 1;
+
+      const addPaymentProof = await Payment.create(
+        { 
+          image_url: `${uploadFileDomain}/${filePath}/${filename}`,
+        },
+      )
+
+      await Transaction.update(
+        { 
+          id_payment: newPaymentId,
+          transaction_status:"Menunggu Konfirmasi Pembayaran"
+        },
+        {
+          where: {no_invoice : noInvoice},
+        }
+      )
+
+      return res.status(200).json({
+        message: "Sukses upload bukti transfer",
+        result : addPaymentProof
+      });
+    } catch (err) {
+      console.log(err);
+      // res.status(500).json({
+      //   message: "File image tidak boleh lebih dari 1MB",
+      // });
+      return res.status(200).json({
+        message: "File image tidak boleh lebih dari 1MB",
+      });
+    }
+  },
+
+  // -------------------- Upload Recipe -------------------- //
+  uploadRecipe: async (req, res) => {
+    try {
+      const { idUser } = req.params;
+      const { note, id_address } = req.body;
+      const uploadFileDomain = process.env.UPLOAD_FILE_DOMAIN;
+      const filePath = "recipes_images";
+      const { filename } = req.file;
+      
+      const newUploadRecipe = await Upload_recipe.create(
+        { 
+          image_recipe: `${uploadFileDomain}/${filePath}/${filename}`,
+          id_user: idUser,
+          id_address,
+          note,
+        },
+      )
+
+      return res.status(200).json({
+        message: "Sukses upload Resep dokter",
+        result : newUploadRecipe
+      });
+    } catch (err) {
+      console.log(err);
+      // res.status(500).json({
+      //   message: "File image tidak boleh lebih dari 1MB",
+      // });
+      return res.status(200).json({
+        message: "File image tidak boleh lebih dari 1MB",
+      });
+    }
+  },
+
+
+   // -------------------- Change transaction status -------------------- //
+  editTransactionStatus: async (req, res) => {
+    try {
+      const { noInvoice } = req.params;
+      
+    await Transaction.update(
+        { 
+          ...req.body, 
+        },
+        {
+          where: {
+            no_invoice : noInvoice,
+          },
+        }
+      )
+
+      return res.status(200).json({
+        message: "Transaction status changed",
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({
+        message: err.toString(),
+      });
+    }
+  },
 };
+
+
 
 module.exports = transactionsController;

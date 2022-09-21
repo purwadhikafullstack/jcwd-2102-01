@@ -44,7 +44,11 @@ const Address = (sequelize) => {
       type: DataTypes.STRING(20),
       allowNull: false,
     },
-    
+    is_deleted: {
+      type: DataTypes.ENUM('yes', 'no'),
+      defaultValue: 'no',
+      allowNull: true,
+    },
   });
 };
 
