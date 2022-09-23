@@ -327,10 +327,22 @@ const transactionsController = {
           ],
           where: {
             [Op.and]: [{id_user: idUser},
+
               search ? {no_invoice:{[Op.substring]: `${search}`}} : null,
-              status ? {transaction_status: status} : null,
+              // status ? {transaction_status: status} : null,
+              status == 'Menunggu Pembayaran'   ? 
+              {[Op.or]: [{transaction_status: 'Menunggu Pembayaran'},{transaction_status: 'Menunggu Konfirmasi Pembayaran'}]}: status ? {transaction_status: status} : null,
+              
               startDate && endDate ? {createdAt: 
                 {[Op.between]: [startDate, endDate]}} : null, 
+                //  {
+                //   [Op.and]: {
+                //   [Op.gte]: endDate,
+                //   [Op.lte]: startDate,
+                //   }
+                //   } 
+                // }
+                //  : null, 
               ]
             },
             order: orderby == 'no_invoice' && sort ? [[`${orderby}`, `${sort}`]] : 
