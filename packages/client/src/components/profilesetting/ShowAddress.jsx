@@ -31,14 +31,10 @@ export default function ShowAddress(props) {
   const dispatch = useDispatch()
   const toast = useToast();
 
-  // -------------------- Delete Adress -------------------- //
+  // -------------------- Delete Address -------------------- //
   async function deleteAddress() {
     try {
-      // if (userSelector.default_address == idalamat) {
-      //   await axiosInstance.delete("/address/" + idalamat)
-      // } else {
-      // }
-      await axiosInstance.delete("/address/" + idalamat)
+      await axiosInstance.patch(`/address/api/v1/address/${idalamat}/user/${userSelector.id}`)
       dispatch({
         type: "FETCH_RENDER",
         payload: { value: !autoRender.value }

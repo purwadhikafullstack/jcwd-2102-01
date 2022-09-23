@@ -16,6 +16,9 @@ router.post("/add/:idUser", addressController.addAddress);
 router.patch("/:id", addressController.editAddress);
 
 // -------------------- delete address
-router.delete("/:id", addressController.deleteAddress);
+router.patch("/api/v1/address/:idAddress/user/:idUser", addressController.deleteAddress);
+
+// -------------------- delete address
+// router.delete("/:id", addressController.deleteAddress);
 
 module.exports = router;

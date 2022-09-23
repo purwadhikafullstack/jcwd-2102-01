@@ -29,6 +29,7 @@ export default function OrderTrasanctions() {
   const [couriers, setCouriers] = useState([])
   const [cart, setCart] = useState([])
   const [cartLength, setCartLength] = useState([])
+  const [idUnit, setIdUnit] = useState()
   const [cartSubTotal, setCartSubTotal] = useState(0)
   const [cartWeight, setCartWeight] = useState(0)
   const [addressFetch, setAddressFetch] = useState([])
@@ -120,11 +121,9 @@ export default function OrderTrasanctions() {
         .then((res) => {
           setCart(res.data.result)
           setCartLength(res.data.result.length)
-          // console.log(res.data.result);
+
           // console.log(res.data.result[1].Product.Product_stocks[0].Unit.unit_name);
         })
-
-
     } catch (err) {
       console.log(err)
     }
@@ -159,6 +158,7 @@ export default function OrderTrasanctions() {
             idCart={val.id}
             firstPrice={val.Product.Product_stocks[0].first_price}
             unit={val.Product.Product_stocks[0].Unit.unit_name}
+            idUnit={val.Product.Product_stocks[0].Unit.id}
             idProduct={val.Product.product_code}
             idUser={val.id_user}
           />
@@ -244,7 +244,7 @@ export default function OrderTrasanctions() {
         console.log(newTransaction.data.result);
         console.log(newTransaction.data.result[0].no_invoice);
 
-        router.push('/transactions/payment/' + noInvoice)
+        router.push('/transactions/alltransactions')
         dispatch({
           type: "FETCH_RENDER",
           payload: { value: !autoRender.value }

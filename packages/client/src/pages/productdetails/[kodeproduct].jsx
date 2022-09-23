@@ -12,7 +12,7 @@ import { useRouter } from "next/router";
 import { useDispatch, useSelector } from 'react-redux'
 import { useState, useEffect } from "react";
 
-export default function productdetails() {
+export default function ProductDetails() {
   const userSelector = useSelector((state) => state.auth);
   const router = useRouter();
   const url = "http://localhost:3000" + router.pathname;

@@ -70,8 +70,9 @@ export default function TransactionList() {
   let startDate2 = moment(dateRange[0].startDate).format('YYYY-MM-DD') + 'T00:00:00.000Z'
   let endDate2 = dateRange[0].endDate ? moment(dateRange[0].endDate).format('YYYY-MM-DD') + 'T00:00:00.000Z' : ''
   // console.log('sekarang ' + dateNow);
+  console.log(moment(dateRange[0].startDate).format("YYYY-MM-DD HH:mm:ss"));
   // console.log(moment(dateRange[0].startDate).format('YYYY-MM-DD'));
-  // console.log(moment(dateRange[0].endDate).format('YYYY-MM-DD'));
+  console.log(moment(dateRange[0].endDate).format('YYYY-MM-DD'));
   console.log(startDate2);
   console.log(endDate2);
 
@@ -97,7 +98,7 @@ export default function TransactionList() {
     }
 
     try {
-      axiosInstance.post(`/transaction/api/v1/Trasanction/User/${userSelector.id}?page=1&limit=15&search=${searchInvNo}&startDate${startDate2 == dateNow && !endDate2 ? null : '=' + startDate2}&endDate=${endDate2}&status=${statusTransaction}&sort=${sort}&orderby=${order}`)
+      axiosInstance.post(`/transaction/api/v1/Trasanctions?idUser=${userSelector.id}&page=1&limit=15&search=${searchInvNo}&startDate${startDate2 == dateNow && !endDate2 ? null : '=' + startDate2}&endDate=${endDate2}&status=${statusTransaction}&sort=${sort}&orderby=${order}`)
         .then((res) => {
           setTransactionFetch(res.data.result)
           const temp = res.data.result
@@ -119,12 +120,14 @@ export default function TransactionList() {
           dateCreated={val.createdAt}
           status={val.transaction_status}
           grandTotal={val.total_paid}
-          qtyBuy={val.Transaction_lists[0].buy_quantity}
+          qtyBuy={val.Transaction_lists[0]?.buy_quantity}
           // unit={val.}
-          productName={val.Transaction_lists[0].Product.product_name}
-          productCode={val.Transaction_lists[0].Product.product_code}
-          productImage={val.Transaction_lists[0].Product.Product_images[0].image_url}
+          productName={val.Transaction_lists[0]?.Product?.product_name}
+          productCode={val.Transaction_lists[0]?.Product?.product_code}
+          productImage={val.Transaction_lists[0]?.Product?.Product_images[0].image_url}
           idUser={val.id_user}
+          recipeImage={val.Upload_recipe.image_recipe}
+          idRecipe={val.id_upload_recipe}
         />
 
       )

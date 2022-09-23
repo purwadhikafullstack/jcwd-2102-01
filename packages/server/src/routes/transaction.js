@@ -17,7 +17,7 @@ router.get("/api/v1/Couriers", transactionsController.getAllCouriers);
 router.post("/api/v1/Trasanction/:idUser", transactionsController.newTransaction);
 
 // -------------------- Get All Transaction
-router.post("/api/v1/Trasanction/User/:idUser", transactionsController.getAllTransaction);
+router.post("/api/v1/Trasanctions", transactionsController.getAllTransaction);
 
 // -------------------- Get Transaction Order
 router.post("/api/v1/user/:idUser/invoice/:noInvoice", transactionsController.getUserTransactionOrder);

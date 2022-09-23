@@ -1,7 +1,7 @@
 const { User, Address } = require("../lib/sequelize");
+const { Op } = require("sequelize");
 
 const addressController = {
-
   // -------------------- Get Address-------------------- //
   getAddressUser: async (req, res) => {
     try {
@@ -11,7 +11,9 @@ const addressController = {
         include: [ User ],
         // order: [["default_address", "DESC"]],
         where: {
-          id_user: id,
+          [Op.and]: [
+            {id_user: id}, {is_deleted: {[Op.notIn]:['yes']}}
+          ]
         },
       });
 
@@ -64,7 +66,9 @@ const addressController = {
       const findUserAddress = await Address.findAll({
         include: [ User ],
         where: {
-          id_user: idUser,
+          [Op.and]: [
+            {id_user: id}, {is_deleted: {[Op.notIn]:['yes']}}
+          ]
         },
       });
 
@@ -119,14 +123,38 @@ const addressController = {
     }
   },
 
-  // -------------------- Delete Address -------------------- //
+  // -------------------- deleteAddress Address -------------------- //
   deleteAddress: async (req, res) => {
     try {
-      const { id } = req.params;
+      const { idAddress, idUser } = req.params;
 
-      await Address.destroy({
-        where: { id },
+      const findUser = await User.findOne({
+        where: { id: idUser },
       });
+
+      if(findUser.default_address == idAddress) {
+      await User.update(
+        {
+          default_address: 0,
+        },
+        {
+          where: { id: idUser }
+        }
+      );
+      } 
+
+      await Address.update(
+        {
+          is_deleted: 'yes',
+        },
+        {
+          where: {
+           id: idAddress,
+          },
+        }
+      );
+
+      
 
       return res.status(200).json({
         message: "Berhasil menghapus data alamat",
@@ -138,6 +166,26 @@ const addressController = {
       });
     }
   },
+
+  // -------------------- Delete Address -------------------- //
+//   deleteAddress: async (req, res) => {
+//     try {
+//       const { id } = req.params;
+
+//       await Address.destroy({
+//         where: { id },
+//       });
+
+//       return res.status(200).json({
+//         message: "Berhasil menghapus data alamat",
+//       });
+//     } catch (err) {
+//       console.log(err);
+//       res.status(500).json({
+//         message: err.toString(),
+//       });
+//     }
+//   },
 };
 
 module.exports = addressController;

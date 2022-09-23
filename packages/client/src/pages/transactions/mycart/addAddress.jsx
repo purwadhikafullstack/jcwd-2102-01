@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import MaddAddressCart from '../../../components/profilesetting/maddressadd/maddaddresscart';
 import CartTrasanctions from '../../../components/transactions/CartTransactions';
 
-export default function cartAddAddress() {
+export default function CartAddAddress() {
   const userSelector = useSelector((state) => state.auth);
   const router = useRouter();
   const url = "http://localhost:3000/" + router.pathname;

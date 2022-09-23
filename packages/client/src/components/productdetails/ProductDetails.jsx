@@ -12,86 +12,64 @@ import { useFormik } from "formik";
 import qs from 'qs';
 import * as Yup from "yup";
 import NextImage from 'next/image'
+import { useRouter } from 'next/router';
 
 export default function ProductDetailsComp(props) {
   const { productId, productCode, productName, isiPerkemasan, isDeleted, productCategory,
-    productImage, stock, firstPrice, sellingPrice, converted, unit, berat, kegunaan, komposisi,
+    productImage, stock, firstPrice, sellingPrice, converted, idUnit, unit, berat, kegunaan, komposisi,
     kemasan, golongan, caraSimpan, nie, caraPakai, peringatan
   } = props
   const percentage = parseInt((firstPrice - sellingPrice) / firstPrice * 100);
   const [category, setCategory] = useState([])
   const [imageProduct, setImageProduct] = useState([])
   const [imageView, setImageView] = useState()
-  const [qtyProduct, setQtyProduct] = useState(0)
+  const [qtyProduct, setQtyProduct] = useState(1)
   const dispatch = useDispatch()
   const toast = useToast();
   const userSelector = useSelector((state) => state.auth)
   const autoRender = useSelector((state) => state.automateRendering)
+  const router = useRouter();
 
-  const formik = useFormik({
-    initialValues: {
-      quantity: ``,
-    },
-    validationSchema: Yup.object().shape({
-      quantity: Yup.number().required("harap isi quantity").
-        min(1, 'minimal quantity 1').max(stock, 'maaf stok tidak mencukupi')
-    }),
-    validateOnChange: false,
-    onSubmit: async () => {
-      const { quantity } = formik.values
-      let msg = ''
-      try {
-        let body = {
-          buy_quantity: quantity,
-          price: parseFloat(sellingPrice),
-          total_price: parseFloat(sellingPrice) * parseFloat(quantity),
-          // note : "", 
-          id_user: userSelector.id,
-          id_product: productId
-        }
-
-        let res = await axiosInstance.post(`/transaction/api/v1/Cart/${userSelector.id}`, qs.stringify(body))
-        msg = res.data.message;
-        console.log(res.data.message);
-
-        dispatch({
-          type: "FETCH_RENDER",
-          payload: { value: !autoRender.value }
-        })
-
-        if (msg == "Error: Maaf data keranjang anda melebihi produk stok" || msg == "Maaf produk stok tidak mencukupi") {
-          toast({
-            title: `Quantity beli Produk ${productName} di keranjang anda sudah melebihi stok / stok tiak mencukupi`,
-            status: "error",
-            isClosable: true,
-          })
-        } else {
-          toast({
-            title: `Berhasil Menambah ${formik.values.quantity} ${unit} Produk ${productName} ke keranjang`,
-            status: "success",
-            isClosable: true,
-          })
-        }
-
-      } catch (err) {
-        console.log(err);
-
-      }
-      formik.setSubmitting(false)
-    }
-  })
-
-  // --------------- Incriment QTY --------------- //
-  async function increment() {
+  // ----- Add to Cart
+  const addToCart = async () => {
+    let msg = ''
     try {
+      let body = {
+        buy_quantity: qtyProduct,
+        price: parseFloat(sellingPrice),
+        total_price: parseFloat(sellingPrice) * parseFloat(qtyProduct),
+        id_user: userSelector.id,
+        id_product: productId,
+        id_unit: idUnit
+      }
+      let res = await axiosInstance.post(`/transaction/api/v1/Cart/${userSelector.id}`, qs.stringify(body))
+      msg = res.data.message;
+      console.log(res.data.message);
 
-      console.log(qtyProduct);
+      dispatch({
+        type: "FETCH_RENDER",
+        payload: { value: !autoRender.value }
+      })
+
+      if (msg == "Error: Maaf data keranjang anda melebihi produk stok" || msg == "Maaf produk stok tidak mencukupi") {
+        toast({
+          title: `Quantity beli Produk ${productName} di keranjang anda sudah melebihi stok / stok tiak mencukupi`,
+          status: "error",
+          isClosable: true,
+        })
+      } else {
+        toast({
+          title: `Berhasil Menambah ${qtyProduct} ${unit} Produk ${productName} ke keranjang`,
+          status: "success",
+          isClosable: true,
+        })
+      }
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
-  };
+  }
 
-
+  // console.log(qtyProduct);
 
   // --------------- Fetching Category Per Product --------------- //
   async function fetchCategory() {
@@ -110,7 +88,7 @@ export default function ProductDetailsComp(props) {
   const renderCategory = () => {
     return category.map((val) => {
       return (
-        <Button borderColor='#009B90' borderRadius='15px' bg='white' borderWidth='2px' mr='5px' my='2px'
+        <Button onClick={() => router.push(`/productlist?category1=${val.Category?.category}`)} borderColor='#009B90' borderRadius='15px' bg='white' borderWidth='2px' mr='5px' my='2px'
           _hover={{ bg: '#009B90', color: 'white' }} size='xs'>{val.Category?.category}</Button>
       )
     })
@@ -188,32 +166,28 @@ export default function ProductDetailsComp(props) {
             <Text fontWeight='semibold' fontSize='sm' mt='5px'> &nbsp; / {unit}</Text>
           </Box>
           <Box display='flex' mt='15px' justifyContent='flex-start'>
-            {formik.values.quantity}
-            <FormControl isInvalid={formik.errors.quantity} w='160px'>
-              <InputGroup w='150px' size='sm'>
-                <InputLeftElement bg='#009B90' borderLeftRadius='5px' color='white'
-                  onClick={() => setQtyProduct(qtyProduct == 0 ? 0 : qtyProduct - 1)}>
-                  <Icon boxSize='5' as={HiMinusSm} sx={{ _hover: { cursor: "pointer" } }} />
-                </InputLeftElement>
-                <Input textAlign='center' type='number' borderRadius='5px' placeholder='qty' required bg='white'
-                  onChange={(event) => formik.setFieldValue("quantity", event.target.value)}
-                />formik.handleChange(event.target.name)(parseInt(event.target.value, 10))
-                <InputRightElement bg='#009B90' borderRightRadius='5px' color='white'
-                  // onClick={() => setQtyProduct(qtyProduct == stock ? stock : qtyProduct + 1)}>
 
-                  onClick={(event) => formik.setFieldValue("quantity", event.target.valueAsNumber + 1)}>
-                  <Icon boxSize='5' as={HiPlusSm} sx={{ _hover: { cursor: "pointer" } }} />
-                </InputRightElement>
-              </InputGroup>
-              <FormHelperText color='red'>{formik.errors.quantity}</FormHelperText>
-            </FormControl>
+            <InputGroup w='150px' size='sm'>
+              <InputLeftElement bg='#009B90' borderLeftRadius='5px' color='white' sx={{ _hover: { cursor: "pointer" } }}
+                onClick={() => setQtyProduct(qtyProduct <= 1 ? 1 : qtyProduct - 1)}>
+                <Icon boxSize='5' as={HiMinusSm} />
+              </InputLeftElement>
+              <Input textAlign='center' type='number' borderRadius='5px' placeholder='qty' required bg='white'
+                onChange={(event) => setQtyProduct(event.target.value > stock ? stock : event.target.value < 1 ? 1 : event.target.value)} value={qtyProduct}
+              />
+              <InputRightElement bg='#009B90' borderRightRadius='5px' color='white' sx={{ _hover: { cursor: "pointer" } }}
+                onClick={() => setQtyProduct(qtyProduct >= stock ? stock : parseInt(qtyProduct) + parseInt(1))}>
+                <Icon boxSize='5' as={HiPlusSm} />
+              </InputRightElement>
+            </InputGroup>
+
             <Box>
               <Text size='sm' alignSelf='end' ml='15px'>Sisa {stock} {unit}</Text>
             </Box>
           </Box>
 
           <Button w='200px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px' my='25px'
-            _hover={{ bg: '#009B90', color: 'white' }} onClick={formik.handleSubmit}>
+            _hover={{ bg: '#009B90', color: 'white' }} onClick={() => addToCart()}>
             <Icon boxSize='6' as={IoCartOutline} mr='5px' />
             Keranjang</Button>
         </Box>

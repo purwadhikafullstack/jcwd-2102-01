@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import Payment from '../../../components/transactions/payment/Payment';
 
-export default function paymentPage() {
+export default function PaymentPage() {
   const userSelector = useSelector((state) => state.auth);
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter();
