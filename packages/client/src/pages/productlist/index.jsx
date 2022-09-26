@@ -7,7 +7,7 @@ import Metatag from '../../components/metatag/Metatag';
 import { useSelector } from 'react-redux';
 import { useRouter } from "next/router";
 
-export default function productlist() {
+export default function ProductList() {
  const userSelector = useSelector((state) => state.auth);
  const router = useRouter();
  const url = "http://localhost:3000" + router.pathname;

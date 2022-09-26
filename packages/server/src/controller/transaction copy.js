@@ -193,7 +193,6 @@ const transactionsController = {
         total_price:val.total_price, 
         id_user:val.id_user,
         id_product:val.id_product,
-        id_unit: val.id_unit,
         id_transaction:newTransactionId});
 
         // Mapping Panggil Product Stock untuk diupdate

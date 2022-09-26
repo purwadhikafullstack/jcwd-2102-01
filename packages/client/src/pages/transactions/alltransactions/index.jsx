@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import CartTrasanctions from '../../../components/transactions/CartTransactions';
 import TransactionList from '../../../components/transactions/TransacitonsList/TransactionList';
 
-export default function allTransactions() {
+export default function AllTransactions() {
   const userSelector = useSelector((state) => state.auth);
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter();

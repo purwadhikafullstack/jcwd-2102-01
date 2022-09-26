@@ -7,6 +7,14 @@ const sequelize = new Sequelize({
   database: dbConfig.MYSQL_DB_NAME,
   port: dbConfig.MYSQL_PORT,
   dialect: "mysql",
+  dialectOptions: {
+    // useUTC: false, //for reading from database
+    dateStrings: true,
+    typeCast: true,
+    timezone: "+07:00"
+  },
+  timezone: "+07:00", //for writing to database
+  operatorsAliases: 0,
 });
 
 //models
@@ -37,8 +45,8 @@ Address.belongsTo(User, { foreignKey: "id_user" });
 User.hasMany(Upload_recipe, { foreignKey: "id_user" });
 Upload_recipe.belongsTo(User, { foreignKey: "id_user" });
 
-Address.hasMany(Upload_recipe, { foreignKey: "id_address" });
-Upload_recipe.belongsTo(Address, { foreignKey: "id_address" });
+// Address.hasMany(Upload_recipe, { foreignKey: "id_address" });
+// Upload_recipe.belongsTo(Address, { foreignKey: "id_address" });
 
 User.hasMany(Cart, { foreignKey: "id_user" });
 Cart.belongsTo(User, { foreignKey: "id_user" });
@@ -89,6 +97,11 @@ Product_stock.belongsTo(Unit, { foreignKey: "id_unit" });
 
 Transaction.hasMany(Transaction_list, { foreignKey: "id_transaction" });
 Transaction_list.belongsTo(Transaction, { foreignKey: "id_transaction" });
+
+Unit.hasOne(Transaction_list, { foreignKey: "id_unit" });
+Transaction_list.belongsTo(Unit, { foreignKey: "id_unit" });
+Unit.hasOne(Cart, { foreignKey: "id_unit" });
+Cart.belongsTo(Unit, { foreignKey: "id_unit" });
 
 // M : M no primary key product category
 Product.hasMany(Product_category, { foreignKey: "id_product" });

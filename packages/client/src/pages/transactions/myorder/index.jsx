@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import OrderTrasanctions from '../../../components/transactions/OrderTransations';
 
-export default function myorder() {
+export default function MyOrder() {
   const userSelector = useSelector((state) => state.auth);
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter();

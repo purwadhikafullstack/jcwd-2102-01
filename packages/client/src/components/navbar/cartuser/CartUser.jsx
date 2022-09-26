@@ -40,14 +40,14 @@ export default function CartUser(props) {
  }
 
  return (
-  <Box borderBottomWidth='2px' p='3px' display='flex' mb='10px' _hover={{ background: '#ddf1f9' }}>
+  <Box borderBottomWidth='2px' display='flex' boxShadow='base' mb='10px' mr='6px' borderWidth='1px' borderRadius='10px' _hover={{ boxShadow: 'lg' }}>
    <Box w='82px' h='82px'>
     <Link href={`/productdetails/${idProduct}`}>
-     <Image objectFit='cover' src={`http://${image}`} width='82px' height='82px' />
+     <Image objectFit='cover' src={`http://${image}`} width='82px' height='82px' borderLeftRadius='10px' />
     </Link>
    </Box>
    <Box w='190px' ml='3px'>
-    <Link href={`/productdetails/${idProduct}`}>
+    <Link href={`/productdetails/${idProduct}`} _hover={{ color: '#009B90' }}>
      <Text fontSize='sm' h='40px' fontWeight='semibold'>{productName.substring(0, 32)}{productName.length >= 32 ? '...' : null}</Text>
     </Link>
     <Box display='flex' justifyContent='space-between'>

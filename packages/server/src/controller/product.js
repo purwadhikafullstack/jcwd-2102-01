@@ -44,9 +44,10 @@ const productController = {
         offset: (page - 1) * limit,
         limit: limit ? parseInt(limit) : undefined,
         where: {
-          product_name: {
-          [Op.substring]: `${search}`
-          }
+          [Op.and]: [
+            { product_name: {[Op.substring]: `${search}`} },
+            { is_deleted: {[Op.notIn]:['yes']} }
+          ]
         },
         include: [
           { model: Product_description },
@@ -70,9 +71,6 @@ const productController = {
         order: orderby == 'product_name' && sort ? [[`${orderby}`, `${sort}`]] : 
         orderby == 'selling_price' && sort ? [[Product_stock, `${orderby}`, `${sort}`]]
         :[],
-        where: {
-            is_deleted: {[Op.notIn]:['yes']}
-            }
       });
       }
 

@@ -2,7 +2,7 @@ import {
   Flex, Box, Input, InputGroup, InputRightElement, Button, useDisclosure,
   Select, Icon, Text, Center, CheckboxGroup, Checkbox, Stack, useMediaQuery,
   Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerHeader, FormControl,
-  DrawerBody, Link, Spinner, SelectField, Tooltip
+  DrawerBody, Link, Spinner, SelectField, Tooltip, FormHelperText
 } from '@chakra-ui/react';
 import { useDispatch, useSelector } from 'react-redux'
 import { useFormik } from "formik";
@@ -12,6 +12,7 @@ import { BiSearchAlt, BiReset } from 'react-icons/bi';
 import { RiListCheck } from 'react-icons/ri';
 import { BsFilterLeft } from 'react-icons/bs';
 import { IoCartOutline } from "react-icons/io5";
+import * as Yup from "yup";
 import NextImage from 'next/image'
 import ProductCard from './prouctcard/ProductCard';
 import SideFilterCategory from './filter/filtercategory/SideFilterCategory';
@@ -32,6 +33,7 @@ export default function ProductListing() {
   const [pageStart, setPageStart] = useState(1)
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(16)
+  const [searchProduct, setSearchProduct] = useState('')
   const [totalProduct, setTotalProduct] = useState(0)
   const [totalPage, setTotalPage] = useState(0)
   let routerQuery = router.query
@@ -39,6 +41,16 @@ export default function ProductListing() {
   const formik = useFormik({
     initialValues: {
       searchName: ``,
+    },
+    validationSchema: Yup.object().shape({
+      searchName: Yup.string()
+        .min(3, 'Minimal 3 huruf')
+    }),
+    validateOnChange: false,
+    onSubmit: async () => {
+      const { searchName } = formik.values;
+
+      setSearchProduct(searchName)
     }
   })
 
@@ -133,7 +145,7 @@ export default function ProductListing() {
     try {
       // axiosInstance.get(`/comment/post/${id}?page=${startComment}&limit=${5}`)
       // get all product length
-      axiosInstance.get(`/products?search=${formik.values.searchName}&sort&orderby&category=${category1}&category2=${category2}&category3=${category3}
+      axiosInstance.get(`/products?search=${searchProduct}&sort&orderby&category=${category1}&category2=${category2}&category3=${category3}
       &limit=${limit}&page=${page}`)
         .then((res) => {
           const temp = res.data.result
@@ -142,7 +154,7 @@ export default function ProductListing() {
         })
 
       if (category1 || category2 || category3) {
-        axiosInstance.get(`/products?search=${formik.values.searchName}&sort=${sort}&orderby=${order}&category=${category1}&category2=${category2}&category3=${category3}
+        axiosInstance.get(`/products?search=${searchProduct}&sort=${sort}&orderby=${order}&category=${category1}&category2=${category2}&category3=${category3}
         &limit=${limit}&page=${page}`)
           .then((res) => {
             setProduct(res.data.result)
@@ -150,7 +162,7 @@ export default function ProductListing() {
             // console.log(temp)
           })
       } else {
-        axiosInstance.get(`/products?search=${formik.values.searchName}&sort=${sort}&orderby=${order}&category&category2&category3&limit=${limit}&page=${page}`)
+        axiosInstance.get(`/products?search=${searchProduct}&sort=${sort}&orderby=${order}&category&category2&category3&limit=${limit}&page=${page}`)
           .then((res) => {
             setProduct(res.data.result)
             const temp = res.data.result
@@ -174,6 +186,7 @@ export default function ProductListing() {
           productImage={val.Product_images[0]?.image_url}
           stock={val.Product_stocks[0]?.stock}
           unit={val.Product_stocks[0]?.Unit?.unit_name}
+          idUnit={val.Product_stocks[0]?.Unit?.id}
           firstPrice={val.Product_stocks[0]?.first_price}
           sellingPrice={val.Product_stocks[0]?.selling_price}
           converted={val.Product_stocks[0]?.converted}
@@ -215,7 +228,7 @@ export default function ProductListing() {
 
   useEffect(() => {
     fetchProduct()
-  }, [formik.values.searchName]);
+  }, [searchProduct]);
 
   useEffect(() => {
     fetchProduct()
@@ -303,10 +316,9 @@ export default function ProductListing() {
             </Box>
 
             {/* ---------- Search filter by Name ---------- */}
-            <Box mx='10px'>
+            <Box mx='10px' display='flex'>
               {/* {formik.values.searchName} */}
               <FormControl isInvalid={formik.errors.searchName}>
-
                 <InputGroup >
                   <Input placeholder="Cari Nama Produk" type='text' bg='white'
                     onChange={(event) => formik.setFieldValue("searchName", event.target.value)} />
@@ -315,10 +327,25 @@ export default function ProductListing() {
                       fontSize="xl"
                       as={BiSearchAlt}
                       sx={{ _hover: { cursor: "pointer" } }}
+                      onClick={() => formik.handleSubmit()}
                     />
                   </InputRightElement>
                 </InputGroup>
+                <FormHelperText color="red">
+                  {formik.errors.searchName}
+                </FormHelperText>
               </FormControl>
+              <Tooltip label='reset filter' fontSize='sm'>
+                <Button ml='5px' colorScheme='teal'
+                  onClick={() => {
+                    async function submit() {
+                      setSearchProduct('')
+                      setTheParams('')
+                    } submit()
+                  }} >
+                  <Icon boxSize='6' as={BiReset} color='white' />
+                </Button>
+              </Tooltip>
             </Box>
 
           </Box>

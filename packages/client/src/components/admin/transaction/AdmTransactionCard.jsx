@@ -23,10 +23,13 @@ import qs from 'qs';
 // import UploadPayment from '../payment/UploadPayment';
 
 export default function AdmTransactionCard(props) {
-   const { id, productCode, noInvoice, dateCreated, status, grandTotal, qtyBuy, unit, productName, productImage, idUser } = props
+   const { id, productCode, noInvoice, dateCreated, status, grandTotal, qtyBuy, unit, productName, productImage, idUser,
+      buyerName, addressReciever, courier, imagePayment } = props
    const { isOpen: isOpenCancel, onOpen: onOpenCancel, onClose: onCloseCancel } = useDisclosure()
    const { isOpen: isOpenConfirm, onOpen: onOpenConfirm, onClose: onCloseConfirm } = useDisclosure()
    const { isOpen: isOpenPayment, onOpen: onOpenPayment, onClose: onClosePayment } = useDisclosure()
+   const { isOpen: isOpenPaymentOk, onOpen: onOpenPaymentOk, onClose: onClosePaymentOk } = useDisclosure()
+   const { isOpen: isOpenPaymentNo, onOpen: onOpenPaymentNo, onClose: onClosePaymentNo } = useDisclosure()
    const dispatch = useDispatch()
    const userSelector = useSelector((state) => state.auth);
    const autoRender = useSelector((state) => state.automateRendering)
@@ -47,7 +50,7 @@ export default function AdmTransactionCard(props) {
          const { note } = formik.values
          try {
             let body = {
-               note: note,
+               cancel_description: note,
                transaction_status: "Dibatalkan"
             };
             const res = await axiosInstance.patch("/transaction/api/v1/invoice/" + noInvoice, qs.stringify(body))
@@ -69,11 +72,11 @@ export default function AdmTransactionCard(props) {
       }
    })
 
-   // ----- Transaction Confirmation
-   const confirmTransaction = async () => {
+   // ----- Transaction will be process
+   const confirmPayment = async () => {
       try {
          let body = {
-            transaction_status: "Pesanan Dikonfirmasi"
+            transaction_status: "Diproses"
          }
          await axiosInstance.patch("/transaction/api/v1/invoice/" + noInvoice, qs.stringify(body))
          dispatch({
@@ -82,7 +85,52 @@ export default function AdmTransactionCard(props) {
          })
          toast({
             title: "Succes",
-            description: "Pesanan telah berhasil di Konfirmasi",
+            description: "Status Menunggu Konfirmasi Pembayaran berubah DiProses",
+            status: "success",
+            isClosable: true,
+         })
+      } catch (err) {
+         console.log(err);
+      }
+   }
+
+   // ----- Transaction will be process
+   const rejectPayment = async () => {
+      try {
+         let body = {
+            transaction_status: "Menunggu Pembayaran",
+            cancel_description: "Bukti Pembayaran Anda ditolak"
+         }
+         await axiosInstance.patch("/transaction/api/v1/invoice/" + noInvoice, qs.stringify(body))
+         dispatch({
+            type: "FETCH_RENDER",
+            payload: { value: !autoRender.value }
+         })
+         toast({
+            title: "Succes",
+            description: "Status Menunggu Konfirmasi Pembayaran berubah Menunggu Pembayaran",
+            status: "success",
+            isClosable: true,
+         })
+      } catch (err) {
+         console.log(err);
+      }
+   }
+
+   // ----- Transaction will be sent
+   const confirmTransaction = async () => {
+      try {
+         let body = {
+            transaction_status: "Dikirim"
+         }
+         await axiosInstance.patch("/transaction/api/v1/invoice/" + noInvoice, qs.stringify(body))
+         dispatch({
+            type: "FETCH_RENDER",
+            payload: { value: !autoRender.value }
+         })
+         toast({
+            title: "Succes",
+            description: "Status Diproses berubah Dikirim",
             status: "success",
             isClosable: true,
          })
@@ -102,7 +150,7 @@ export default function AdmTransactionCard(props) {
                            moment(dateCreated).format('dddd') == 'Friday' ? 'Jumat' :
                               moment(dateCreated).format('dddd') == 'Saturday' ? 'Sabtu' :
                                  'minggu'}, &nbsp;
-               {moment(dateCreated).format('DD MMMM YYYY')} - {noInvoice} No Invoice</Text>
+               {moment(dateCreated).format('DD MMMM YYYY')} - {noInvoice}</Text>
 
             <Box py='2px' px='4px' display='flex' justifyContent='center' borderWidth='1px' borderRadius='6px'
                borderColor={status == 'Menunggu Pembayaran' || status == 'Menunggu Konfirmasi Pembayaran' ? '#CBAF4E' :
@@ -131,9 +179,7 @@ export default function AdmTransactionCard(props) {
                <Box w='250px' >
                   <Link href={`/productdetails/${productCode}`} style={{ textDecoration: 'none' }}>
                      <Text fontWeight='semibold' textColor='#213360' overflow='hidden'>
-                        {/* {productName?.substring(0, 50)}{productName.length >= 32 ? '...' : null} */}
-                        {/* {productName} */}
-                        Nama Produk asdfasdf asf asf sf sf
+                        {productName?.substring(0, 50)}{productName.length >= 32 ? '...' : null}
                      </Text>
                   </Link>
                   <Text fontWeight='semibold' textColor='#213360'>
@@ -147,7 +193,7 @@ export default function AdmTransactionCard(props) {
                   Pembeli
                </Text>
                <Text textColor='#213360'>
-                  Wira Chanra
+                  {buyerName}
                </Text>
             </Box>
             <Box w='300px' mr='15px' >
@@ -156,7 +202,7 @@ export default function AdmTransactionCard(props) {
                   Alamat
                </Text>
                <Text textColor='#213360'>
-                  Jl. Dewi Sartika kec. Mandau
+                  {addressReciever}
                </Text>
             </Box>
             <Box w='100px' mr='15px' >
@@ -164,7 +210,7 @@ export default function AdmTransactionCard(props) {
                   Kurir
                </Text>
                <Text fontWeight='semibold' textColor='#213360'>
-                  POST
+                  {courier}
                </Text>
             </Box>
          </Box>
@@ -180,25 +226,31 @@ export default function AdmTransactionCard(props) {
          <Box display='flex' justifyContent='flex-end' alignItems='center'>
             {status == 'Menunggu Pembayaran' ?
                <>
-                  <Button onClick={onOpenPayment} w='180px' size='sm' borderRadius='8px' bg='#009B90' mr='10px'
-                     _hover={{ background: '#02d1c2' }}>
-
-                     <Text mx='10px' fontWeight='bold' color='white'>
-                        Upload Bukti Transfer
-                     </Text>
-                  </Button>
                   <Button onClick={() => onOpenCancel()} colorScheme='red' size='sm' borderRadius='7px' mr='10px' >
-                     Batalkan
+                     Tolak Pesanan
                   </Button>
                </> :
                status == 'Menunggu Konfirmasi Pembayaran' ?
-                  <Button onClick={() => onOpenCancel()} colorScheme='red' size='sm' borderRadius='7px' mr='10px' >
-                     Batalkan
-                  </Button> :
-                  status == 'Dikirim' ?
-                     <Button onClick={() => onOpenConfirm()} colorScheme='whatsapp' size='sm' borderRadius='7px' mr='10px' >
-                        Konfirmasi Pesanan
-                     </Button> : null
+                  <>
+                     <Button onClick={() => onOpenPayment()} colorScheme='twitter' size='sm' borderRadius='7px' mr='10px' >
+                        Cek Pembayaran
+                     </Button>
+                     <Button onClick={() => onOpenCancel()} colorScheme='red' size='sm' borderRadius='7px' mr='10px' >
+                        Tolak Pesanan
+                     </Button>
+                  </>
+
+                  :
+                  status == 'Diproses' ?
+                     <>
+                        <Button onClick={() => onOpenConfirm()} colorScheme='whatsapp' size='sm' borderRadius='7px' mr='10px' >
+                           Kirim Produk
+                        </Button>
+                        <Button onClick={() => onOpenCancel()} colorScheme='red' size='sm' borderRadius='7px' mr='10px' >
+                           Tolak Pesanan
+                        </Button>
+                     </>
+                     : null
             }
             <Box >
 
@@ -211,33 +263,94 @@ export default function AdmTransactionCard(props) {
             </Box>
          </Box>
 
-         {/* ----- Upload bukti pembayaran -----  */}
-         {/* <Modal isOpen={isOpenPayment} onClose={onClosePayment} size='lg'>
+         {/* ----- Cek bukti pembayaran -----  */}
+         <Modal isOpen={isOpenPayment} onClose={onClosePayment} size='lg'>
             <ModalOverlay />
             <ModalContent>
-               <ModalHeader>Unggah Bukti Pembayaran</ModalHeader>
+               <ModalHeader>Cek Bukti Pembayaran</ModalHeader>
                <ModalCloseButton />
                <ModalBody pb={6}>
-                  <UploadPayment
-                     noInvoicePayment={noInvoice}
-                     onClose={onClosePayment} />
+                  <Center>
+                     <Image mr='20px' objectFit='contain' src={`http://${imagePayment}`} width='300px' height='350px' />
+                  </Center>
                </ModalBody>
+               <ModalFooter pt='5px'>
+                  <Button mr={3} colorScheme='red' onClick={() => onOpenPaymentNo()}>
+                     Tolak Pembayaran
+                  </Button>
+                  <Button colorScheme='whatsapp' mr={3} onClick={() => onOpenPaymentOk()}>
+                     Konfirmasi Pembayaran
+                  </Button>
+               </ModalFooter>
             </ModalContent>
-         </Modal> */}
+         </Modal>
 
-         {/* ----- Modal Batalkan Pesanan -----  */}
+         {/* ----- Konfirmasi bukti pembayaran -----  */}
+         <Modal isOpen={isOpenPaymentOk} onClose={onClosePaymentOk} size='lg'>
+            <ModalOverlay />
+            <ModalContent>
+               <ModalHeader>Konfirmasi Pembayaran</ModalHeader>
+               <ModalCloseButton />
+               <ModalBody pb={6}>
+                  <Text>Apakah anda yakin ingin mengkonfirmasi pembayaran transaksi {noInvoice}?</Text>
+               </ModalBody>
+               <ModalFooter pt='5px'>
+                  <Button mr={3} colorScheme='red' onClick={onClosePaymentOk}>
+                     Batal
+                  </Button>
+                  <Button colorScheme='whatsapp' mr={3} onClick={() => {
+                     async function submit() {
+                        await confirmPayment();
+                        onClosePaymentOk();
+                        onClosePayment();
+                     }
+                     submit()
+                  }}>
+                     Konfirmasi
+                  </Button>
+               </ModalFooter>
+            </ModalContent>
+         </Modal>
+
+         {/* ----- Tolak bukti pembayaran -----  */}
+         <Modal isOpen={isOpenPaymentNo} onClose={onClosePaymentNo} size='lg'>
+            <ModalOverlay />
+            <ModalContent>
+               <ModalHeader>Tolak Bukti Pembayaran</ModalHeader>
+               <ModalCloseButton />
+               <ModalBody pb={6}>
+                  <Text>Apakah anda yakin ingin menolak pembayaran transaksi {noInvoice}?</Text>
+               </ModalBody>
+               <ModalFooter pt='5px'>
+                  <Button mr={3} colorScheme='red' onClick={onClosePaymentNo}>
+                     Batal
+                  </Button>
+                  <Button mr={3} colorScheme='red' onClick={() => {
+                     async function submit() {
+                        await rejectPayment();
+                        onClosePaymentNo();
+                        onClosePayment();
+                     }
+                     submit()
+                  }}>
+                     Tolak Pembayaran
+                  </Button>
+               </ModalFooter>
+            </ModalContent>
+         </Modal>
+
          <Modal isOpen={isOpenCancel} onClose={onCloseCancel} size='sm'>
             <ModalOverlay />
             <ModalContent>
-               <ModalHeader>Batalkan Pesanan</ModalHeader>
+               <ModalHeader>Tolak Pesanan</ModalHeader>
                <ModalCloseButton />
                <ModalBody>
                   <Box justifyContent={'space-between'}>
-                     <Text>Apakah anda yakin ingin membatalakan pesanan ini?</Text>
+                     <Text>Apakah anda yakin ingin menolak pesanan ini?</Text>
                   </Box>
                   <FormControl>
                      <FormLabel my='10px' display='flex'>Catatan <Text textColor='red'>*</Text></FormLabel>
-                     <Textarea mb='20px' placeholder='Alasan membatalkan Transaksi . . .' maxLength='500'
+                     <Textarea mb='20px' placeholder='Alasan menolak Transaksi . . .' maxLength='500'
                         onChange={(e) => {
                            formik.setFieldValue("note", e.target.value)
                         }} />
@@ -254,7 +367,7 @@ export default function AdmTransactionCard(props) {
                      }
                      submit()
                   }}>
-                     Batalkan
+                     Tolak
                   </Button>
                </ModalFooter>
             </ModalContent>
@@ -264,16 +377,16 @@ export default function AdmTransactionCard(props) {
          <Modal isOpen={isOpenConfirm} onClose={onCloseConfirm} size='sm'>
             <ModalOverlay />
             <ModalContent>
-               <ModalHeader>Konfirmasi Pesanan</ModalHeader>
+               <ModalHeader>Pengiriman Produk</ModalHeader>
                <ModalCloseButton />
                <ModalBody>
                   <Box justifyContent={'space-between'}>
-                     <Text>Konfirmasi pesanan anda jika sudah diterima sesuai dengan alamat</Text>
+                     <Text>Produk akan di kirim ke Pembeli, Harap dilakukan pengecekkan produk sebelum melakukan pengiriman.</Text>
                   </Box>
                </ModalBody>
                <ModalFooter pt='5px'>
                   <Button colorScheme='red' mr={3} onClick={onCloseConfirm}>
-                     Tidak
+                     Batal
                   </Button>
                   <Button mr={3} colorScheme='whatsapp' onClick={() => {
                      async function submit() {

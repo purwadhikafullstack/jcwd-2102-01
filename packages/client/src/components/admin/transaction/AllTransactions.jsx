@@ -46,7 +46,8 @@ export default function AllTransactions() {
   const [limit, setLimit] = useState(16)
   const [totalProduct, setTotalProduct] = useState(0)
   const [searchInvNo, setSearchInvNo] = useState('')
-  const [statusTransaction, setStatusTransaction] = useState('')
+  let routerQuery = router.query
+  // const [statusTransaction, setStatusTransaction] = useState('')
   const [dateRange, setDateRange] = useState([
     {
       startDate: new Date(),
@@ -78,6 +79,8 @@ export default function AllTransactions() {
 
   // ---------- Fetching Transaction ---------- //
   async function fetchTransaction(filter) {
+    const { status } = router.query
+
     let order = "";
     let sort = "";
     if (filter == 'no_invoice_asc') {
@@ -98,7 +101,7 @@ export default function AllTransactions() {
     }
 
     try {
-      axiosInstance.post(`/transaction/api/v1/Trasanction/User/${userSelector.id}?page=1&limit=15&search=${searchInvNo}&startDate${startDate2 == dateNow && !endDate2 ? null : '=' + startDate2}&endDate=${endDate2}&status=${statusTransaction}&sort=${sort}&orderby=${order}`)
+      axiosInstance.post(`/transaction/api/v1/Trasanctions?idUser&page=1&limit=15&search=${searchInvNo}&startDate${startDate2 == dateNow && !endDate2 ? null : '=' + startDate2}&endDate=${endDate2}&status${status ? '=' + status : null}&sort=${sort}&orderby=${order}`)
         .then((res) => {
           setTransactionFetch(res.data.result)
           const temp = res.data.result
@@ -111,26 +114,30 @@ export default function AllTransactions() {
     }
   };
 
-  // const renderTransaction = () => {
-  //  return transactionFetch.map((val, index) => {
-  //   return (
-  //    <TransactionCard key={index}
-  //     id={val.id}
-  //     noInvoice={val.no_invoice}
-  //     dateCreated={val.createdAt}
-  //     status={val.transaction_status}
-  //     grandTotal={val.total_paid}
-  //     qtyBuy={val.Transaction_lists[0].buy_quantity}
-  //     // unit={val.}
-  //     productName={val.Transaction_lists[0].Product.product_name}
-  //     productCode={val.Transaction_lists[0].Product.product_code}
-  //     productImage={val.Transaction_lists[0].Product.Product_images[0].image_url}
-  //     idUser={val.id_user}
-  //    />
+  const renderTransaction = () => {
+    return transactionFetch.map((val, index) => {
+      return (
+        <AdmTransactionCard key={index}
+          id={val.id}
+          noInvoice={val.no_invoice}
+          dateCreated={val.createdAt}
+          status={val.transaction_status}
+          grandTotal={val.total_paid}
+          qtyBuy={val.Transaction_lists[0].buy_quantity}
+          // unit={val.}
+          productName={val.Transaction_lists[0].Product.product_name}
+          productCode={val.Transaction_lists[0].Product.product_code}
+          productImage={val.Transaction_lists[0].Product.Product_images[0].image_url}
+          idUser={val.id_user}
+          buyerName={val.User.first_name + ' ' + val.User.last_name}
+          addressReciever={val.Address.address}
+          courier={val.courier}
+          imagePayment={val.Payment?.image_url}
+        />
 
-  //   )
-  //  })
-  // }
+      )
+    })
+  }
 
   useEffect(() => {
     fetchTransaction()
@@ -150,7 +157,7 @@ export default function AllTransactions() {
   useEffect(() => {
     fetchTransaction()
     // console.log(addressLength)
-  }, [statusTransaction]);
+  }, [routerQuery.status]);
 
   useEffect(() => {
     fetchTransaction()
@@ -178,7 +185,7 @@ export default function AllTransactions() {
           </FormControl>
         </Box>
 
-        <Box m='3px' w='190px'>
+        <Box m='3px' w='210px'>
           {formik.values.sortByProduct}
           <FormControl isInvalid={formik.errors.sortByProduct}>
             <Select size='md' borderRadius='8px' bg='white'
@@ -221,12 +228,23 @@ export default function AllTransactions() {
           </Popover>
         </Box>
       </Box>
+
+      {!searchInvNo ?
+        null
+        :
+        <Box mt='10px' display='flex'>
+          <Text mr='5px'>
+            Hasil Pencarian :
+          </Text>
+          <Text fontWeight='semibold'>
+            {searchInvNo}
+          </Text>
+        </Box>
+      }
+
       <Box my='15px'>
-        <AdmTransactionCard />
-        <AdmTransactionCard />
-        <AdmTransactionCard />
-        <AdmTransactionCard />
-        <AdmTransactionCard />
+        {/* <AdmTransactionCard /> */}
+        {renderTransaction()}
       </Box>
     </Box>
   )

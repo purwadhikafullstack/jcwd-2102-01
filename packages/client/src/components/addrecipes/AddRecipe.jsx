@@ -112,34 +112,36 @@ export default function AddRecipe(props) {
       const formData = new FormData();
       const { note } = formik.values
       let msg = ""
+      // ---------- form data for add to Post table ---------- //
+      formData.append("note", note)
+      formData.append("id_user", userSelector.id)
+      formData.append("id_address", userSelector.default_address)
+      formData.append("image", selectedFile)
       try {
-        // ---------- form data for add to Post table ---------- //
-        formData.append("note", note)
-        formData.append("id_user", userSelector.id)
-        formData.append("id_address", userSelector.default_address)
-        formData.append("image", selectedFile)
 
-        await axiosInstance.post("/transaction/api/v1/recipes/" + userSelector.id, formData).then(() => {
-          dispatch({
-            type: "FETCH_RENDER",
-            payload: { value: !autoRender.value }
-          })
-
-          msg = res.data.message;
-          if (msg != "File image tidak boleh lebih dari 1MB")
-            toast({
-              title: `Berhasil upload resep dokter`,
-              status: "success",
-              isClosable: true,
-            });
-          else {
-            toast({
-              title: "File image tidak boleh lebih dari 1MB",
-              status: "error",
-              isClosable: true,
-            });
-          }
+        let res = await axiosInstance.post("/transaction/api/v1/recipes/" + userSelector.id, formData)
+        dispatch({
+          type: "FETCH_RENDER",
+          payload: { value: !autoRender.value }
         })
+        // console.log(res);
+
+        msg = res.data.message;
+        console.log(msg);
+        if (msg != "File image tidak boleh lebih dari 1MB")
+          toast({
+            title: `Berhasil upload resep dokter`,
+            status: "success",
+            isClosable: true,
+          });
+        else {
+          toast({
+            title: "File image tidak boleh lebih dari 1MB",
+            status: "error",
+            isClosable: true,
+          });
+        }
+
       } catch (err) {
         console.log(err);
         toast({
@@ -211,7 +213,7 @@ export default function AddRecipe(props) {
               <Box w='400px' h='300px' rounded='lg' >
                 {imageShow !==
                   <NextImage src={uploadLoading} rounded='lg' />
-                  && <Image src={imageShow} objectFit='cover' w='400px' h='300px' rounded='lg' />}
+                  && <Image src={imageShow} objectFit='contain' w='400px' h='300px' rounded='lg' />}
               </Box>
               <Input type='file' onChange={handleFile} hidden
                 accept={"image/png, image/jpg, image/jpeg"} ref={inputFileRef} />

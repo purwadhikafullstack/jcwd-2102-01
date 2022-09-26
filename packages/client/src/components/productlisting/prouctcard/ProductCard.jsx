@@ -11,7 +11,7 @@ import qs from 'qs';
 // import Image from 'next/image'
 
 export default function ProductCard(props) {
-  const { productId, productCode, productName, isiPerkemasan, isDeleted, productCategory, productImage, stock, firstPrice, sellingPrice, converted, unit } = props
+  const { productId, productCode, productName, isiPerkemasan, isDeleted, productCategory, productImage, stock, firstPrice, sellingPrice, converted, unit, idUnit } = props
   const percentage = parseInt((firstPrice - sellingPrice) / firstPrice * 100);
   const userSelector = useSelector((state) => state.auth)
   const autoRender = useSelector((state) => state.automateRendering)
@@ -27,7 +27,7 @@ export default function ProductCard(props) {
         buy_quantity: parseInt(1),
         price: parseFloat(sellingPrice),
         total_price: parseFloat(sellingPrice),
-        // note : "", 
+        id_unit: idUnit,
         id_user: userSelector.id,
         id_product: productId
       }

@@ -38,7 +38,7 @@ import Buttonadd from '../../../../components/admin/inventory/category/Buttonadd
 import Buttonedit from '../../../../components/admin/inventory/category/Buttonedit';
 import Buttondeleted from '../../../../components/admin/inventory/category/Buttondeleted';
 
-export default function category() {
+export default function Category() {
 
   // const { isOpen: isOpenEditCat, onOpen: onOpenEditCat, onCLose: onCloseEditCat } = useDisclosure();
   // const { isOpen: isOpenDeleteCat, onOpen: onOpenDeleteCat, onClose: onCloseDeleteCat } = useDisclosure();

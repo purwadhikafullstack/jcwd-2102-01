@@ -10,7 +10,7 @@ import { userVerified } from '../../redux/action/userVerified';
 import { axiosInstance } from "../../lib/api"
 import { useRouter } from 'next/router';
 
-export default function verify_success() {
+export default function VerifySuccess() {
   const [verified, setVerified] = useState(false)
   const router = useRouter()
   const { vertoken } = router.query

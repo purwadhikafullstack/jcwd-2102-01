@@ -6,7 +6,7 @@ import AdminNavBar from "../../components/admin/sidebar/AdminNavBar";
 import SideBar from "../../components/admin/sidebar/sidebar";
 import AdmFooter from '../../components/admin/admfooter/admfooter';
 
-export default function dashboard() {
+export default function Dashboard() {
  return (
   <Flex bgGradient='linear(to-tr, #ffffff 50%, #ddf1f9 )'>
    <SideBar />

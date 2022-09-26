@@ -11,7 +11,7 @@ import AdmFooter from '../../../components/admin/admfooter/admfooter';
 import Metatag from '../../../components/metatag/Metatag';
 import AllTransactions from '../../../components/admin/transaction/AllTransactions';
 
-export default function transaction() {
+export default function Transaction() {
  const userSelector = useSelector((state) => state.auth);
  const [isLoading, setIsLoading] = useState(true)
  const router = useRouter();

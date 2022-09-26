@@ -4,7 +4,7 @@ import ProfileSetting from '../../components/profilesetting/ProfileSetting';
 import Metatag from '../../components/metatag/Metatag';
 import { useRouter } from "next/router";
 
-export default function profile_setting() {
+export default function ProfileSettingPage() {
  const router = useRouter();
  const url = "http://localhost:3000" + router.pathname;
 

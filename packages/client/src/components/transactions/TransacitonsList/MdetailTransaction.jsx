@@ -14,7 +14,8 @@ import { useRouter } from "next/router";
 import { useSelector, useDispatch } from 'react-redux';
 import { useState, useEffect } from "react";
 
-export default function MdetailTransaction() {
+export default function MdetailTransaction(props) {
+ const { idDet, productCodeDet, noInvoiceDet, dateCreatedDet, statusDet, grandTotalDet, qtyBuyDet, unitDet, productNameDet, productImageDet, idUserDet } = props
  const { isOpen: isOpenDetail, onOpen: onOpenDetail, onClose: onCloseDetail } = useDisclosure()
  const { isOpen: isOpenPayment, onOpen: onOpenPayment, onClose: onClosePayment } = useDisclosure()
  const toast = useToast();

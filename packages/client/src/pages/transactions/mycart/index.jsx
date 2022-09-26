@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import CartTrasanctions from '../../../components/transactions/CartTransactions';
 
-export default function mycart() {
+export default function MyCart() {
   const userSelector = useSelector((state) => state.auth);
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter();
