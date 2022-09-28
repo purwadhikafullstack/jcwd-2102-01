@@ -83,7 +83,7 @@ export default function Category() {
   const rendergetCategory = () => {
     return category.map((val, index) => {
       return (
-        <Tr>
+        <Tr key={index} >
           <Td>{val.id}</Td>
 
           <Td>{val.category}</Td>

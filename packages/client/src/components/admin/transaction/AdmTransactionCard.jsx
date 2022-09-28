@@ -17,14 +17,16 @@ import { BiDetail } from "react-icons/bi";
 import { GoVerified } from "react-icons/go";
 import { BiSearchAlt, BiReset } from 'react-icons/bi';
 import { axiosInstance } from '../../../lib/api';
+import AdmMdetailTransaction from './AdmMdetailTransaction';
 // import ModalProfPicture from './mchangepicture/ModalProfPict';
 import * as Yup from "yup";
 import qs from 'qs';
+import ServeOrder from './ServeOrder';
 // import UploadPayment from '../payment/UploadPayment';
 
 export default function AdmTransactionCard(props) {
-   const { id, productCode, noInvoice, dateCreated, status, grandTotal, qtyBuy, unit, productName, productImage, idUser,
-      buyerName, addressReciever, courier, imagePayment } = props
+   const { id, productCode, products, noInvoice, dateCreated, status, totalOrder, grandTotal, qtyBuy, unit, productName, productImage, recipeImage, idRecipe, idUser,
+      buyerName, namaPenerima, noHpPenerima, prov, city, district, addressReciever, courier, shippingCost, imagePayment, note, cancelDes } = props
    const { isOpen: isOpenCancel, onOpen: onOpenCancel, onClose: onCloseCancel } = useDisclosure()
    const { isOpen: isOpenConfirm, onOpen: onOpenConfirm, onClose: onCloseConfirm } = useDisclosure()
    const { isOpen: isOpenPayment, onOpen: onOpenPayment, onClose: onClosePayment } = useDisclosure()
@@ -149,47 +151,63 @@ export default function AdmTransactionCard(props) {
                         moment(dateCreated).format('dddd') == 'Thursday' ? 'Kamis' :
                            moment(dateCreated).format('dddd') == 'Friday' ? 'Jumat' :
                               moment(dateCreated).format('dddd') == 'Saturday' ? 'Sabtu' :
-                                 'minggu'}, &nbsp;
-               {moment(dateCreated).format('DD MMMM YYYY')} - {noInvoice}</Text>
+                                 'Minggu'}, &nbsp;
+               {moment(dateCreated).format('DD MMMM YYYY')} {idRecipe == 1 ? "/ " + noInvoice : null}
+            </Text>
 
             <Box py='2px' px='4px' display='flex' justifyContent='center' borderWidth='1px' borderRadius='6px'
                borderColor={status == 'Menunggu Pembayaran' || status == 'Menunggu Konfirmasi Pembayaran' ? '#CBAF4E' :
                   status == 'Diproses' ? '#757575' :
                      status == 'Dikirim' ? '#0677c7' :
-                        status == 'Pesanan Dikonfirmasi' ? '#87DF9F' : '#FF6B6B'}
+                        status == 'Pesanan Dikonfirmasi' ? '#87DF9F' :
+                           status == 'Resep Dokter' ? '#B032FF' : '#FF6B6B'}
                bg={status == 'Menunggu Pembayaran' || status == 'Menunggu Konfirmasi Pembayaran' ? '#FFDE6B4D' :
                   status == 'Diproses' ? '#ededed' :
                      status == 'Dikirim' ? '#bae2ff' :
-                        status == 'Pesanan Dikonfirmasi' ? '#c2ffd3' : '#fcd7d7'} >
+                        status == 'Pesanan Dikonfirmasi' ? '#c2ffd3' :
+                           status == 'Resep Dokter' ? '#EFD7FE' : '#fcd7d7'} >
 
                <Text fontSize='xs' textAlign='center' fontWeight='semibold'
                   color={status == 'Menunggu Pembayaran' || status == 'Menunggu Konfirmasi Pembayaran' ? '#CBAF4E' :
                      status == 'Diproses' ? '#757575' :
                         status == 'Dikirim' ? '#0677c7' :
-                           status == 'Pesanan Dikonfirmasi' ? '#26c754' : '#FF6B6B'}
+                           status == 'Pesanan Dikonfirmasi' ? '#26c754' :
+                              status == 'Resep Dokter' ? '#B032FF' : '#FF6B6B'}
                >{status}</Text>
             </Box>
          </Box>
          <Divider my='10px' />
          <Box display='flex' justifyContent='space-between' flexWrap='wrap'>
             <Box display='flex' mr='20px'>
-               <NextLink href={`/productdetails/${productCode}`}>
-                  <Image mr='20px' objectFit='cover' src={`http://${productImage}`} _hover={{ cursor: 'pointer' }} width='80px' height='80px' />
-               </NextLink>
+               {/* ------ jika transaksi dari resep dokter maka yg tampil resep dokter ------ */}
+               {idRecipe == 1 ?
+                  <NextLink href={`/productdetails/${productCode}`}>
+                     <Image mr='20px' objectFit='cover' src={`http://${productImage}`} _hover={{ cursor: 'pointer' }} width='80px' height='80px' />
+                  </NextLink>
+                  :
+                  <Image mr='20px' objectFit='cover' src={`http://${recipeImage}`} _hover={{ cursor: 'pointer' }} width='80px' height='80px' />
+               }
+
                <Box w='250px' >
-                  <Link href={`/productdetails/${productCode}`} style={{ textDecoration: 'none' }}>
-                     <Text fontWeight='semibold' textColor='#213360' overflow='hidden'>
-                        {productName?.substring(0, 50)}{productName.length >= 32 ? '...' : null}
+                  {idRecipe == 1 ?
+                     <>
+                        <Link href={`/productdetails/${productCode}`} style={{ textDecoration: 'none' }}>
+                           <Text fontWeight='semibold' textColor='#213360' overflow='hidden'>
+                              {productName?.substring(0, 50)}{!productName ? null : productName.length >= 32 ? '...' : null}
+                           </Text>
+                        </Link>
+                        <Text fontWeight='semibold' textColor='#213360'>
+                           {qtyBuy} x
+                        </Text>
+                     </> :
+                     <Text fontWeight='semibold' fontSize='sm' textColor='#213360' maxW='300px' overflow='hidden'>
+                        Catatan : {note}
                      </Text>
-                  </Link>
-                  <Text fontWeight='semibold' textColor='#213360'>
-                     {qtyBuy} x
-                  </Text>
+                  }
                </Box>
             </Box>
             <Box w='150px' mr='15px' >
                <Text fontWeight='semibold' fontSize='sm' textColor='#213360' overflow='hidden'>
-                  {/* {productName} */}
                   Pembeli
                </Text>
                <Text textColor='#213360'>
@@ -198,7 +216,6 @@ export default function AdmTransactionCard(props) {
             </Box>
             <Box w='300px' mr='15px' >
                <Text fontWeight='semibold' fontSize='sm' textColor='#213360' overflow='hidden'>
-                  {/* {productName} */}
                   Alamat
                </Text>
                <Text textColor='#213360'>
@@ -206,24 +223,32 @@ export default function AdmTransactionCard(props) {
                </Text>
             </Box>
             <Box w='100px' mr='15px' >
-               <Text fontWeight='semibold' fontSize='sm' textColor='#213360'>
-                  Kurir
-               </Text>
-               <Text fontWeight='semibold' textColor='#213360'>
-                  {courier}
-               </Text>
+               {idRecipe == 1 ?
+                  <>
+                     <Text fontWeight='semibold' fontSize='sm' textColor='#213360'>
+                        Kurir
+                     </Text>
+                     <Text fontWeight='semibold' textColor='#213360'>
+                        {courier}
+                     </Text>
+                  </>
+                  :
+                  null
+               }
             </Box>
          </Box>
-         <Box display='flex' justifyContent='space-between' mt='10px' bg='#F6FAFB' p='5px' borderRadius='8px'>
-            <Text fontWeight='semibold' textColor='#213360'>
-               Total Belanja
-            </Text>
-            <Text fontWeight='semibold' textColor='#213360'>
-               Rp {grandTotal?.toLocaleString()}
-            </Text>
-         </Box>
+         {idRecipe == 1 ?
+            <Box display='flex' justifyContent='space-between' mt='10px' bg='#F6FAFB' p='5px' borderRadius='8px'>
+               <Text fontWeight='semibold' textColor='#213360'>
+                  Total Belanja
+               </Text>
+               <Text fontWeight='semibold' textColor='#213360'>
+                  Rp {grandTotal?.toLocaleString()}
+               </Text>
+            </Box> :
+            null}
          <Divider my='10px' />
-         <Box display='flex' justifyContent='flex-end' alignItems='center'>
+         <Box display='flex' justifyContent='flex-end' alignItems='center' flexWrap='wrap' >
             {status == 'Menunggu Pembayaran' ?
                <>
                   <Button onClick={() => onOpenCancel()} colorScheme='red' size='sm' borderRadius='7px' mr='10px' >
@@ -232,10 +257,10 @@ export default function AdmTransactionCard(props) {
                </> :
                status == 'Menunggu Konfirmasi Pembayaran' ?
                   <>
-                     <Button onClick={() => onOpenPayment()} colorScheme='twitter' size='sm' borderRadius='7px' mr='10px' >
-                        Cek Pembayaran
+                     <Button onClick={() => onOpenPayment()} colorScheme='twitter' size='sm' borderRadius='7px' mr='6px' >
+                        Pembayaran
                      </Button>
-                     <Button onClick={() => onOpenCancel()} colorScheme='red' size='sm' borderRadius='7px' mr='10px' >
+                     <Button onClick={() => onOpenCancel()} colorScheme='red' size='sm' borderRadius='7px' mr='7px' >
                         Tolak Pesanan
                      </Button>
                   </>
@@ -250,16 +275,37 @@ export default function AdmTransactionCard(props) {
                            Tolak Pesanan
                         </Button>
                      </>
-                     : null
+                     :
+                     status == 'Resep Dokter' ?
+                        <>
+                           <ServeOrder
+                              recipeImage={recipeImage}
+                           />
+                        </>
+                        : null
             }
-            <Box >
-
-               <Link color='#009B90' alignSelf='center' display='flex'>
-                  <Icon boxSize='5' as={BiDetail} color='#009B90' mr='5px' />
-                  <Text fontWeight='semibold' fontSize='sm' textColor='#009B90'>
-                     Lihat Detail Transaksi
-                  </Text>
-               </Link>
+            {/* ---------- Detail Transaksi ---------- */}
+            <Box mt='5px'>
+               <AdmMdetailTransaction
+                  idDet={id}
+                  productsDet={products}
+                  noInvoiceDet={noInvoice}
+                  dateCreatedDet={dateCreated}
+                  statusDet={status}
+                  grandTotalDet={grandTotal}
+                  namaPenerimaDet={namaPenerima}
+                  noHpPenerimaDet={noHpPenerima}
+                  alamatPenerimaDet={addressReciever}
+                  provDet={prov}
+                  cityDet={city}
+                  districtDet={district}
+                  kurirDet={courier}
+                  totalOrderDet={totalOrder}
+                  shippingCostDet={shippingCost}
+                  idUserDet={idUser}
+                  noteDet={note}
+                  cancelDet={cancelDes}
+               />
             </Box>
          </Box>
 

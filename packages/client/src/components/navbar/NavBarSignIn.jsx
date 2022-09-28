@@ -1,11 +1,11 @@
 import {
   Box, Input, Flex, Avatar, AvatarBadge, HStack, Stack, Link, IconButton, Button, Menu, Tooltip,
   MenuButton, MenuList, MenuItem, MenuDivider, useDisclosure, Modal, ModalCloseButton, ModalOverlay, ModalHeader, ModalBody, ModalContent
-  , Icon, Text, Accordion, AccordionIcon, AccordionPanel, AccordionItem, AccordionButton,
+  , Icon, Text, Accordion, AccordionIcon, AccordionPanel, AccordionItem, AccordionButton, Image,
   Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerOverlay, DrawerFooter, DrawerHeader, Center
 } from '@chakra-ui/react';
 import LinkNext from 'next/link';
-import Image from 'next/image';
+import NextImage from 'next/image';
 import logo from '../../assets/img/healthymedLogo.png'
 import jsCookie from "js-cookie";
 import auth_types from "../../redux/reducers/auth/type";
@@ -14,9 +14,8 @@ import { FaRegHeart, FaTrashAlt } from "react-icons/fa";
 import { MdOutlineCategory, MdUploadFile, MdCategory, MdPersonAddAlt, MdPersonAdd } from 'react-icons/md';
 import { AiFillBell, AiFillSetting, AiOutlineBell, AiOutlineHome, AiFillHome } from "react-icons/ai";
 import { RiLoginCircleLine, RiLoginCircleFill, RiHistoryLine } from "react-icons/ri";
-import { IoSettingsOutline, IoNotificationsOutline, IoLogOutOutline, IoStorefrontOutline, IoStorefrontSharp } from "react-icons/io5"
+import { IoSettingsOutline, IoCartOutline, IoNotificationsOutline, IoLogOutOutline, IoStorefrontOutline, IoStorefrontSharp } from "react-icons/io5"
 import { BiAddToQueue, BiHelpCircle } from "react-icons/bi";
-import { IoCartOutline } from "react-icons/io5";
 import { axiosInstance } from '../../lib/api';
 import { useState, useEffect } from "react";
 import { useRouter } from 'next/router';
@@ -163,7 +162,7 @@ export default function NavBarSignIn() {
 
           <Link href='/' >
             <HStack spacing={8} alignItems={'center'} _hover={{ cursor: "pointer" }}>
-              <Center><Image src={logo} width='180px' height='40px' /></Center>
+              <Center><NextImage src={logo} width='180px' height='40px' /></Center>
             </HStack>
           </Link>
 
@@ -252,28 +251,47 @@ export default function NavBarSignIn() {
               <Drawer isOpen={isOpenCart} placement='right' onClose={onCloseCart}>
                 <DrawerOverlay />
                 <DrawerContent>
-                  <DrawerCloseButton />
-                  <DrawerHeader>Keranjang</DrawerHeader>
+                  <DrawerCloseButton color='white' size='lg' />
+                  <DrawerHeader bg='#009B90' color='white'>
+                    <Flex alignContent='center'>
+                      <Center >
+                        <Icon boxSize='6' as={IoCartOutline} mr='10px' />
+                      </Center>
+                      <Text>Keranjang</Text>
+                    </Flex>
+                  </DrawerHeader>
                   <DrawerBody>
-                    <Box maxH='450px' className='scrollCart'>
-                      {/* <CartUser />
-                      <CartUser />
-                      <CartUser /> */}
-                      {renderCartNavbar()}
-                    </Box >
-                    <Box display='flex' mt='10px' justifyContent='space-between'>
-                      <Text fontWeight='bold'>
-                        Total Belanja :
-                      </Text>
-                      <Text fontWeight='semibold'>
-                        Rp {cartSubTotal.toLocaleString()}
-                      </Text>
-                    </Box>
+                    {cart.length == 0 ?
+                      <Box align='center'>
+                        <Image src='/cart2.png' objectFit='contain' w='400px' h='300px' />
+                        <Text textAlign='center' fontWeight='bold'>Keranjang anda kosong</Text>
+                        <Text textAlign='center' fontWeight='bold' color='#009B90' w='150px' _hover={{ cursor: 'pointer', textDecoration: 'underline' }}
+                          onClick={() => router.push('/productlist')}>
+                          Belanja Sekarang
+                        </Text>
+                      </Box>
+                      :
+                      <>
+                        <Box maxH='450px' className='scrollCart' mt='10px'>
+                          {renderCartNavbar()}
+                        </Box >
+                        <Box display='flex' mt='10px' justifyContent='space-between'>
+                          <Text fontWeight='bold'>
+                            Total Belanja :
+                          </Text>
+                          <Text fontWeight='semibold'>
+                            Rp {cartSubTotal.toLocaleString()}
+                          </Text>
+                        </Box>
+                      </>
+                    }
                   </DrawerBody>
                   <DrawerFooter>
-                    <LinkNext href='/transactions/mycart'>
-                      <Button colorScheme='blue'>Order Sekarang</Button>
-                    </LinkNext>
+                    <Button w='full' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px' size='md' my='5px'
+                      _hover={{ bg: '#009B90', color: 'white' }} disabled={cart.length == 0 ? true : false}
+                      onClick={() => router.push('/transactions/mycart')}>
+                      Order Sekarang
+                    </Button>
                   </DrawerFooter>
                 </DrawerContent>
               </Drawer>

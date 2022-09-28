@@ -109,7 +109,7 @@ export default function MeditAddress(props) {
   const renderProvinceRajaOngkir = () => {
     return provinceRajaOngkir.map((val, index) => {
       return (
-        <option value={val.province_id}>{val.province}</option>
+        <option key={index} value={val.province_id}>{val.province}</option>
       )
     })
   }
@@ -144,7 +144,7 @@ export default function MeditAddress(props) {
   const renderCityRajaOngkir = () => {
     return cityRajaOngkir.map((val, index) => {
       return (
-        <option value={val.city_id}>{val.city_name}</option>
+        <option key={index} value={val.city_id}>{val.city_name}</option>
       )
     })
   }
@@ -152,7 +152,7 @@ export default function MeditAddress(props) {
   const renderPostCodeRajaOngkir = () => {
     return cityRajaOngkir.map((val, index) => {
       return (
-        <option value={val.postal_code}>{val.postal_code}</option>
+        <option key={index} value={val.postal_code}>{val.postal_code}</option>
       )
     })
   }

@@ -196,26 +196,6 @@ const transactionsController = {
         id_unit: val.id_unit,
         id_transaction:newTransactionId});
 
-        // Mapping Panggil Product Stock untuk diupdate
-        // let newStokUpdate = val.Product.Product_stocks[0].stock - val.buy_quantity
-        // let newTotalSold = val.buy_quantity + val.Product.Product_stocks[0].total_sold
-        // console.log('tes find ' +  val.Product.Product_stocks[0].stock);
-        // console.log('tes find ' +  val.Product.Product_stocks[0].Unit.id);
-        // console.log('tes val cart ' + val.buy_quantity);
-        
-        // Product_stock.update({stock: newStokUpdate, total_sold:newTotalSold}, {
-        // where: {
-        //   [Op.and]: [
-        //     { converted: {[Op.notIn]:['yes']} },
-        //     { id_product: val.id_product, }
-        //   ]
-        // },});
-        
-        // tambah data stock history
-        // Stock_history.create({
-        // type: 'Penjualan', description: 'pengurangan', quantity : val.buy_quantity, id_product: val.id_product, id_unit: val.Product.Product_stocks[0].Unit.id, 
-        // });
-
         // delete data cart
         Cart.destroy({
         where: {
@@ -271,7 +251,8 @@ const transactionsController = {
           { model : User },
           { model : Address },
           { model : Transaction_list,
-            include: [{ model : Product,
+            include: [{model: Unit},
+              { model : Product,
             include : [
               { model: Product_stock,
                 include : [{model: Unit}],
@@ -279,7 +260,8 @@ const transactionsController = {
               { model : Product_image},
               { model : Product_description},
               ],
-            },]
+            },
+            ]
            },
           
         ],
@@ -312,15 +294,19 @@ const transactionsController = {
             { model : User },
             { model : Address },
             { model : Transaction_list,
-              include: [{ model : Product,
+              include: [
+                { model : Product,
               include : [
                 { model: Product_stock,
                   include : [{model: Unit}],
+                 
                 }, 
                 { model : Product_image},
                 { model : Product_description},
                 ],
-              },]
+              },
+            {model: Unit}
+          ]
             },
             { model : Upload_recipe },
             { model : Payment },
@@ -332,7 +318,7 @@ const transactionsController = {
               search ? {no_invoice:{[Op.substring]: `${search}`}} : null,
               // status ? {transaction_status: status} : null,
               status == 'Menunggu Pembayaran'   ? 
-              {[Op.or]: [{transaction_status: 'Menunggu Pembayaran'},{transaction_status: 'Menunggu Konfirmasi Pembayaran'}]}: status ? {transaction_status: status} : null,
+              {[Op.or]: [{transaction_status: 'Resep Dokter'},{transaction_status: 'Menunggu Pembayaran'},{transaction_status: 'Menunggu Konfirmasi Pembayaran'}]}: status ? {transaction_status: status} : null,
               
               startDate && endDate ? {createdAt: 
                 {[Op.between]: [startDate, endDate]}} : null, 
@@ -489,7 +475,45 @@ const transactionsController = {
         where: {id_transaction: findTransactionId.id},
       });
 
+      const renderTransactionList = () => { 
+        return findTransactionList.map((val) => {
+        // Mapping Panggil Product Stock untuk diupdate
+        let newStokUpdate = val.Product.Product_stocks[0].stock - val.buy_quantity
+        let newTotalSold = val.buy_quantity + val.Product.Product_stocks[0].total_sold
+        // console.log('tes find ' +  val.Product.Product_stocks[0].stock);
+        // console.log('tes find ' +  val.Product.Product_stocks[0].Unit.id);
+        // console.log('tes find id uni' + val.id_unit);
+        // console.log('tes val cart ' + val.buy_quantity);
+        
+        Product_stock.update({stock: newStokUpdate, total_sold:newTotalSold}, {
+        where: {
+          [Op.and]: [
+            { id_unit:val.id_unit},
+            { id_product: val.id_product, }
+          ]
+        },});
+        
+        // tambah data stock history
+        Stock_history.create({
+        type: 'Penjualan', description: 'pengurangan', quantity : val.buy_quantity, id_product: val.id_product, id_unit: val.Product.Product_stocks[0].Unit.id, 
+        });
+      })
+    }
+    renderTransactionList()
+    await Transaction.update(
+          { 
+            ...req.body, 
+          },
+          {
+            where: {
+              no_invoice : noInvoice,
+            },
+          }
+        )
 
+    return res.status(200).json({
+        message: "Berhasil mengirimpesanan",
+      });
     } else {
       await Transaction.update(
           { 
@@ -513,32 +537,6 @@ const transactionsController = {
       });
     }
   },
-  //  // -------------------- Change transaction status -------------------- //
-  // editTransactionStatus: async (req, res) => {
-  //   try {
-  //     const { noInvoice } = req.params;
-      
-  //   await Transaction.update(
-  //       { 
-  //         ...req.body, 
-  //       },
-  //       {
-  //         where: {
-  //           no_invoice : noInvoice,
-  //         },
-  //       }
-  //     )
-
-  //     return res.status(200).json({
-  //       message: "Transaction status changed",
-  //     });
-  //   } catch (err) {
-  //     console.log(err);
-  //     res.status(500).json({
-  //       message: err.toString(),
-  //     });
-  //   }
-  // },
 };
 
 

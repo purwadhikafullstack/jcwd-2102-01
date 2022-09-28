@@ -5,6 +5,7 @@ import {
   Divider, Tabs, TabList, TabPanel, TabPanels, Tab, InputRightElement, Drawer,
   DrawerBody, DrawerHeader, DrawerCloseButton, DrawerContent, DrawerOverlay,
   Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverCloseButton, PopoverHeader, PopoverBody,
+  NumberInputField, NumberInput, NumberIncrementStepper, NumberDecrementStepper, NumberInputStepper
 } from '@chakra-ui/react';
 import { useDispatch, useSelector } from 'react-redux'
 import { useState, useEffect } from "react";
@@ -31,7 +32,6 @@ export default function TransactionList() {
   const [filtermobile] = useMediaQuery('(min-width: 1059px)')
   const [filtermobile2] = useMediaQuery('(min-width: 670px)')
   const [transactionFetch, setTransactionFetch] = useState([])
-  const [transactionLength, setTransactionLength] = useState()
   const userSelector = useSelector((state) => (state.auth))
   const autoRender = useSelector((state) => state.automateRendering)
   const toast = useToast();
@@ -42,10 +42,15 @@ export default function TransactionList() {
   // ------ for filter
   const [pageStart, setPageStart] = useState(1)
   const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(16)
-  const [totalProduct, setTotalProduct] = useState(0)
+  const [totalPage, setTotalPage] = useState(0)
+  const [limit, setLimit] = useState(8)
+  const [transactionLength, setTransactionLength] = useState(0)
   const [searchInvNo, setSearchInvNo] = useState('')
   const [statusTransaction, setStatusTransaction] = useState('')
+  const [hoursStart, setHoursStart] = useState(0)
+  const [minutesStart, setMinutesStart] = useState(0)
+  const [hoursEnd, setHoursEnd] = useState(0)
+  const [minutesEnd, setMinutesEnd] = useState(0)
   const [dateRange, setDateRange] = useState([
     {
       startDate: new Date(),
@@ -53,7 +58,6 @@ export default function TransactionList() {
       key: 'selection'
     }
   ]);
-
 
   // ----- Search
   const formik = useFormik({
@@ -67,14 +71,12 @@ export default function TransactionList() {
   })
 
   let dateNow = moment(new Date()).format('YYYY-MM-DD')
-  let startDate2 = moment(dateRange[0].startDate).format('YYYY-MM-DD') + 'T00:00:00.000Z'
-  let endDate2 = dateRange[0].endDate ? moment(dateRange[0].endDate).format('YYYY-MM-DD') + 'T00:00:00.000Z' : ''
-  // console.log('sekarang ' + dateNow);
-  console.log(moment(dateRange[0].startDate).format("YYYY-MM-DD HH:mm:ss"));
-  // console.log(moment(dateRange[0].startDate).format('YYYY-MM-DD'));
-  console.log(moment(dateRange[0].endDate).format('YYYY-MM-DD'));
-  console.log(startDate2);
-  console.log(endDate2);
+  let startDate2 = moment(dateRange[0]?.startDate).format('YYYY-MM-DD') + ` ${hoursStart < 10 ? '0' + hoursStart : hoursStart}:${minutesStart < 10 ? '0' + minutesStart : minutesStart}:00`
+  let endDate2 = dateRange[0]?.endDate ? moment(dateRange[0]?.endDate).format('YYYY-MM-DD') + ` ${hoursEnd < 10 ? '0' + hoursEnd : hoursEnd}:${minutesEnd < 10 ? '0' + minutesEnd : minutesEnd}:00` : ''
+  // console.log(moment(dateRange[0].startDate).format("YYYY-MM-DD HH:mm:ss"));
+  // console.log(moment(dateRange[0].endDate).format('YYYY-MM-DD'));
+  // console.log(startDate2);
+  // console.log(endDate2);
 
   // ---------- Fetching Transaction ---------- //
   async function fetchTransaction(filter) {
@@ -98,13 +100,19 @@ export default function TransactionList() {
     }
 
     try {
-      axiosInstance.post(`/transaction/api/v1/Trasanctions?idUser=${userSelector.id}&page=1&limit=15&search=${searchInvNo}&startDate${startDate2 == dateNow && !endDate2 ? null : '=' + startDate2}&endDate=${endDate2}&status=${statusTransaction}&sort=${sort}&orderby=${order}`)
+      axiosInstance.post(`/transaction/api/v1/Trasanctions?idUser=${userSelector.id}&page=1&limit=1000000&search=${searchInvNo}&startDate${startDate2 == dateNow && !endDate2 ? null : '=' + startDate2}&endDate=${endDate2}&status${statusTransaction ? '=' + statusTransaction : null}&sort=${sort}&orderby=${order}`)
+        .then((res) => {
+          const temp = res.data.result
+          setTransactionLength(temp.length) // total transaksi keseluruhan
+          setTotalPage(Math.ceil(temp.length / limit))
+        })
+
+      axiosInstance.post(`/transaction/api/v1/Trasanctions?idUser=${userSelector.id}&page=${page}&limit=${limit}&search=${searchInvNo}&startDate${startDate2 == dateNow && !endDate2 ? null : '=' + startDate2}&endDate=${endDate2}&status=${statusTransaction}&sort=${sort}&orderby=${order}`)
         .then((res) => {
           setTransactionFetch(res.data.result)
           const temp = res.data.result
           setTransactionLength(temp.length)
           console.log(temp)
-          console.log('test' + res.data.result.length)
         })
     } catch (err) {
       console.log(err)
@@ -121,53 +129,58 @@ export default function TransactionList() {
           status={val.transaction_status}
           grandTotal={val.total_paid}
           qtyBuy={val.Transaction_lists[0]?.buy_quantity}
-          // unit={val.}
+          products={val.Transaction_lists}
+          note={val.note}
+          cancelDes={val.cancel_description}
+          unit={val.Transaction_lists[0]?.Unit?.unit_name}
           productName={val.Transaction_lists[0]?.Product?.product_name}
           productCode={val.Transaction_lists[0]?.Product?.product_code}
           productImage={val.Transaction_lists[0]?.Product?.Product_images[0].image_url}
           idUser={val.id_user}
-          recipeImage={val.Upload_recipe.image_recipe}
+          recipeImage={val.Upload_recipe?.image_recipe}
           idRecipe={val.id_upload_recipe}
+          namaPenerima={val.Address?.receiver_name}
+          noHpPenerima={val.Address?.receiver_phone}
+          alamatPenerima={val.Address?.address}
+          prov={val.Address?.province}
+          city={val.Address?.city_name}
+          district={val.Address?.districts}
+          kurir={val.courier}
+          totalOrder={val.total_transaction}
+          shippingCost={val.shipping_cost}
         />
 
       )
     })
   }
 
-  async function handleEvent(event, picker) {
-
-    console.log(picker.startDate);
-    console.log(picker.endDate);
-    // console.log('testing ' + newEnd);
-  }
-  async function handleCallback(start, end, label) {
-    console.log(start, end, label);
+  const resetFilter = async () => {
+    setSearchInvNo('')
+    setHoursStart(0)
+    setMinutesStart(0)
+    setHoursEnd(0)
+    setMinutesEnd(0)
+    setPage(1)
+    setDateRange([
+      {
+        startDate: new Date(),
+        endDate: null,
+        key: 'selection'
+      }]
+    )
   }
 
   useEffect(() => {
     fetchTransaction()
-    // console.log(addressLength)
   }, [router.isReady]);
 
   useEffect(() => {
     fetchTransaction()
-    // console.log(addressLength)
   }, [autoRender]);
 
   useEffect(() => {
     fetchTransaction()
-    // console.log(addressLength)
-  }, [searchInvNo],);
-
-  useEffect(() => {
-    fetchTransaction()
-    // console.log(addressLength)
-  }, [statusTransaction]);
-
-  useEffect(() => {
-    fetchTransaction()
-    // console.log(addressLength)
-  }, [dateRange]);
+  }, [searchInvNo, statusTransaction, dateRange, startDate2, endDate2, page]);
 
   return (
     <>
@@ -218,21 +231,27 @@ export default function TransactionList() {
             {/* {formik.values.searchInvoice} */}
             <FormControl isInvalid={formik.errors.searchInvoice}>
               <InputGroup size='sm' >
-                <Input placeholder="Cari Nama Produk" type='text' bg='white' borderRadius='8px'
+                <Input placeholder="Cari No Invoice" type='text' bg='white' borderRadius='8px'
                   onChange={(event) => formik.setFieldValue("searchInvoice", event.target.value)} />
                 <InputRightElement>
                   <Icon
                     fontSize="xl"
                     as={BiSearchAlt}
                     sx={{ _hover: { cursor: "pointer" } }}
-                    onClick={() => setSearchInvNo(`${formik.values.searchInvoice}`)}
+                    onClick={() => {
+                      async function submit() {
+                        setSearchInvNo(`${formik.values.searchInvoice}`)
+                        setPage(1)
+                      }
+                      submit()
+                    }}
                   />
                 </InputRightElement>
               </InputGroup>
             </FormControl>
           </Box>
 
-          <Box m='3px' w='170px'>
+          <Box m='3px' w='202px'>
             {formik.values.sortByProduct}
             <FormControl isInvalid={formik.errors.sortByProduct}>
               <Select size='sm' borderRadius='8px'
@@ -270,7 +289,7 @@ export default function TransactionList() {
             </Drawer>
           </Box>
 
-          <Box m='3px' w='170px'>
+          <Box m='3px' mr='8px'>
             <Popover>
               <PopoverTrigger>
                 <Button size='sm' borderWidth='1px' borderRadius='8px' bg='white'>
@@ -284,6 +303,47 @@ export default function TransactionList() {
                   <Text fontWeight='bold'>Pilih tanggal</Text>
                 </PopoverHeader>
                 <PopoverBody>
+                  <Box>Pukul</Box>
+                  <Box display='flex' bg='#F3F3F3' justifyContent='space-evenly' p='5px' mb='5px'>
+                    <Box display='flex' bg='white' p='5px' borderRadius='6px'>
+                      <NumberInput size='sm' borderRadius='full' defaultValue={'00'} min={0} max={24} w='63px'
+                        onChange={(valueString) => setHoursStart(parseInt(valueString))} value={hoursStart}>
+                        <NumberInputField />
+                        <NumberInputStepper >
+                          <NumberIncrementStepper />
+                          <NumberDecrementStepper />
+                        </NumberInputStepper>
+                      </NumberInput>
+                      <Text mx='5px'> : </Text>
+                      <NumberInput size='sm' borderRadius='full' defaultValue={0} min={0} max={59} w='63px'
+                        onChange={(valueString) => setMinutesStart(parseInt(valueString))} value={minutesStart}>
+                        <NumberInputField />
+                        <NumberInputStepper >
+                          <NumberIncrementStepper />
+                          <NumberDecrementStepper />
+                        </NumberInputStepper>
+                      </NumberInput>
+                    </Box>
+                    <Box display='flex' bg='white' p='5px' borderRadius='6px'>
+                      <NumberInput size='sm' borderRadius='full' defaultValue={0} min={0} max={24} w='63px'
+                        onChange={(valueString) => setHoursEnd(parseInt(valueString))} value={hoursEnd}>
+                        <NumberInputField />
+                        <NumberInputStepper >
+                          <NumberIncrementStepper />
+                          <NumberDecrementStepper />
+                        </NumberInputStepper>
+                      </NumberInput>
+                      <Text mx='5px'> : </Text>
+                      <NumberInput size='sm' borderRadius='full' defaultValue={0} min={0} max={59} w='63px'
+                        onChange={(valueString) => setMinutesEnd(parseInt(valueString))} value={minutesEnd}>
+                        <NumberInputField />
+                        <NumberInputStepper >
+                          <NumberIncrementStepper />
+                          <NumberDecrementStepper />
+                        </NumberInputStepper>
+                      </NumberInput>
+                    </Box>
+                  </Box>
                   <DateRange
                     editableDateInputs={true}
                     onChange={item => setDateRange([item.selection])}
@@ -294,38 +354,81 @@ export default function TransactionList() {
                 </PopoverBody>
               </PopoverContent>
             </Popover>
-
-            {/* <DateRange
-                editableDateInputs={true}
-                onChange={item => setDateRange([item.selection])}
-                moveRangeOnFirstSelection={false}
-                ranges={dateRange}
-              /> */}
+          </Box>
+          <Box display='flex' >
+            <Button variant='link' style={{ textDecoration: 'none' }}
+              onClick={() => resetFilter()}>
+              <Text alignSelf='center' fontWeight='semibold' textColor='#009B90'>
+                Reset Filter
+              </Text>
+            </Button>
           </Box>
         </Box>
 
         <Box hidden={filtermobile2 ? false : true}>
           <Tabs>
             <TabList>
-              <Tab py='15px' onClick={() => setStatusTransaction(``)}>
+              <Tab py='15px' onClick={() => {
+                async function submit() {
+                  setStatusTransaction(``)
+                  setPage(1)
+                }
+                submit()
+              }}>
                 <Text fontSize='sm' fontWeight='semibold'>Semua</Text>
               </Tab>
-              <Tab py='15px' onClick={() => setStatusTransaction(`Menunggu Pembayaran`)}>
+              <Tab py='15px' onClick={() => {
+                async function submit() {
+                  setStatusTransaction(`Menunggu Pembayaran`)
+                  setPage(1)
+                }
+                submit()
+              }}>
                 <Text fontSize='sm' fontWeight='semibold'>Menunggu</Text>
               </Tab>
-              <Tab py='15px' onClick={() => setStatusTransaction(`Diproses`)}>
+              <Tab py='15px' onClick={() => {
+                async function submit() {
+                  setStatusTransaction(`Diproses`)
+                  setPage(1)
+                }
+                submit()
+              }}>
                 <Text fontSize='sm' fontWeight='semibold'>Diproses</Text>
               </Tab>
-              <Tab py='15px' onClick={() => setStatusTransaction(`Dikirim`)}>
+              <Tab py='15px' onClick={() => {
+                async function submit() {
+                  setStatusTransaction(`Dikirim`)
+                  setPage(1)
+                }
+                submit()
+              }}>
                 <Text fontSize='sm' fontWeight='semibold'>Dikirim</Text>
               </Tab>
-              <Tab py='15px' onClick={() => setStatusTransaction(`Pesanan Dikonfirmasi`)}>
+              <Tab py='15px' onClick={() => {
+                async function submit() {
+                  setStatusTransaction(`Pesanan Dikonfirmasi`)
+                  setPage(1)
+                }
+                submit()
+              }}>
                 <Text fontSize='sm' fontWeight='semibold'>Selesai</Text>
               </Tab>
-              <Tab py='15px' onClick={() => setStatusTransaction(`Dibatalkan`)}>
+              <Tab py='15px' onClick={() => {
+                async function submit() {
+                  setStatusTransaction(`Dibatalkan`)
+                  setPage(1)
+                }
+                submit()
+              }}>
                 <Text fontSize='sm' fontWeight='semibold'>Dibatalkan</Text>
               </Tab>
-              <Tab py='15px'>
+              <Tab py='15px' onClick={() => {
+                async function submit() {
+                  setStatusTransaction(`Resep Dokter`)
+                  setPage(1)
+                }
+                submit()
+              }}>
                 <Text fontSize='sm' fontWeight='semibold'>Resep Dokter</Text>
               </Tab>
             </TabList>
@@ -345,12 +448,21 @@ export default function TransactionList() {
           </Box>
         }
 
-
         <Box my='15px'>
           {renderTransaction()}
         </Box>
 
-        Test
+        {/* ---------- Pagination ---------- */}
+        <Box display='flex' justifyContent='center' alignContent='center'>
+          <Button onClick={() => setPage(page == 1 ? 1 : page - 1)} size='sm' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
+            _hover={{ bg: '#009B90', color: 'white' }}>Prev</Button>
+          {/* {renderButton()} */}
+          <Input w='50px' type='number' textAlign='center' bg='white' value={page}
+            onChange={(event) => setPage(event.target.value > totalPage ? page : event.target.value < 1 ? 1 : event.target.value)} />
+          <Text alignSelf='center' ml='10px'>of {totalPage} pages</Text>
+          <Button onClick={() => setPage(totalPage == page ? page : page + 1)} size='sm' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
+            _hover={{ bg: '#009B90', color: 'white' }}>Next</Button>
+        </Box>
       </Box >
     </>
   )

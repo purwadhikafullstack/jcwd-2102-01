@@ -8,15 +8,14 @@ import { BiDetail } from "react-icons/bi";
 import bank_bca from '../../../assets/img/metode_pembayaran/bank_bca.png'
 import logo from '../../../assets/img/healthymedLogo.png'
 import NextImage from 'next/image';
-import ProductOrderList from '../payment/ProductOrderList';
+import AdmProductOrderList from './AdmProductOrderList';
 import { RiFileCopyFill } from 'react-icons/ri';
 import { useRouter } from "next/router";
 import { useSelector, useDispatch } from 'react-redux';
 import { useState, useEffect } from "react";
 import moment from 'moment';
-import UploadPayment from '../payment/UploadPayment';
 
-export default function MdetailTransaction(props) {
+export default function AdmMdetailTransaction(props) {
    const { idDet, productsDet, noInvoiceDet, dateCreatedDet, statusDet, totalOrderDet, shippingCostDet, namaPenerimaDet, alamatPenerimaDet, provDet, cityDet, districtDet, kurirDet,
       grandTotalDet, qtyBuyDet, noHpPenerimaDet, unitDet, productNameDet, productImageDet, idUserDet, noteDet, cancelDet } = props
    const { isOpen: isOpenDetail, onOpen: onOpenDetail, onClose: onCloseDetail } = useDisclosure()
@@ -26,7 +25,7 @@ export default function MdetailTransaction(props) {
    const renderTransactionList = () => {
       return productsDet.map((val, index) => {
          return (
-            <ProductOrderList key={index}
+            <AdmProductOrderList key={index}
                image={val.Product?.Product_images[0]?.image_url}
                productName={val.Product?.product_name}
                qtyBuy={val.buy_quantity}
@@ -39,7 +38,7 @@ export default function MdetailTransaction(props) {
       })
    }
 
-   //  console.log(productsDet);
+   // console.log(productsDet);
    return (
       <>
          <Button onClick={onOpenDetail} variant='link' color='#009B90'>
@@ -59,48 +58,6 @@ export default function MdetailTransaction(props) {
                      <Center my='10px'>
                         <NextImage src={logo} width='180px' height='40px' />
                      </Center>
-
-                     {statusDet == 'Menunggu Pembayaran' ?
-                        // {/* -------------------- Batas Pembayaran -------------------- */ }
-                        <Box display='flex' flexWrap='wrap' my='10px' p='20px' justifyContent='center' boxShadow='md' bg='#ffffff' borderWidth='1px' borderRadius="10px">
-                           <Box w='300px'>
-                              <Text fontWeight='semibold' color='#737A8D' fontSize='sm'>
-                                 Batas Akhir Pembayaran
-                              </Text>
-                              <Text fontWeight='semibold' color='#213360'>
-                                 Kamis, 21 Maret 2022, 20.45 WIB
-                              </Text>
-                           </Box>
-                           <Center display='flex' justifyContent='flex-end'>
-                              <Center w='30px' h='30px' m='10px' borderRadius='5px' bg='#FF6B6B' color='white'>
-                                 <Text>
-                                    20
-                                 </Text>
-                              </Center>
-                              <Center borderRadius='5px' color='#FF6B6B'>
-                                 <Text fontWeight='bold'>
-                                    :
-                                 </Text>
-                              </Center>
-                              <Center w='30px' h='30px' m='10px' borderRadius='5px' bg='#FF6B6B' color='white'>
-                                 <Text>
-                                    20
-                                 </Text>
-                              </Center>
-                              <Center borderRadius='5px' color='#FF6B6B'>
-                                 <Text fontWeight='bold'>
-                                    :
-                                 </Text>
-                              </Center>
-                              <Center w='30px' h='30px' m='10px' borderRadius='5px' bg='#FF6B6B' color='white'>
-                                 <Text>
-                                    20
-                                 </Text>
-                              </Center>
-                           </Center>
-                        </Box>
-                        : null}
-
 
                      {/* -------------------- Ringkasan Order -------------------- */}
                      <Box justifyContent='space-between'>
@@ -212,7 +169,7 @@ export default function MdetailTransaction(props) {
                                  Biaya Pengiriman
                               </Text>
                               <Text fontWeight='semibold' color='#213360'>
-                                 Rp {shippingCostDet.toLocaleString()}
+                                 Rp {shippingCostDet?.toLocaleString()}
                               </Text>
                            </Box>
                            <Box display='flex' justifyContent='space-between' mt='7px'>
@@ -220,76 +177,10 @@ export default function MdetailTransaction(props) {
                                  Total Pembayaran
                               </Text>
                               <Text fontWeight='semibold' color='#213360'>
-                                 Rp {grandTotalDet.toLocaleString()}
+                                 Rp {grandTotalDet?.toLocaleString()}
                               </Text>
                            </Box>
                         </Box>
-                        {statusDet == 'Menunggu Pembayaran' ?
-                           // {/* -------------------- Bank -------------------- */}
-                           <Box my='25px' p='20px' px='30px' boxShadow='md' bg='#ffffff' borderWidth='1px' borderRadius="10px">
-                              <Box mb='10px' justifyContent='space-between' display='flex'>
-                                 <Text fontWeight='bold' fontSize='lg' color='#213360'>
-                                    Rekening BCA
-                                 </Text>
-                                 <NextImage src={bank_bca} width='80px' height='23px' />
-                              </Box>
-                              <Divider />
-                              <Box my='10px'>
-                                 <Text fontSize='2xl' fontWeight='bold' color='#213360'>
-                                    PT. HEALTHYMED INDONESIA
-                                 </Text>
-                                 <Text color='#737A8D' fontSize='sm' fontWeight='semibold'>
-                                    Nomor Rekening BCA.
-                                 </Text>
-                                 <Box display='flex' justifyContent='space-between'>
-                                    <Text fontSize='2xl' fontWeight='bold' color='#213360'>
-                                       80777082261130123
-                                    </Text>
-                                    {/* <Tooltip label='Salin' fontSize='sm' > */}
-                                    <Button variant='link' color='#009B90' _hover={{ textDecoration: 'none' }} size='sm'
-                                       onClick={() => {
-                                          navigator.clipboard.writeText(`80777082261130123`)
-                                          // setLinkCopy(true)
-                                          toast({
-                                             title: "Berhasil Salin No.Rekening",
-                                             status: "success",
-                                             isClosable: true,
-                                          })
-                                       }}>
-                                       <Text fontWeight='bold'>Salin</Text> &nbsp;
-                                       <Icon boxSize={4} as={RiFileCopyFill} />
-                                    </Button>
-                                 </Box>
-                              </Box>
-                              <Box >
-                                 <Text fontWeight='semibold' color='#737A8D' fontSize='sm'>
-                                    Total Pembayaran
-                                 </Text>
-                                 <Text fontSize='xl' fontWeight='bold' color='#213360'>
-                                    Rp {grandTotalDet.toLocaleString()}
-                                 </Text>
-                              </Box>
-
-                              {/* ----- Upload Bukti Transfer ----- */}
-                              <Box mt='20px'>
-                                 <Button onClick={onOpenPayment} variant='link' color='#009B90' _hover={{ textDecoration: 'none' }} size='sm'>
-                                    <Icon boxSize={4} as={RiFileCopyFill} /> &nbsp;
-                                    <Text fontWeight='bold'> Upload Bukti Transfer</Text>
-                                 </Button>
-
-                                 <Modal isOpen={isOpenPayment} onClose={onClosePayment} size='lg'>
-                                    <ModalOverlay />
-                                    <ModalContent>
-                                       <ModalHeader>Unggah Bukti Pembayaran</ModalHeader>
-                                       <ModalCloseButton />
-                                       <ModalBody pb={6}>
-                                          <UploadPayment />
-                                       </ModalBody>
-                                    </ModalContent>
-                                 </Modal>
-                              </Box>
-                           </Box> : null
-                        }
 
                      </Box>
                   </Box>

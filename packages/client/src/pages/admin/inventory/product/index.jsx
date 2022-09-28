@@ -25,12 +25,10 @@ import {
 } from '@chakra-ui/react';
 import AdminNavBar from "../../../../components/admin/sidebar/AdminNavBar";
 import SideBar from "../../../../components/admin/sidebar/sidebar";
-import SidebarWithHeader from "../../../../components/admin/sidebar/sidebar3";
 import AdmFooter from '../../../../components/admin/admfooter/admfooter';
 import { useSelector, useDispatch } from "react-redux";
 import { useFormik } from "formik";
-import NilaiBarang from "../../../../components/admin/inventory/Nilai Barang";
-import NilaiJual from "../../../../components/admin/inventory/Nilai Jual";
+
 import { axiosInstance } from '../../../../lib/api';
 import qs from "qs";
 import * as yup from "yup";

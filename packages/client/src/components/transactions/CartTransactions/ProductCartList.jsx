@@ -14,7 +14,7 @@ import { axiosInstance } from '../../../lib/api';
 import qs from 'qs';
 
 export default function ProductCartList(props) {
-  const { image, productName, qtyBuy, price, totalPrice, unit, firstPrice, idCart, idProduct, idUnit, idUser } = props
+  const { image, productName, qtyBuy, price, totalPrice, unit, firstPrice, idCart, idProduct, productCode, idUnit, idUser } = props
   const { isOpen: isOpenDelete, onOpen: onOpenDelete, onClose: onCloseDelete } = useDisclosure()
   const userSelector = useSelector((state) => state.auth)
   const autoRender = useSelector((state) => state.automateRendering)
@@ -51,17 +51,20 @@ export default function ProductCartList(props) {
   // ----- Add to Cart
   async function addToCart(quantity) {
     let msg = ''
+    // let newQty = quantity
     try {
       let body = {
         buy_quantity: quantity,
         price: parseFloat(price),
-        total_price: parseFloat(price) * parseFloat(quantity),
+        total_price: parseFloat(price),
+        id_unit: idUnit,
         id_user: userSelector.id,
         id_product: idProduct
       }
       let res = await axiosInstance.post(`/transaction/api/v1/Cart/${userSelector.id}`, qs.stringify(body))
       msg = res.data.message;
       console.log(res.data.message);
+      // console.log(newQty);
 
       dispatch({
         type: "FETCH_RENDER",
@@ -75,18 +78,18 @@ export default function ProductCartList(props) {
           isClosable: true,
         })
       } else {
-        toast({
-          title: `Berhasil Menambah ${quantityBuy} ${unit} Produk ${productName} ke keranjang`,
-          status: "success",
-          isClosable: true,
-        })
+        // toast({
+        //   title: `Berhasil Menambah ${quantity} ${unit} Produk ${productName} ke keranjang`,
+        //   status: "success",
+        //   isClosable: true,
+        // })
       }
     } catch (err) {
       console.log(err);
     }
   }
 
-  console.log(qtyBuy);
+  console.log("qty buy" + qtyBuy);
 
   return (
     <Box boxShadow='sm' borderWidth='1px' borderRadius='10px' mb='20px' p='10px' _hover={{ boxShadow: 'lg' }}>
@@ -94,12 +97,12 @@ export default function ProductCartList(props) {
       <Flex justifyContent='space-between'>
         <Box display='flex'>
           <Box minW='100px' minH='100px' overflow='hidden' borderWidth='1px' >
-            <Link href={`/productdetails/${idProduct}`}>
+            <Link href={`/productdetails/${productCode}`}>
               <Image objectFit='cover' src={`http://${image}`} width='100px' height='100px' />
             </Link>
           </Box>
           <Box ml='15px' >
-            <Link href={`/productdetails/${idProduct}`}>
+            <Link href={`/productdetails/${productCode}`}>
               <Text fontWeight='semibold' textColor='#213360'>
                 {productName.substring(0, 32)}{productName.length >= 32 ? '...' : null}
               </Text>
@@ -131,7 +134,8 @@ export default function ProductCartList(props) {
       <Box display='flex' justifyContent='flex-end' mt='5px' pt='5px' borderTopWidth='2px'>
 
         <InputGroup w='150px' size='sm' mx='15px'>
-          <InputLeftElement bg='#F6FAFB' borderWidth='1px' borderRightWidth='0px' borderLeftRadius='8px' color='#009B90' _hover={{ cursor: "pointer", bg: '#009B90', color: '#F6FAFB' }}>
+          <InputLeftElement bg='#F6FAFB' borderWidth='1px' borderRightWidth='0px' borderLeftRadius='8px' color='#009B90' _hover={{ cursor: "pointer", bg: '#009B90', color: '#F6FAFB' }}
+            onClick={() => { qtyBuy == 1 ? null : addToCart(-1) }}>
             <Icon
               boxSize='5'
               as={HiMinusSm}
@@ -139,15 +143,9 @@ export default function ProductCartList(props) {
             />
           </InputLeftElement>
           <Input textAlign='center' type='number' borderRadius='8px' placeholder='QTY' required bg='#F6FAFB'
-            onChange={(event) => addToCart(event.target.value)} value={qtyProduct} />
+            value={qtyBuy} disabled />
           <InputRightElement bg='#F6FAFB' borderWidth='1px' borderLeftWidth='0px' borderRightRadius='8px' color='#009B90' _hover={{ cursor: "pointer", bg: '#009B90', color: '#F6FAFB' }}
-            onClick={() => {
-              // function submit() {
-              setQtyProduct(qtyProduct + 1)
-              // addToCart();
-              // }
-              // submit()
-            }}>
+            onClick={() => { addToCart(1); }}>
             <Icon
               boxSize='5'
               as={HiPlusSm}

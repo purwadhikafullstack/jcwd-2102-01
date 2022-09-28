@@ -22,7 +22,7 @@ const NotFound = () => {
      <Box display='flex' top={0} justifyContent={'center'} >
       {/* <Box position='absolute' zIndex={2} mt='30px' textAlign='center' boxShadow='md' p='6' rounded='md' bg='white' backdropContrast='30%'> */}
       <Box position='absolute' zIndex={2} mt='30px' textAlign='center' p='6' backdropContrast='30%'>
-       <Heading >Sorry the page 'NOT FOUND'</Heading>
+       <Heading >Sorry the page NOT FOUND</Heading>
        <Text >The link you followed probably broken or the page has been removed</Text>
       </Box>
       <NextImage src={imagenf} position='absolute' />
