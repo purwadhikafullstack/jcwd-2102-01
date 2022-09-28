@@ -1,5 +1,5 @@
 import {
-  Button, ModalBody, ModalHeader,
+  Button, ModalBody, ModalHeader, Icon, Text,
   ModalContent, ModalCloseButton, FormControl,
   FormLabel, Input, Box, Textarea, useToast, Image
 } from '@chakra-ui/react'
@@ -8,6 +8,7 @@ import { useState, useRef, useEffect } from 'react';
 import { axiosInstance } from '../../../lib/api';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from "next/router";
+import { IoClose } from "react-icons/io5"
 import qs from 'qs'
 // import { Uploader } from "uploader";
 // import { UploadButton } from "react-uploader";
@@ -25,8 +26,6 @@ export default function UploadPayment(props) {
   const router = useRouter();
   const toast = useToast()
   const [imageShow, setImageShow] = useState(null)
-
-
 
   const formik = useFormik({
     initialValues: {
@@ -129,27 +128,34 @@ export default function UploadPayment(props) {
             </UploadButton> */}
         <Box minW='400px' minH='300px' >
           <FormControl>
-            <FormLabel> Image </FormLabel>
             <Box>
               <Box w='400px' h='300px' rounded='lg' >
-                {imageShow !==
-                  <NextImage src={uploadLoading} rounded='lg' />
-                  && <Image src={imageShow} objectFit='contain' w='400px' h='300px' rounded='lg' />}
+                {!imageShow ?
+                  <>
+                    <Text position='relative' w='200px' fontWeight='bold' top='3' left='120' color='#2B478B' onClick={() => inputFileRef.current.click()} _hover={{ cursor: 'pointer' }}  >
+                      Upload Bukti Bayar
+                    </Text>
+                    <Image src='/payment.png' objectFit='contain' w='400px' h='300px' onClick={() => inputFileRef.current.click()} _hover={{ cursor: 'pointer' }} />
+                  </>
+                  : <Image src={imageShow} objectFit='contain' w='400px' h='300px' rounded='lg' />}
               </Box>
               <Input type='file' onChange={handleFile} hidden
                 accept={"image/png, image/jpg, image/jpeg"} ref={inputFileRef} />
-              <Button background='#72FFFF' mt='5px' size='sm' onClick={() => inputFileRef.current.click()} >Upload Image</Button>
-              <Button size='sm' mt='5px' ml='5px' background='#FFB4B4' onClick={() => {
-                setImageShow(null)
-                setSelectedFile(null)
-              }}>Cancel</Button>
+              {/* <Button background='#72FFFF' mt='5px' size='sm' onClick={() => inputFileRef.current.click()} >Upload Image</Button> */}
+              <Button position='relative' size='sm' bottom='301' ml='5px' bg='white' variant='ghost' left='343'
+                onClick={() => {
+                  setImageShow(null)
+                  setSelectedFile(null)
+                }}>
+                <Icon boxSize='7' as={IoClose} />
+              </Button>
             </Box>
           </FormControl>
         </Box>
 
-        <Box mt='10px'>
-          <Box mt={'17px'} justifyContent='flex-end'>
-            <Button mr={3} colorScheme='twitter' disabled={imageShow == null ? true : false} onClick=
+        <Box>
+          <Box justifyContent='flex-end'>
+            <Button colorScheme='twitter' disabled={imageShow == null ? true : false} onClick=
               {() => {
                 async function submit() {
                   UploadPayment();

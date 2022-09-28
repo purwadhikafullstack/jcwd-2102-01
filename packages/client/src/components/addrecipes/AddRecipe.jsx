@@ -1,6 +1,6 @@
 import {
   Button, Text, useDisclosure, Modal, ModalOverlay, ModalHeader, ModalCloseButton, ModalBody, ModalContent,
-  FormControl, Flex,
+  FormControl, Flex, Icon,
   FormLabel, Input, Box, Textarea, useToast, Image
 } from '@chakra-ui/react'
 import { useFormik } from "formik";
@@ -9,6 +9,7 @@ import { axiosInstance } from '../../lib/api';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from "next/router";
 import qs from 'qs'
+import { IoClose } from "react-icons/io5"
 // import { Uploader } from "uploader";
 // import { UploadButton } from "react-uploader";
 import ShowAddress from '../profilesetting/ShowAddress';
@@ -211,24 +212,32 @@ export default function AddRecipe(props) {
           <FormControl>
             <Box>
               <Box w='400px' h='300px' rounded='lg' >
-                {imageShow !==
-                  <NextImage src={uploadLoading} rounded='lg' />
-                  && <Image src={imageShow} objectFit='contain' w='400px' h='300px' rounded='lg' />}
+                {!imageShow ?
+                  <>
+                    <Text position='relative' w='200px' fontWeight='bold' top='90' left='120' color='#2B478B' onClick={() => inputFileRef.current.click()} _hover={{ cursor: 'pointer' }}  >
+                      Upload Resep Dokter
+                    </Text>
+                    <Image src='/recipe2.png' objectFit='contain' w='400px' h='300px' onClick={() => inputFileRef.current.click()} _hover={{ cursor: 'pointer' }} />
+                  </>
+                  : <Image src={imageShow} objectFit='contain' w='400px' h='300px' rounded='lg' />}
               </Box>
               <Input type='file' onChange={handleFile} hidden
                 accept={"image/png, image/jpg, image/jpeg"} ref={inputFileRef} />
-              <Button background='#72FFFF' mt='5px' size='sm' onClick={() => inputFileRef.current.click()} >Upload Image</Button>
-              <Button size='sm' mt='5px' ml='5px' background='#FFB4B4' onClick={() => {
-                setImageShow(null)
-                setSelectedFile(null)
-              }}>Cancel</Button>
+              {/* <Button background='#72FFFF' mt='5px' size='sm' onClick={() => inputFileRef.current.click()} >Upload Image</Button> */}
+              <Button position='relative' size='sm' bottom='301' ml='5px' bg='white' variant='ghost' left='343'// left='227'
+                onClick={() => {
+                  setImageShow(null)
+                  setSelectedFile(null)
+                }}>
+                <Icon boxSize='7' as={IoClose} />
+              </Button>
             </Box>
           </FormControl>
         </Box>
 
         <Box mt='10px'>
-          <Box mt={'17px'} justifyContent='flex-end'>
-            <Button mr={3} colorScheme='twitter'
+          <Box justifyContent='flex-end'>
+            <Button position='relative' bottom='5' colorScheme='twitter'
               disabled={imageShow != null && formik.values.note.length > 5 && userSelector.default_address != false ? false : true} onClick=
               {() => {
                 async function submit() {

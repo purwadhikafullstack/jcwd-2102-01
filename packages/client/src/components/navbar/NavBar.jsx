@@ -55,7 +55,7 @@ export default function NavBar() {
   }
 
   const renderCategoryWeb = () => {
-    return category.map((val, index) => {
+    return category?.map((val, index) => {
       return (
         <>
           <Link href={`/productlist?category1=` + val.category} style={{ textDecoration: "none" }}>

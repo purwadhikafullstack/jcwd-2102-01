@@ -1,6 +1,6 @@
 import {
   Flex, Box, Text, Button, InputGroup, InputLeftElement, Icon,
-  InputRightElement, Input, Tooltip, Divider
+  InputRightElement, Input, Tooltip, Divider, Image
 } from '@chakra-ui/react';
 import Footer from '../../../components/footer/Footer';
 import { HiMinusSm, HiPlusSm } from "react-icons/hi";
@@ -75,7 +75,8 @@ export default function CartTrasanctions() {
             idCart={val.id}
             firstPrice={val.Product.Product_stocks[0].first_price}
             unit={val.Product.Product_stocks[0].Unit.unit_name}
-            idProduct={val.Product.product_code}
+            idProduct={val.Product.id}
+            productCode={val.Product.product_code}
             idUser={val.id_user}
           />
         </>
@@ -101,7 +102,6 @@ export default function CartTrasanctions() {
     fetchAddress()
   }, [autoRender]);
 
-
   return (
     <Box>
       <Text mx='15px' mb='5px' fontWeight='bold' fontSize='2xl' color='#213360'>
@@ -112,7 +112,18 @@ export default function CartTrasanctions() {
 
         {/* -------------------- Cart List -------------------- */}
         <Box minW='370px' w={'55vw'} mx='15px' my='10px' p='25px' px='20px' justifyContent={'center'} boxShadow='md' bg='#ffffff' borderWidth='1px' borderRadius="10px">
-          {renderCartList()}
+          {
+            cart.length == 0 ?
+              <Box align='center'>
+                <Image src='/cart2.png' objectFit='contain' w='400px' h='300px' />
+                <Text textAlign='center' fontWeight='bold'>Keranjang anda kosong</Text>
+                <Text textAlign='center' fontWeight='bold' color='#009B90' w='150px' _hover={{ cursor: 'pointer', textDecoration: 'underline' }}
+                  onClick={() => router.push('/productlist')}>
+                  Belanja Sekarang
+                </Text>
+              </Box>
+              :
+              renderCartList()}
         </Box>
 
         {/* -------------------- Total Order -------------------- */}
@@ -139,7 +150,7 @@ export default function CartTrasanctions() {
           </Box>
           <Box mt='20px' display='flex' justifyContent='flex-end' >
             <Button w='full' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
-              _hover={{ bg: '#009B90', color: 'white' }} disabled={userSelector.id ? false : true}
+              _hover={{ bg: '#009B90', color: 'white' }} disabled={cart.length == 0 ? true : false}
               onClick={() => orderNow()}>
               Order Sekarang
             </Button>

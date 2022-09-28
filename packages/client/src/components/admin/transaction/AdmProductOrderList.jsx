@@ -4,7 +4,7 @@ import {
   Modal, ModalOverlay, ModalHeader, ModalBody, ModalCloseButton, ModalContent
 } from '@chakra-ui/react';
 
-export default function ProductOrderList(props) {
+export default function AdmProductOrderList(props) {
   const { image, productName, qtyBuy, price, totalPrice, unit, firstPrice, idCart, productCode, idUser } = props
   const percentage = parseInt((firstPrice - price) / firstPrice * 100);
 

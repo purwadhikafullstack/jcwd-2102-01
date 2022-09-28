@@ -19,10 +19,10 @@ export default function Transaction() {
  return (
   <Metatag title={"Admin | Daftar Transaksi"} description={"Daftar Transaksi"}
    url={url} type="website">
-   <Flex  >
+   <Flex minW='500px'>
     <SideBar />
     <Box display='flex' flexDirection='column' justifyContent='space-between'>
-     <Box>
+     <Box  >
       <AdminNavBar />
       <Flex flexWrap={'wrap'} px='40px' py='15px' bgGradient='linear(to-tr, #ffffff 50%, #ddf1f9 )'>
        <Box>

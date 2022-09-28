@@ -33,6 +33,8 @@ export default function ProductListing() {
   const [pageStart, setPageStart] = useState(1)
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(16)
+  // const [order, setOrder] = useState('')
+  // const [sort, setSort] = useState('')
   const [searchProduct, setSearchProduct] = useState('')
   const [totalProduct, setTotalProduct] = useState(0)
   const [totalPage, setTotalPage] = useState(0)
@@ -51,6 +53,7 @@ export default function ProductListing() {
       const { searchName } = formik.values;
 
       setSearchProduct(searchName)
+      setPage(1)
     }
   })
 
@@ -72,14 +75,19 @@ export default function ProductListing() {
   const setTheParams = async (category) => {
     if (routerQuery.category1 == category && routerQuery.category2 != category) {
       await router.push(`?category1&category2=${!routerQuery.category2 ? '' : routerQuery.category2}`);
+      setPage(1)
     } else if (routerQuery.category1 != category && routerQuery.category2 == category) {
       await router.push(`?category1=${routerQuery.category1}&category2=`);
+      setPage(1)
     } else if (!routerQuery.category1 && !routerQuery.category2) {
       await router.push(`?category1=${category}`);
+      setPage(1)
     } else if (!routerQuery.category1 && routerQuery.category2) {
       await router.push(`?category1=${category}&category2=${routerQuery.category2}`);
+      setPage(1)
     } else if (routerQuery.category1 && !routerQuery.category2) {
       await router.push(`?category1=${routerQuery.category1}&category2=${category}`);
+      setPage(1)
     }
     // else if (routerQuery.category1 && routerQuery.category2) {
 
@@ -126,18 +134,28 @@ export default function ProductListing() {
     let sort = "";
 
     if (filter == 'product_asc') {
+      // setOrder('product_name');
+      // setSort("ASC")
       order = 'product_name';
       sort = "ASC"
     } else if (filter == 'product_des') {
+      // setOrder('product_name');
+      // setSort("DESC")
       order = 'product_name';
       sort = "DESC"
     } else if (filter == 'price_des') {
+      // setOrder('selling_price');
+      // setSort("DESC")
       order = 'selling_price';
       sort = "DESC"
     } else if (filter == 'price_asc') {
+      // setOrder('selling_price');
+      // setSort("ASC")
       order = 'selling_price';
       sort = "ASC"
     } else {
+      // setOrder('');
+      // setSort("")
       order = '';
       sort = ""
     }
@@ -145,30 +163,21 @@ export default function ProductListing() {
     try {
       // axiosInstance.get(`/comment/post/${id}?page=${startComment}&limit=${5}`)
       // get all product length
-      axiosInstance.get(`/products?search=${searchProduct}&sort&orderby&category=${category1}&category2=${category2}&category3=${category3}
-      &limit=${limit}&page=${page}`)
+      // axiosInstance.get(`/products?search=${searchProduct}&sort=${sort}&orderby=${order}&category=${category1 ? category1 : null}&category2=${category2 ? category2 : null}&category3=${category3 ? category3 : null}
+      axiosInstance.get(`/products?search=${searchProduct}&sort=${sort}&orderby=${order}&category${category1 ? '=' + category1 : null}&category2${category2 ? '=' + category2 : null}&category3${category3 ? '=' + category3 : null}&limit=100000&page=1`)
         .then((res) => {
           const temp = res.data.result
-          setTotalProduct(temp.length)
-          // console.log(temp);
+          setTotalProduct(temp.length) // total prod keseluruhan
+          setTotalPage(Math.ceil(temp.length / limit))
         })
 
-      if (category1 || category2 || category3) {
-        axiosInstance.get(`/products?search=${searchProduct}&sort=${sort}&orderby=${order}&category=${category1}&category2=${category2}&category3=${category3}
-        &limit=${limit}&page=${page}`)
-          .then((res) => {
-            setProduct(res.data.result)
-            const temp = res.data.result
-            // console.log(temp)
-          })
-      } else {
-        axiosInstance.get(`/products?search=${searchProduct}&sort=${sort}&orderby=${order}&category&category2&category3&limit=${limit}&page=${page}`)
-          .then((res) => {
-            setProduct(res.data.result)
-            const temp = res.data.result
-            console.log(temp)
-          })
-      }
+      axiosInstance.get(`/products?search=${searchProduct}&sort=${sort}&orderby=${order}&category${category1 ? '=' + category1 : null}&category2${category2 ? '=' + category2 : null}&category3${category3 ? '=' + category3 : null}&limit=${limit}&page=${page}`)
+        .then((res) => {
+          setProduct(res.data.result)
+          const temp = res.data.result
+          // console.log(res.data.result)
+        })
+
     } catch (err) {
       console.log(err)
     }
@@ -199,23 +208,22 @@ export default function ProductListing() {
     fetchCategory()
     fetchProduct()
     setIsLoading(false);
-    setTotalPage(Math.ceil(totalProduct / 16))
 
   }, [router.isReady]);
 
   console.log('total produk ' + totalProduct)
   console.log('total page ' + totalPage)
-  console.log(limit);
+  console.log('limit ' + limit);
   // console.log(page)
 
-  const renderButton = () => {
-    const array = [...Array(totalPage)]
-    return (
-      array.map(_ =>
-        <Button size='sm' m='3px' onClick={() => setPage(pageStart++)} borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
-          _hover={{ bg: '#009B90', color: 'white' }}>{pageStart++}</Button>)
-    )
-  }
+  // const renderButton = () => {
+  //   const array = [...Array(totalPage)]
+  //   return (
+  //     array.map(_ =>
+  //       <Button size='sm' m='3px' onClick={() => setPage(pageStart++)} borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
+  //         _hover={{ bg: '#009B90', color: 'white' }}>{pageStart++}</Button>)
+  //   )
+  // }
 
   // const renderButton = () => {
   //   return totalPage.map((val) => {
@@ -228,15 +236,7 @@ export default function ProductListing() {
 
   useEffect(() => {
     fetchProduct()
-  }, [searchProduct]);
-
-  useEffect(() => {
-    fetchProduct()
-  }, [autoRender]);
-
-  useEffect(() => {
-    fetchProduct()
-  }, [limit]);
+  }, [autoRender, searchProduct, page, limit]);
 
   return (
     <>
@@ -400,6 +400,19 @@ export default function ProductListing() {
             </Drawer>
           </Box>
 
+          {!searchProduct ?
+            null
+            :
+            <Box mt='10px' ml='10px' display='flex'>
+              <Text mr='5px'>
+                Hasil Pencarian :
+              </Text>
+              <Text fontWeight='semibold'>
+                {searchProduct}
+              </Text>
+            </Box>
+          }
+
           {/* --------------- Product Rendering --------------- */}
           <Box display='flex' flexWrap={'wrap'} justifyContent='center'>
             {/* <ProductCard /> */}
@@ -425,12 +438,17 @@ export default function ProductListing() {
             <Box w='180px' m='10px'>
             </Box>
           </Box>
-          <Box display='flex' justifyContent='center'>
-            <Button onClick={() => setPage(1)} size='sm' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
+
+          {/* ---------- Pagination ---------- */}
+          <Box display='flex' justifyContent='center' alignContent='center'>
+            <Button onClick={() => setPage(page == 1 ? 1 : page - 1)} size='sm' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
               _hover={{ bg: '#009B90', color: 'white' }}>Prev</Button>
-            {renderButton()}
-            <Button size='sm' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
+            {/* {renderButton()} */}
+            <Input w='50px' type='number' textAlign='center' bg='white' value={page}
+              onChange={(event) => setPage(event.target.value > totalPage ? page : event.target.value < 1 ? 1 : event.target.value)} />
+            <Button onClick={() => setPage(totalPage == page ? page : page + 1)} size='sm' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
               _hover={{ bg: '#009B90', color: 'white' }}>Next</Button>
+            <Text alignSelf='center' ml='10px'>of {totalPage} pages</Text>
           </Box>
         </Box>
       </Flex>

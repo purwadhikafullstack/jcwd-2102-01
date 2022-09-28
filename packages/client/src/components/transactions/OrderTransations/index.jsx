@@ -181,9 +181,9 @@ export default function OrderTrasanctions() {
     }
   };
   const renderCouriers = () => {
-    return couriers.map((val) => {
+    return couriers.map((val, index) => {
       return (
-        <option value={val.courier_code}> {val.courier}</option>
+        <option key={index} value={val.courier_code}> {val.courier}</option>
       )
     })
   }
@@ -207,7 +207,7 @@ export default function OrderTrasanctions() {
   const renderCostRajaOngkir = () => {
     return costRajaOngkir.map((val, index) => {
       return (
-        <option value={val.cost[0].value}>{val.service} &nbsp; ={'>'}  &nbsp; Estimasi pengiriman :&nbsp;
+        <option key={index} value={val.cost[0].value}>{val.service} &nbsp; ={'>'}  &nbsp; Estimasi pengiriman :&nbsp;
           {val.service == 'ECO' || val.service == 'REG' || val.service == 'ONS' || val.service == 'CTC' || val.service == 'OKE' ? val.cost[0].etd + ' HARI'
             : val.service == 'CTCYES' ? '1 HARI' : val.cost[0].etd}</option>
       )

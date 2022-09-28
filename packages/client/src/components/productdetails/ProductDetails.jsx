@@ -86,9 +86,9 @@ export default function ProductDetailsComp(props) {
   };
 
   const renderCategory = () => {
-    return category.map((val) => {
+    return category.map((val, index) => {
       return (
-        <Button onClick={() => router.push(`/productlist?category1=${val.Category?.category}`)} borderColor='#009B90' borderRadius='15px' bg='white' borderWidth='2px' mr='5px' my='2px'
+        <Button key={index} onClick={() => router.push(`/productlist?category1=${val.Category?.category}`)} borderColor='#009B90' borderRadius='15px' bg='white' borderWidth='2px' mr='5px' my='2px'
           _hover={{ bg: '#009B90', color: 'white' }} size='xs'>{val.Category?.category}</Button>
       )
     })
@@ -109,9 +109,9 @@ export default function ProductDetailsComp(props) {
   };
 
   const renderImageProduct = () => {
-    return imageProduct.map((val) => {
+    return imageProduct.map((val, index) => {
       return (
-        <Box onClick={() => setImageView(val.image_url)} h='100px' w='100px' mt='5px' ml='5px' overflow='hidden' _hover={{ borderWidth: '1px', borderColor: '#009B90', cursor: 'pointer' }}>
+        <Box key={index} onClick={() => setImageView(val.image_url)} h='100px' w='100px' mt='5px' ml='5px' overflow='hidden' _hover={{ borderWidth: '1px', borderColor: '#009B90', cursor: 'pointer' }}>
           <Image objectFit='cover' src={`http://${val.image_url}`} width='100px' height='100px' />
         </Box>
       )
