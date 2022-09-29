@@ -7,7 +7,7 @@ const { productController } = require("../controller");
 
 router.get("/", productController.getProductPaging);
 
-// router.get("/user/:id", postController.getPostByUser);
+router.get("/api/v1/products/admin", productController.getProductPagingAdmin);
 
 router.get("/productDetail/:code", productController.getProductById);
 

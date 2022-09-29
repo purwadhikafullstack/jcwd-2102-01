@@ -84,9 +84,9 @@ export default function OrderTrasanctions() {
       axiosInstance.get(`address/addressid/` + userSelector.default_address)
         .then((res) => {
           setAddressFetchById(res.data.result)
-          setGetCityId(res.data.result[0].city_id)
+          setGetCityId(res.data.result[0]?.city_id)
           const temp = res.data.result
-          console.log(res.data.result[0].city_id)
+          console.log(res.data.result[0]?.city_id)
           console.log(getCityId)
           // console.log('address length' + temp.length)
         })
@@ -159,7 +159,8 @@ export default function OrderTrasanctions() {
             firstPrice={val.Product.Product_stocks[0].first_price}
             unit={val.Product.Product_stocks[0].Unit.unit_name}
             idUnit={val.Product.Product_stocks[0].Unit.id}
-            idProduct={val.Product.product_code}
+            idProduct={val.Product.id}
+            productCode={val.Product.product_code}
             idUser={val.id_user}
           />
         </>
@@ -191,14 +192,17 @@ export default function OrderTrasanctions() {
   // ---------- Fetching Cost Raja Ongkir ---------- //
   async function fetchCostRajaOngkir() {
     try {
-      const res = await axios.post('https://api.rajaongkir.com/starter/cost',
-        { "origin": "455", "destination": `${getCityId}`, "weight": `${cartWeight}`, "courier": `${formik.values.courier}` },
-        {
-          headers: { 'key': '461415f8b280e7996178dd23957c633e' },
-        })
-      setCostRajaOngkir(res.data.rajaongkir.results[0].costs)
-      // console.log(res)
-      // console.log(res.data.rajaongkir.results[0].costs)
+      if (getCityId && cartWeight && formik.values.courier) {
+        const res = await axios.post('https://api.rajaongkir.com/starter/cost',
+          { "origin": "455", "destination": `${getCityId}`, "weight": `${cartWeight}`, "courier": `${formik.values.courier}` },
+          {
+            headers: { 'key': '461415f8b280e7996178dd23957c633e' },
+          })
+        setCostRajaOngkir(res.data.rajaongkir.results[0].costs)
+        // console.log(res)
+        // console.log(res.data.rajaongkir.results[0].costs)
+      } else { null }
+
     } catch (err) {
       console.log(err)
     }

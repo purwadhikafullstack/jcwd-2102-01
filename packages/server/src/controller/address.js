@@ -67,7 +67,7 @@ const addressController = {
         include: [ User ],
         where: {
           [Op.and]: [
-            {id_user: id}, {is_deleted: {[Op.notIn]:['yes']}}
+            {id_user: idUser}, {is_deleted: {[Op.notIn]:['yes']}}
           ]
         },
       });

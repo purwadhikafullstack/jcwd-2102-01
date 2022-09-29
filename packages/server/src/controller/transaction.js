@@ -155,7 +155,7 @@ const transactionsController = {
       else if(newTransactionId < 100) {newTransactionId = '00'+ (gettransactionId + 1)}
       else if(newTransactionId < 1000) {newTransactionId = '0'+ (gettransactionId + 1)}
       // no Invoice
-      var noInvoice = 'HM/INV/' + month.toString() + year.toString().substr(-2)  + newTransactionId 
+      var noInvoice = 'HM-INV-' + month.toString() + year.toString().substr(-2)  + newTransactionId 
 
       const newTransaction = await Transaction.create({
         no_invoice: noInvoice, total_transaction, courier, shipping_cost, total_paid, cancel_description, transaction_status,id_user : idUser, id_address,id_upload_recipe, id_payment
@@ -322,14 +322,6 @@ const transactionsController = {
               
               startDate && endDate ? {createdAt: 
                 {[Op.between]: [startDate, endDate]}} : null, 
-                //  {
-                //   [Op.and]: {
-                //   [Op.gte]: endDate,
-                //   [Op.lte]: startDate,
-                //   }
-                //   } 
-                // }
-                //  : null, 
               ]
             },
             order: orderby == 'no_invoice' && sort ? [[`${orderby}`, `${sort}`]] : 
@@ -425,7 +417,7 @@ const transactionsController = {
       else if(newTransactionId < 100) {newTransactionId = '00'+ (gettransactionId + 1)}
       else if(newTransactionId < 1000) {newTransactionId = '0'+ (gettransactionId + 1)}
       // no Invoice
-      var noInvoice = 'HM/INV/' + month.toString() + year.toString().substr(-2)  + newTransactionId 
+      var noInvoice = 'HM-INV-' + month.toString() + year.toString().substr(-2)  + newTransactionId 
 
       const newTransaction = await Transaction.create({
         no_invoice: noInvoice, transaction_status :'Resep Dokter',id_user : idUser, note,id_address ,id_payment: 1, id_upload_recipe: newUploadRecipe.id

@@ -32,7 +32,7 @@ export default function ProductListing() {
   // --------------- for Filtering --------------- //
   const [pageStart, setPageStart] = useState(1)
   const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(16)
+  const [limit, setLimit] = useState(2)
   // const [order, setOrder] = useState('')
   // const [sort, setSort] = useState('')
   const [searchProduct, setSearchProduct] = useState('')
