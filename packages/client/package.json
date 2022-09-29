@@ -5,9 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 3201",
     "lint": "next lint"
   },
+  
   "dependencies": {
     "@chakra-ui/icons": "^2.0.8",
     "@chakra-ui/react": "^2.2.8",
@@ -20,6 +21,7 @@
     "js-cookie": "^3.0.1",
     "moment": "^2.29.4",
     "next": "12.2.5",
+    "node": "^18.10.0",
     "qs": "^6.11.0",
     "react": "18.2.0",
     "react-date-range": "^1.4.0",

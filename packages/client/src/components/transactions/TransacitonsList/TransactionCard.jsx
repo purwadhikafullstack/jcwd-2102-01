@@ -271,7 +271,7 @@ export default function TransactionCard(props) {
                         <Button mr={3} colorScheme='red' disabled={formik.values.note.length < 4 ? true : false} onClick={() => {
                            async function submit() {
                               formik.handleSubmit();
-                              // onCloseCancel();
+                              onCloseCancel();
                            }
                            submit()
                         }}>

@@ -10,7 +10,7 @@ router.get("/user/:id", addressController.getAddressUser);
 router.get("/addressid/:id", addressController.getAddressId);
 
 // -------------------- add address
-router.post("/add/:idUser", addressController.addAddress);
+router.post("/api/v1/address/user/:idUser", addressController.addAddress);
 
 // -------------------- edit address
 router.patch("/:id", addressController.editAddress);

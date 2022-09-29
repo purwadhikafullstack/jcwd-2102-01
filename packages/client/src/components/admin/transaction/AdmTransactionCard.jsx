@@ -26,7 +26,7 @@ import ServeOrder from './ServeOrder';
 
 export default function AdmTransactionCard(props) {
    const { id, productCode, products, noInvoice, dateCreated, status, totalOrder, grandTotal, qtyBuy, unit, productName, productImage, recipeImage, idRecipe, idUser,
-      buyerName, namaPenerima, noHpPenerima, prov, city, district, addressReciever, courier, shippingCost, imagePayment, note, cancelDes } = props
+      buyerName, namaPenerima, noHpPenerima, prov, city, district, postalCode, addressReciever, courier, shippingCost, imagePayment, note, cancelDes } = props
    const { isOpen: isOpenCancel, onOpen: onOpenCancel, onClose: onCloseCancel } = useDisclosure()
    const { isOpen: isOpenConfirm, onOpen: onOpenConfirm, onClose: onCloseConfirm } = useDisclosure()
    const { isOpen: isOpenPayment, onOpen: onOpenPayment, onClose: onClosePayment } = useDisclosure()
@@ -280,6 +280,27 @@ export default function AdmTransactionCard(props) {
                         <>
                            <ServeOrder
                               recipeImage={recipeImage}
+                              transactionId
+                              noInvoice={noInvoice}
+                              dateCreated={dateCreated}
+                              status
+                              totalOrderList
+                              totalWeight
+                              grandTotal
+                              buyer={buyerName}
+                              reciever={namaPenerima}
+                              recieverPhoneNo={noHpPenerima}
+                              address={addressReciever}
+                              courier
+                              shippingCost
+                              province={prov}
+                              district={district}
+                              city={city}
+                              postalCode={postalCode}
+                              productList
+                              note={note}
+                              userId
+                              productId
                            />
                         </>
                         : null

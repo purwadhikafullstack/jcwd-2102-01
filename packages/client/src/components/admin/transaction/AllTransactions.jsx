@@ -155,6 +155,7 @@ export default function AllTransactions() {
           prov={val.Address?.province}
           city={val.Address?.city_name}
           district={val.Address?.districts}
+          postalCode={val.Address?.postal_code}
           totalOrder={val.total_transaction}
           shippingCost={val.shipping_cost}
         />

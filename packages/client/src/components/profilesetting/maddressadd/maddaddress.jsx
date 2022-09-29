@@ -82,7 +82,7 @@ export default function MaddAddress(props) {
         // console.log(city);
         // console.log(province);
 
-        await axiosInstance.post("/address/add/" + userSelector.id, qs.stringify(body))
+        await axiosInstance.post("/address/api/v1/address/user/" + userSelector.id, qs.stringify(body))
         dispatch({
           type: "FETCH_RENDER",
           payload: { value: !autoRender.value }
