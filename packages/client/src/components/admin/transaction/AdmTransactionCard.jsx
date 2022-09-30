@@ -297,7 +297,7 @@ export default function AdmTransactionCard(props) {
                               district={district}
                               city={city}
                               postalCode={postalCode}
-                              productList
+                              productList={products}
                               note={note}
                               userId
                               productId

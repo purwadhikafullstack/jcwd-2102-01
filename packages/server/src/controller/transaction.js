@@ -282,7 +282,7 @@ const transactionsController = {
     }
   },
 
-      // -------------------- Get all transaction list -------------------- //
+    // -------------------- Get all transaction list -------------------- //
     getAllTransaction: async (req, res) => {
     try {
       const { idUser, limit , page = 1, search, startDate, endDate, status, sort, orderby } = req.query;
@@ -299,7 +299,6 @@ const transactionsController = {
               include : [
                 { model: Product_stock,
                   include : [{model: Unit}],
-                 
                 }, 
                 { model : Product_image},
                 { model : Product_description},
@@ -529,8 +528,85 @@ const transactionsController = {
       });
     }
   },
+
+// -------------------- Serve Custom Order Progress (Docter Ricepe) -------------------- //
+  serveCustomOrder: async (req, res) => {
+    try {
+      const { buy_quantity, price, total_price, id_user, id_product, id_unit, id_transaction } = req.body;
+      
+      // ---------------  Mengambil produk stok --------------- //
+      const findproduct = await Product_stock.findOne({
+        where: {
+          [Op.and]: [
+            { id_product: id_product, },
+            { id_unit: id_unit, }
+          ]
+        },
+      });
+      // ---------------  Kondisi jika buy qty lebih besar dari stok maka error --------------- //
+      if (buy_quantity > findproduct.stock ) {
+        throw new Error("Maaf produk stok tidak mencukupi");
+      }
+
+      // --------------- Mengambil data order --------------- //
+      const findOrderProduct = await Transaction_list.findOne({
+        where: {
+          [Op.and]: [
+          { id_user: id_user, },
+          { id_product: id_product,},
+          { id_unit: id_unit, },
+          { id_transaction: id_transaction, }
+          ]
+        },
+      });
+      // mengecek kondisi jika data order dengan id user dan id product dan id transaksi sudah ada maka melakukan update qty buy saja --------------- //
+      let addProduct
+      if (!findOrderProduct) {
+          addProduct= await Transaction_list.create({
+          buy_quantity, price: parseFloat(findproduct.selling_price), total_price, id_user, id_product, id_unit, id_transaction
+          });
+          return res.status(201).json({
+            message: "Berhasil menambah ke Transaction List",
+            result: addProduct
+          });
+        } else {
+          let newQuantity = parseInt(buy_quantity) + parseInt(findOrderProduct.buy_quantity)
+
+          if (newQuantity > findproduct.stock ) {
+            throw new Error("Maaf quantity melebihi produk stok");
+          } else {
+          addProduct= await Transaction_list.update({
+          buy_quantity: newQuantity, 
+          price: parseFloat(findproduct.selling_price), 
+          total_price:parseFloat(newQuantity) * parseFloat(findproduct.selling_price), 
+          // id_user, 
+          // id_product,
+          // id_unit,
+          // id_transaction
+          },
+          {where: {
+          [Op.and]: [
+          { id_user: id_user, },
+          { id_product: id_product, },
+          { id_unit: id_unit, },
+          { id_transaction: id_transaction, }
+          ]
+          },}
+          );
+          return res.status(201).json({
+          message: "Berhasil upadate data list transaksi",
+          result: addProduct})
+          }
+        }
+
+    } catch (err) {
+      console.log(err);
+      return res.status(200).json({
+        message: err.toString(),
+      });
+    }
+  },
+
 };
-
-
 
 module.exports = transactionsController;

@@ -7,6 +7,9 @@ const { transactionsController } = require("../controller");
 // -------------------- add to Cart
 router.post("/api/v1/Cart/:idUser", transactionsController.addToCart);
 
+// -------------------- Serve Custom Order
+router.post("/api/v1/CustomOrder", transactionsController.serveCustomOrder);
+
 // -------------------- Show the cart user
 router.get("/api/v1/Carts/:idUser", transactionsController.getCartUser);
 
