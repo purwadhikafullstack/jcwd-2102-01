@@ -111,7 +111,7 @@ export default function ProductListing() {
     return category.map((val, index) => {
       return (
         <>
-          <Button variant='link' onClick={() => setTheParams(val.category)}
+          <Button key={index} variant='link' onClick={() => setTheParams(val.category)}
             style={{ textDecoration: 'none' }} my='3px' w='full'>
             <Checkbox onClick={setTheParams}
               // checked={routerQuery.category1 || routerQuery.category2 || routerQuery.category3 == val.category ? true : false}
@@ -216,14 +216,14 @@ export default function ProductListing() {
   console.log('limit ' + limit);
   // console.log(page)
 
-  const renderButton = () => {
-    const array = [...Array(totalPage)]
-    return (
-      array.map(_ =>
-        <Button size='sm' m='3px' onClick={() => setPage(pageStart++)} borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
-          _hover={{ bg: '#009B90', color: 'white' }}>{pageStart++}</Button>)
-    )
-  }
+  // const renderButton = () => {
+  //   const array = [...Array(totalPage)]
+  //   return (
+  //     array.map(_ =>
+  //       <Button size='sm' m='3px' onClick={() => setPage(pageStart++)} borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
+  //         _hover={{ bg: '#009B90', color: 'white' }}>{pageStart++}</Button>)
+  //   )
+  // }
 
   // const renderButton = () => {
   //   return totalPage.map((val) => {
