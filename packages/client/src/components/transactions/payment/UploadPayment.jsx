@@ -70,6 +70,7 @@ export default function UploadPayment(props) {
   // ----- cancel transaction
   const UploadPayment = async () => {
     let msg = ""
+    let cancelDes = ''
     try {
       const formData = new FormData();
       const { noInvoice } = router.query

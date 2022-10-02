@@ -140,14 +140,17 @@ export default function AdmMdetailTransaction(props) {
                                  {noteDet ? noteDet : "-"}
                               </Text>
                            </Box>
-                           <Box display='flex' >
-                              <Text fontWeight='semibold' color='#213360' w='160px'>
-                                 Deskripsi Batal
-                              </Text>:
-                              <Text fontWeight='semibold' color='red' ml='5px'>
-                                 {cancelDet ? cancelDet : "-"}
-                              </Text>
-                           </Box>
+                           {cancelDet ?
+                              <Box display='flex' >
+                                 <Text fontWeight='semibold' color='#213360' w='160px'>
+                                    Deskripsi Batal
+                                 </Text>:
+                                 <Text fontWeight='semibold' color='red' ml='5px'>
+                                    {cancelDet}
+                                 </Text>
+                              </Box> :
+                              null
+                           }
                         </Box>
 
                         <Box>

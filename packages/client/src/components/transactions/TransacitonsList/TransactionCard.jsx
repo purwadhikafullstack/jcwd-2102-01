@@ -22,6 +22,7 @@ import * as Yup from "yup";
 import qs from 'qs';
 import UploadPayment from '../payment/UploadPayment';
 import MdetailTransaction from './MdetailTransaction';
+import PrescriptionImage from './PrescriptionImage';
 
 export default function TransactionCard(props) {
    const { id, productCode, noInvoice, dateCreated, status, grandTotal, qtyBuy, note, cancelDes, unit, productName, productImage, idUser, recipeImage, idRecipe, products,
@@ -165,18 +166,25 @@ export default function TransactionCard(props) {
                            <Image mr='20px' objectFit='cover' src={`http://${productImage}`} _hover={{ cursor: 'pointer' }} width='80px' height='80px' />
                         </NextLink>
                         :
-                        <Image mr='20px' objectFit='cover' src={`http://${recipeImage}`} _hover={{ cursor: 'pointer' }} width='80px' height='80px' />
+                        // <Image mr='20px' objectFit='cover' src={`http://${recipeImage}`} _hover={{ cursor: 'pointer' }} width='80px' height='80px' />
+                        <PrescriptionImage imageUrl={recipeImage} />
                      }
                      <Box>
-                        <Link href={`/productdetails/${productCode}`} style={{ textDecoration: 'none' }}>
-                           <Text fontWeight='semibold' fontSize='sm' textColor='#213360' maxW='250px' overflow='hidden'>
-                              {productName?.substring(0, 50)}{!productName ? null : productName.length >= 32 ? '...' : null}
-                              {/* {productName} */}
-                           </Text>
-                        </Link>
-                        <Text fontWeight='semibold' fontSize='sm' textColor='#213360'>
-                           {qtyBuy} {unit} x
-                        </Text>
+                        {idRecipe == 1 ?
+                           <>
+                              <Link href={`/productdetails/${productCode}`} style={{ textDecoration: 'none' }}>
+                                 <Text fontWeight='semibold' fontSize='sm' textColor='#213360' maxW='250px' overflow='hidden'>
+                                    {productName?.substring(0, 50)}{!productName ? null : productName.length >= 32 ? '...' : null}
+                                    {/* {productName} */}
+                                 </Text>
+                              </Link>
+                              <Text fontWeight='semibold' fontSize='sm' textColor='#213360'>
+                                 {qtyBuy} {unit} x
+                              </Text>
+                           </> :
+                           <Text fontWeight='semibold' fontSize='sm' textColor='#213360' maxW='300px' overflow='hidden'>
+                              Catatan : {note}
+                           </Text>}
                      </Box>
                   </Box>
                   <Box w='100px'>

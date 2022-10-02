@@ -23,14 +23,19 @@ import * as Yup from "yup";
 import qs from 'qs';
 import { RiZzzFill } from 'react-icons/ri';
 import ModalAddProduct from './serveOrderModal/ModalAddProduct';
+import ModalEditProductList from './serveOrderModal/ModalEditProductList';
 // import UploadPayment from '../payment/UploadPayment';
+import axios from 'axios';
 
 export default function ServeOrder(props) {
-  const { transactionId, noInvoice, recipeImage, dateCreated, status, totalOrderList, totalWeight, grandTotal, buyer, reciever, recieverPhoneNo, address, courier, shippingCost,
-    province, city, district, postalCode, productList, note, userId, productId } = props
+  const { transactionId, noInvoice, recipeImage, dateCreated, status, totalOrderList, grandTotal, buyer, reciever, recieverPhoneNo, address,
+    province, city, cityId, district, postalCode, productList, note, userId, productId } = props
   const { isOpen: isOpenServe, onOpen: onOpenServe, onClose: onCloseServe } = useDisclosure()
-  const { isOpen: isOpenAddQty, onOpen: onOpeSAddQty, onClose: onCloseAddQty } = useDisclosure()
+  const { isOpen: isOpenServeOk, onOpen: onOpenServeOk, onClose: onCloseServeOk } = useDisclosure()
+  const autoRender = useSelector((state) => state.automateRendering)
+  const dispatch = useDispatch()
   const router = useRouter();
+  const toast = useToast();
   const [product, setProduct] = useState([])
   // --------------- for Filtering --------------- //
   const [pageStart, setPageStart] = useState(1)
@@ -40,6 +45,10 @@ export default function ServeOrder(props) {
   const [totalProduct, setTotalProduct] = useState(0)
   const [totalPage, setTotalPage] = useState(0)
   // let routerQuery = router.query
+  const [costRajaOngkir, setCostRajaOngkir] = useState([])
+  const [couriers, setCouriers] = useState([])
+  const [totalSeluruh, setTotalSeluruh] = useState()
+  const [weight, setWeight] = useState(0)
 
   const formik = useFormik({
     initialValues: {
@@ -57,12 +66,67 @@ export default function ServeOrder(props) {
     }
   })
 
+  // ----- Transaction will be process
+  const confirmTransaction = async () => {
+    try {
+      if (formik.values.courier && formik.values.service) {
+        let body = {
+          transaction_status: status,
+          courier: `${formik.values.courier}`,
+          shipping_cost: formik.values.service,
+          total_paid: totalSeluruh
+        }
+        await axiosInstance.patch("/transaction/api/v1/invoice/" + noInvoice, qs.stringify(body))
+        dispatch({
+          type: "FETCH_RENDER",
+          payload: { value: !autoRender.value }
+        })
+        toast({
+          title: "Succes",
+          description: "Sukses menyiapkan Pesanan",
+          status: "success",
+          isClosable: true,
+        })
+        onCloseServeOk()
+      } else {
+        toast({
+          title: "Gagal",
+          description: "Harap memilih kurir dan service terlebih dahulu",
+          status: "error",
+          isClosable: true,
+        })
+      }
+
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  let totalWeight = 0;
+
+  useEffect(() => {
+    setTotalSeluruh(parseFloat(totalOrderList) + parseFloat(formik.values.service))
+    setWeight(totalWeight)
+  }, [productList])
+
   // ---------- render Transaction List
   const renderTransactionList = () => {
     return productList.map((val, index) => {
+      totalWeight += (val.buy_quantity * val.Product?.Product_description?.weight)
       return (
         <Tr _hover={{ background: '#c7fcfc' }} key={index}>
-          <Td><Button size='xs'>edit</Button></Td>
+          <Td>
+            <ModalEditProductList
+              transactionId={val.id_transaction}
+              orderListId={val.id}
+              productName={val.Product?.product_name}
+              totalPrice={val.total_price}
+              price={val.price}
+              buyQuantity={val.buy_quantity}
+              stokProduk={val.Product?.Product_stocks[0]?.id_unit == val.Unit?.id ? val.Product?.Product_stocks[0]?.stock : val.Product?.Product_stocks[1]?.stock}
+              unitName={val.Unit?.unit_name}
+            />
+          </Td>
           <Td>{val.Product?.product_name.substring(0, 30)}{!val.Product?.product_name ? null : val.Product?.product_name.length >= 32 ? '...' : null}</Td>
           <Td textAlign='right'>Rp {val.price?.toLocaleString()}</Td>
           <Td textAlign='right'>{val.buy_quantity?.toLocaleString()} {val.Unit?.unit_name}</Td>
@@ -72,6 +136,7 @@ export default function ServeOrder(props) {
     })
   }
 
+  // console.log(productList);
   // --------------- Fetching Product --------------- //
   async function fetchProduct() {
     try {
@@ -98,7 +163,17 @@ export default function ServeOrder(props) {
       return (
         <Tr _hover={{ background: '#c7fcfc' }} key={index}>
           <Td textAlign='right'>
-            <ModalAddProduct />
+            <ModalAddProduct
+              weight={val.Product?.Product_description?.weight}
+              stock={val.stock}
+              unit={val.Unit?.unit_name}
+              price={val.selling_price}
+              unitId={val.Unit?.id}
+              userId={userId}
+              transactionId={transactionId}
+              productName={val.Product?.product_name}
+              productId={val.Product?.id}
+            />
             {/* <Button size='xs' bg='#009B90' color='white' _hover={{ background: '#02d1c2' }}>Tambah</Button> */}
           </Td>
           <Td textAlign='left'>{val.Product?.product_code}</Td>
@@ -111,13 +186,70 @@ export default function ServeOrder(props) {
     })
   }
 
+  // --------------- Fetching courier --------------- //
+  async function fetchCouriers() {
+    try {
+      axiosInstance.get(`/transaction/api/v1/Couriers`)
+        .then((res) => {
+          setCouriers(res.data.result)
+          // console.log(res.data.result);
+        })
+    } catch (err) {
+      console.log(err)
+    }
+  };
+  const renderCouriers = () => {
+    return couriers.map((val, index) => {
+      return (
+        <option key={index} value={val.courier_code}> {val.courier}</option>
+      )
+    })
+  }
+
+  // ---------- Fetching Cost Raja Ongkir ---------- //
+  async function fetchCostRajaOngkir() {
+    try {
+      if (cityId && weight && formik.values.courier) {
+        const res = await axios.post('https://api.rajaongkir.com/starter/cost',
+          { "origin": "455", "destination": `${cityId}}`, "weight": `${weight}`, "courier": `${formik.values.courier}` },
+          {
+            headers: { 'key': '461415f8b280e7996178dd23957c633e' },
+          })
+        setCostRajaOngkir(res.data.rajaongkir.results[0].costs)
+        // console.log(res)
+        // console.log(res.data.rajaongkir.results[0].costs)
+      } else { null }
+
+    } catch (err) {
+      console.log(err)
+    }
+  };
+
+  const renderCostRajaOngkir = () => {
+    return costRajaOngkir.map((val, index) => {
+      return (
+        <option key={index} value={val.cost[0].value}>{val.service} &nbsp; ={'>'}  &nbsp; Estimasi pengiriman :&nbsp;
+          {val.service == 'ECO' || val.service == 'REG' || val.service == 'ONS' || val.service == 'CTC' || val.service == 'OKE' ? val.cost[0].etd + ' HARI'
+            : val.service == 'CTCYES' ? '1 HARI' : val.cost[0].etd}</option>
+      )
+    })
+  }
+
+
   useEffect(() => {
     fetchProduct()
+    fetchCouriers()
+    fetchCostRajaOngkir()
   }, [router.isReady]);
 
   useEffect(() => {
     fetchProduct()
-  }, [page, searchProduct]);
+    fetchCostRajaOngkir()
+  }, [page, searchProduct, autoRender, formik.values.courier]);
+
+  useEffect(() => {
+    setTotalSeluruh(parseFloat(totalOrderList) + parseFloat(formik.values.service))
+  }, [formik.values.service]);
   return (
     <>
       <Button onClick={onOpenServe} size='sm' borderRadius='8px' bg='#009B90' mr='10px'
@@ -165,7 +297,7 @@ export default function ServeOrder(props) {
                 </Box>
                 <Box display='flex' fontSize='sm'>
                   <Text fontWeight='semibold' color='#213360' minW='160px'>
-                    Alamat Penerima
+                    Alamat Penerima {cityId} {weight}
                   </Text>:
                   <Text fontWeight='semibold' color='#213360' ml='5px' maxW='300px'>
                     {address}, Prov. {province}, Kec. {district}, Kota/Kab. {city}. {postalCode}
@@ -206,43 +338,73 @@ export default function ServeOrder(props) {
                     </Table>
                   </TableContainer>
                 </Box>
-                <Box display='flex' fontSize='sm'>
+                <Box display='flex' fontSize='sm' justifyContent='space-between'>
                   <Text fontWeight='semibold' color='#213360' minW='160px'>
-                    Total Keseluruhan
-                  </Text>:
+                    Total Keseluruhan :
+                  </Text>
                   <Text fontWeight='semibold' color='#213360' ml='5px' maxW='300px'>
-                    {/* {alamatPenerimaDet}, Prov. {provDet}, Kec. {districtDet}, Kota/Kab. {cityDet}. */}
+                    Rp {totalOrderList?.toLocaleString()}
                   </Text>
                 </Box>
-                <Box display='flex' fontSize='sm'>
+                {/* ----- Pilih Kurir ----- */}
+                <Box fontSize='sm' justifyContent='space-between'>
                   <Text fontWeight='semibold' color='#213360' minW='160px'>
-                    Pilih Kurir
-                  </Text>:
-                  <Text fontWeight='semibold' color='#213360' ml='5px' maxW='300px'>
-                    {/* {alamatPenerimaDet}, Prov. {provDet}, Kec. {districtDet}, Kota/Kab. {cityDet}. */}
+                    Pilih Kurir :
                   </Text>
+                  <FormControl isInvalid={formik.errors.courier}>
+                    {/* {formik.values.courier} */}
+                    <Select size='sm' w='300px' onChange={(event) => formik.setFieldValue("courier", event.target.value)}>
+                      <option value="">- Pilih Kurir -</option>
+                      {renderCouriers()}
+                    </Select>
+                    <FormHelperText color="red">
+                      {formik.errors.courier}
+                    </FormHelperText>
+                  </FormControl>
                 </Box>
-                <Box display='flex' fontSize='sm'>
+                {/* ----- Pilih Service ----- */}
+                <Box fontSize='sm' justifyContent='space-between'>
                   <Text fontWeight='semibold' color='#213360' minW='160px'>
-                    Biaya Pengiriman
-                  </Text>:
-                  <Text fontWeight='semibold' color='#213360' ml='5px' maxW='300px'>
-                    {/* {alamatPenerimaDet}, Prov. {provDet}, Kec. {districtDet}, Kota/Kab. {cityDet}. */}
+                    Pilih Service :
                   </Text>
-                </Box>
-                <Box display='flex' fontSize='sm'>
-                  <Text fontWeight='semibold' color='#213360' minW='160px'>
-                    Total Keseluruhan
-                  </Text>:
-                  <Text fontWeight='semibold' color='#213360' ml='5px' maxW='300px'>
-                    {/* {alamatPenerimaDet}, Prov. {provDet}, Kec. {districtDet}, Kota/Kab. {cityDet}. */}
-                  </Text>
+                  {/* {formik.values.service} */}
+                  <FormControl isInvalid={formik.errors.service} >
+                    <Select size='sm' w='300px' onChange={(event) => formik.setFieldValue("service", event.target.value)}>
+                      {/* {formik.values.service == '' ? <option value="">- Pilih Service -</option>
+                  : <>
+                  {renderCostRajaOngkir()}
+                  </>
+                } */}
+                      <option value="">- Pilih Service -</option>
+
+                      {formik.values.courier ? renderCostRajaOngkir() : null}
+                    </Select>
+                    <FormHelperText color="red">
+                      {formik.errors.service}
+                    </FormHelperText>
+                  </FormControl>
                 </Box>
 
+                <Box display='flex' fontSize='sm' justifyContent='space-between'>
+                  <Text fontWeight='semibold' color='#213360' minW='160px'>
+                    Biaya Pengiriman :
+                  </Text>
+                  <Text fontWeight='semibold' color='#213360' ml='5px' maxW='300px'>
+                    Rp {formik.values.service ? formik.values.service.toLocaleString() : 0}
+                  </Text>
+                </Box>
+                <Box display='flex' fontSize='sm' justifyContent='space-between'>
+                  <Text fontWeight='semibold' color='#213360' minW='160px'>
+                    Total Keseluruhan :
+                  </Text>
+                  <Text fontWeight='semibold' color='#213360' ml='5px' maxW='300px'>
+                    Rp {totalSeluruh ? totalSeluruh.toLocaleString() : totalOrderList.toLocaleString()}
+                  </Text>
+                </Box>
               </Box>
             </Flex>
 
-            <Box>
+            <Box pt='10px' borderTopWidth='2px'>
               <Text fontWeight='bold'>Daftar Produk :</Text>
               <Box display='flex' justifyContent='space-between'>
                 {/* {formik.values.searchName} */}
@@ -318,6 +480,31 @@ export default function ServeOrder(props) {
               Batal
             </Button>
             <Button colorScheme='whatsapp' size='sm' mr={3} onClick={() => onOpenServeOk()}>
+              Konfirmasi
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* ----- Konfirmasi Transaksi untuk diubah status menjaid menunggu pembayaran -----  */}
+      <Modal isOpen={isOpenServeOk} onClose={onCloseServeOk} size='lg'>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Konfirmasi Transaksi</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <Text>Lakukan pengecekan ulang sebelum konfirmasi transaksi</Text>
+          </ModalBody>
+          <ModalFooter pt='5px'>
+            <Button mr={3} colorScheme='red' onClick={onCloseServeOk}>
+              Batal
+            </Button>
+            <Button colorScheme='whatsapp' mr={3} onClick={() => {
+              async function submit() {
+                await confirmTransaction();
+              }
+              submit()
+            }}>
               Konfirmasi
             </Button>
           </ModalFooter>

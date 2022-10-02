@@ -341,7 +341,7 @@ export default function NavBarSignIn() {
                 </HStack>
               </Link>
 
-              <Link href='./productlist' borderRadius={5} style={{ textDecoration: "none" }} _hover={{ background: '#E8F5FD' }}>
+              <Link href='/productlist' borderRadius={5} style={{ textDecoration: "none" }} _hover={{ background: '#E8F5FD' }}>
                 <HStack color='#4c4c4d'>
                   <Center display='flex' justifyContent='center' h='50px' w='50px'>
                     <Icon boxSize='6' as={router.pathname == '/productlist' ? IoStorefrontSharp : IoStorefrontOutline} />

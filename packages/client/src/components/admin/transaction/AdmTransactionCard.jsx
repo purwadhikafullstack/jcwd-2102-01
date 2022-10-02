@@ -22,11 +22,12 @@ import AdmMdetailTransaction from './AdmMdetailTransaction';
 import * as Yup from "yup";
 import qs from 'qs';
 import ServeOrder from './ServeOrder';
+import PrescriptionImage from '../../transactions/TransacitonsList/PrescriptionImage';
 // import UploadPayment from '../payment/UploadPayment';
 
 export default function AdmTransactionCard(props) {
    const { id, productCode, products, noInvoice, dateCreated, status, totalOrder, grandTotal, qtyBuy, unit, productName, productImage, recipeImage, idRecipe, idUser,
-      buyerName, namaPenerima, noHpPenerima, prov, city, district, postalCode, addressReciever, courier, shippingCost, imagePayment, note, cancelDes } = props
+      buyerName, namaPenerima, noHpPenerima, prov, city, cityId, district, postalCode, addressReciever, courier, shippingCost, imagePayment, note, cancelDes } = props
    const { isOpen: isOpenCancel, onOpen: onOpenCancel, onClose: onCloseCancel } = useDisclosure()
    const { isOpen: isOpenConfirm, onOpen: onOpenConfirm, onClose: onCloseConfirm } = useDisclosure()
    const { isOpen: isOpenPayment, onOpen: onOpenPayment, onClose: onClosePayment } = useDisclosure()
@@ -185,7 +186,7 @@ export default function AdmTransactionCard(props) {
                      <Image mr='20px' objectFit='cover' src={`http://${productImage}`} _hover={{ cursor: 'pointer' }} width='80px' height='80px' />
                   </NextLink>
                   :
-                  <Image mr='20px' objectFit='cover' src={`http://${recipeImage}`} _hover={{ cursor: 'pointer' }} width='80px' height='80px' />
+                  <PrescriptionImage imageUrl={recipeImage} />
                }
 
                <Box w='250px' >
@@ -280,26 +281,25 @@ export default function AdmTransactionCard(props) {
                         <>
                            <ServeOrder
                               recipeImage={recipeImage}
-                              transactionId
+                              transactionId={id}
                               noInvoice={noInvoice}
                               dateCreated={dateCreated}
-                              status
-                              totalOrderList
+                              status={status}
+                              totalOrderList={totalOrder}
                               totalWeight
                               grandTotal
                               buyer={buyerName}
                               reciever={namaPenerima}
                               recieverPhoneNo={noHpPenerima}
                               address={addressReciever}
-                              courier
-                              shippingCost
                               province={prov}
                               district={district}
                               city={city}
+                              cityId={cityId}
                               postalCode={postalCode}
                               productList={products}
                               note={note}
-                              userId
+                              userId={idUser}
                               productId
                            />
                         </>

@@ -154,6 +154,7 @@ export default function AllTransactions() {
           alamatPenerima={val.Address?.address}
           prov={val.Address?.province}
           city={val.Address?.city_name}
+          cityId={val.Address?.city_id}
           district={val.Address?.districts}
           postalCode={val.Address?.postal_code}
           totalOrder={val.total_transaction}
