@@ -1,8 +1,6 @@
 import {
- Box, Text, Avatar, Link, FormLabel, Textarea, AvatarBadge, Flex, Input, Select, InputLeftElement, InputGroup,
- Modal, ModalCloseButton, Icon, Tooltip, ModalOverlay, ModalHeader, ModalBody, useDisclosure, ModalFooter,
- FormControl, Button, useToast, FormHelperText, ModalContent, Center, useMediaQuery, Image,
- Divider, Tabs, TabList, TabPanel, TabPanels, Tab, InputRightElement, Drawer, DrawerBody, DrawerHeader, DrawerCloseButton, DrawerContent, DrawerOverlay
+ Modal, ModalCloseButton, ModalOverlay, ModalHeader, ModalBody, useDisclosure,
+ ModalContent, Center, Image,
 } from '@chakra-ui/react';
 
 export default function PrescriptionImage(props) {

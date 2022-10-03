@@ -1,24 +1,14 @@
 import {
-  Box, Text, Avatar, Link, AvatarBadge, Flex, Input, Select, InputLeftElement, InputGroup,
-  Modal, ModalCloseButton, Icon, Tooltip, ModalOverlay, ModalHeader, ModalBody, useDisclosure,
-  FormControl, Button, useToast, FormHelperText, ModalContent, Divider, Checkbox
+  Box, Text, Modal, ModalCloseButton, Icon, Tooltip, ModalOverlay, ModalHeader, ModalBody, useDisclosure,
+  Button, useToast, ModalContent, Divider,
 } from '@chakra-ui/react';
 import { useDispatch, useSelector } from 'react-redux'
 import { useState, useEffect } from "react";
 import { useFormik } from "formik";
-import { useRouter } from "next/router";
 import { FaTrashAlt, FaEdit } from "react-icons/fa";
-import { IoCloseSharp } from "react-icons/io5";
-import { IoIosSave } from "react-icons/io";
-import { BiPlusMedical } from "react-icons/bi";
-import { GoVerified } from "react-icons/go";
 import { axiosInstance } from '../../lib/api';
-import ModalProfPicture from './mchangepicture/ModalProfPict';
-import * as Yup from "yup";
 import qs from 'qs';
-import MaddAddress from './maddressadd/maddaddress';
 import MeditAddress from './maddressedit/meditaddress';
-import MchangePassword from './mchangepassword/MchangePassword';
 
 export default function ShowAddress(props) {
   const { idalamat, namaPenerima, phonePenerima, alamat, provinsi, kecamatan, provinsiId, city, city_id, postalCode, defaultAddress } = props
@@ -31,7 +21,7 @@ export default function ShowAddress(props) {
   const dispatch = useDispatch()
   const toast = useToast();
 
-  // -------------------- Delete Address -------------------- //
+  // ---------------------- Delete Address ---------------------- //
   async function deleteAddress() {
     try {
       await axiosInstance.patch(`/address/api/v1/address/${idalamat}/user/${userSelector.id}`)
@@ -62,7 +52,7 @@ export default function ShowAddress(props) {
   }, [addressId]);
 
 
-  // -------------------- Edit Address -------------------- //
+  // ---------------------- Edit Address ---------------------- //
   const formik = useFormik({
     initialValues: {
       default_address: { addressId },
@@ -231,11 +221,7 @@ export default function ShowAddress(props) {
                 <Text>{postalCode}</Text>
               </Box>
             </Box>
-
-
-
           </Box>
-
         </Box>
       </Box>
       <Divider mt='7px' size='lg' borderWidth='1px' />

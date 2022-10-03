@@ -1,12 +1,9 @@
 import {
   Flex, Box, Text, Button, InputGroup, InputLeftElement, Icon, useDisclosure,
-  InputRightElement, Input, Tooltip, Divider, useToast, Link, Image,
+  InputRightElement, Input, Tooltip, useToast, Link, Image,
   Modal, ModalOverlay, ModalHeader, ModalBody, ModalCloseButton, ModalContent
 } from '@chakra-ui/react';
-import Footer from '../../../components/footer/Footer';
 import { HiMinusSm, HiPlusSm } from "react-icons/hi";
-import Metatag from '../../../components/metatag/Metatag';
-import { useRouter } from "next/router";
 import { FaTrashAlt, FaEdit } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
@@ -48,7 +45,7 @@ export default function ProductCartList(props) {
     }
   }
 
-  // ----- Add to Cart
+  // -------------------- Add to Cart -------------------- //
   async function addToCart(quantity) {
     let msg = ''
     // let newQty = quantity

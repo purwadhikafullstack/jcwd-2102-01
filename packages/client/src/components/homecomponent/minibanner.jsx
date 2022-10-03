@@ -1,7 +1,4 @@
-import {
- Box, Flex, Avatar, HStack, Button, Menu, MenuButton, AlertIcon, Alert,
- MenuDivider, Text, Icon, useDisclosure, Link, Modal, ModalOverlay, Center
-} from '@chakra-ui/react';
+import { Box, Text, Center } from '@chakra-ui/react';
 import banner from '../../assets/img/bg.png'
 import Image from 'next/image';
 import minibanner1 from '../../assets/img/minibanner1.png'

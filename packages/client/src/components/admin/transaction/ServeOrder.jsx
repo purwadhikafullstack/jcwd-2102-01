@@ -1,30 +1,21 @@
 import {
-  Box, Text, Avatar, Link, FormLabel, Textarea, AvatarBadge, Flex, Input, Select, InputLeftElement, InputGroup,
-  Modal, ModalCloseButton, Icon, InputRightElement, Tooltip, ModalOverlay, ModalHeader, ModalBody, useDisclosure, ModalFooter,
-  FormControl, Button, useToast, FormHelperText, ModalContent, Center, useMediaQuery, Image,
-  Divider, TableContainer, Table, Thead, Tr, Th, Td, Tbody, Tfoot, Drawer, DrawerBody, DrawerHeader, DrawerCloseButton, DrawerContent, DrawerOverlay,
+  Box, Text, Flex, Input, Select, InputGroup, Modal, ModalCloseButton, Icon, InputRightElement, ModalOverlay, ModalHeader, ModalBody,
+  useDisclosure, ModalFooter, FormControl, Button, useToast, FormHelperText, ModalContent, Image, TableContainer,
+  Table, Thead, Tr, Th, Td, Tbody, Tfoot,
 } from '@chakra-ui/react';
-import NextLink from 'next/link';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux'
 import { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import { useRouter } from "next/router";
 import { FaTrashAlt, FaEdit } from "react-icons/fa";
-import { IoCloseSharp } from "react-icons/io5";
-import { IoIosSave } from "react-icons/io";
-import { BiDetail } from "react-icons/bi";
-import { GoVerified } from "react-icons/go";
-import { BiSearchAlt, BiReset } from 'react-icons/bi';
+import { BiSearchAlt } from "react-icons/bi";
 import { axiosInstance } from '../../../lib/api';
 import AdmMdetailTransaction from './AdmMdetailTransaction';
-// import ModalProfPicture from './mchangepicture/ModalProfPict';
 import * as Yup from "yup";
 import qs from 'qs';
-import { RiZzzFill } from 'react-icons/ri';
 import ModalAddProduct from './serveOrderModal/ModalAddProduct';
 import ModalEditProductList from './serveOrderModal/ModalEditProductList';
-// import UploadPayment from '../payment/UploadPayment';
 import axios from 'axios';
 
 export default function ServeOrder(props) {
@@ -37,6 +28,7 @@ export default function ServeOrder(props) {
   const router = useRouter();
   const toast = useToast();
   const [product, setProduct] = useState([])
+
   // --------------- for Filtering --------------- //
   const [pageStart, setPageStart] = useState(1)
   const [page, setPage] = useState(1)
@@ -44,12 +36,12 @@ export default function ServeOrder(props) {
   const [searchProduct, setSearchProduct] = useState('')
   const [totalProduct, setTotalProduct] = useState(0)
   const [totalPage, setTotalPage] = useState(0)
-  // let routerQuery = router.query
   const [costRajaOngkir, setCostRajaOngkir] = useState([])
   const [couriers, setCouriers] = useState([])
   const [totalSeluruh, setTotalSeluruh] = useState()
   const [weight, setWeight] = useState(0)
 
+  // -------------------- filter name and code product -------------------- //
   const formik = useFormik({
     initialValues: {
       searchName: ``,
@@ -66,7 +58,7 @@ export default function ServeOrder(props) {
     }
   })
 
-  // ----- Transaction will be process
+  // -------------------- Transaction will be process -------------------- //
   const confirmTransaction = async () => {
     try {
       if (formik.values.courier && formik.values.service) {
@@ -96,7 +88,6 @@ export default function ServeOrder(props) {
           isClosable: true,
         })
       }
-
     } catch (err) {
       console.log(err);
     }
@@ -109,7 +100,7 @@ export default function ServeOrder(props) {
     setWeight(totalWeight)
   }, [productList])
 
-  // ---------- render Transaction List
+  // -------------------- render Transaction List -------------------- //
   const renderTransactionList = () => {
     return productList.map((val, index) => {
       totalWeight += (val.buy_quantity * val.Product?.Product_description?.weight)
@@ -137,7 +128,7 @@ export default function ServeOrder(props) {
   }
 
   // console.log(productList);
-  // --------------- Fetching Product --------------- //
+  // -------------------- Fetching Product -------------------- //
   async function fetchProduct() {
     try {
       axiosInstance.get(`/products/api/v1/products/admin?search=${searchProduct}&limit=100000&page=1`)
@@ -174,7 +165,6 @@ export default function ServeOrder(props) {
               productName={val.Product?.product_name}
               productId={val.Product?.id}
             />
-            {/* <Button size='xs' bg='#009B90' color='white' _hover={{ background: '#02d1c2' }}>Tambah</Button> */}
           </Td>
           <Td textAlign='left'>{val.Product?.product_code}</Td>
           <Td textAlign='left'>{val.Product?.product_name.substring(0, 30)}{!val.Product?.product_name ? null : val.Product?.product_name.length >= 32 ? '...' : null}</Td>
@@ -186,7 +176,7 @@ export default function ServeOrder(props) {
     })
   }
 
-  // --------------- Fetching courier --------------- //
+  // -------------------- Fetching courier -------------------- //
   async function fetchCouriers() {
     try {
       axiosInstance.get(`/transaction/api/v1/Couriers`)
@@ -206,7 +196,7 @@ export default function ServeOrder(props) {
     })
   }
 
-  // ---------- Fetching Cost Raja Ongkir ---------- //
+  // -------------------- Fetching Cost Raja Ongkir -------------------- //
   async function fetchCostRajaOngkir() {
     try {
       if (cityId && weight && formik.values.courier) {
@@ -234,7 +224,6 @@ export default function ServeOrder(props) {
       )
     })
   }
-
 
   useEffect(() => {
     fetchProduct()
@@ -319,7 +308,6 @@ export default function ServeOrder(props) {
 
                 {/* ----- Table Ringkasan Pesanan ----- */}
                 <Box mt='5px' maxH='200px' maxW='460px' overflow='scroll' >
-                  {/* ----- table transaction list */}
                   <TableContainer borderTopRadius='6px'>
                     <Table size='sm' >
                       <Thead bg='#213360' color='white' fontWeight='bold' >
@@ -334,7 +322,6 @@ export default function ServeOrder(props) {
                       <Tbody fontWeight='semibold'>
                         {renderTransactionList()}
                       </Tbody>
-
                     </Table>
                   </TableContainer>
                 </Box>
@@ -370,13 +357,7 @@ export default function ServeOrder(props) {
                   {/* {formik.values.service} */}
                   <FormControl isInvalid={formik.errors.service} >
                     <Select size='sm' w='300px' onChange={(event) => formik.setFieldValue("service", event.target.value)}>
-                      {/* {formik.values.service == '' ? <option value="">- Pilih Service -</option>
-                  : <>
-                  {renderCostRajaOngkir()}
-                  </>
-                } */}
                       <option value="">- Pilih Service -</option>
-
                       {formik.values.courier ? renderCostRajaOngkir() : null}
                     </Select>
                     <FormHelperText color="red">
@@ -404,6 +385,7 @@ export default function ServeOrder(props) {
               </Box>
             </Flex>
 
+            {/* ----- daftar produk ----- */}
             <Box pt='10px' borderTopWidth='2px'>
               <Text fontWeight='bold'>Daftar Produk :</Text>
               <Box display='flex' justifyContent='space-between'>
@@ -437,7 +419,6 @@ export default function ServeOrder(props) {
                   <Button onClick={() => setPage(totalPage == page ? page : page + 1)} size='xs' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
                     _hover={{ bg: '#009B90', color: 'white' }}>Next</Button>
                 </Box>
-
               </Box>
 
               <Box mt='5px' maxH='300px' maxW='850px' overflow='scroll' >
@@ -470,11 +451,11 @@ export default function ServeOrder(props) {
                     </Tfoot>
                   </Table>
                 </TableContainer>
-
               </Box>
             </Box>
 
           </ModalBody>
+
           <ModalFooter pt='5px'>
             <Button mr={3} size='sm' colorScheme='red' onClick={() => onCloseServe()}>
               Batal

@@ -1,8 +1,6 @@
 import {
-   Box, Text, Avatar, Link, FormLabel, Textarea, AvatarBadge, Flex, Input, Select, InputLeftElement, InputGroup,
-   Modal, ModalCloseButton, Icon, Tooltip, ModalOverlay, ModalHeader, ModalBody, useDisclosure, ModalFooter,
-   FormControl, Button, useToast, FormHelperText, ModalContent, Center, useMediaQuery, Image,
-   Divider, Tabs, TabList, TabPanel, TabPanels, Tab, InputRightElement, Drawer, DrawerBody, DrawerHeader, DrawerCloseButton, DrawerContent, DrawerOverlay
+   Box, Text, Modal, ModalCloseButton, Icon, Tooltip, ModalOverlay, ModalHeader, ModalBody, useDisclosure, ModalFooter,
+   Button, useToast, ModalContent, Center, Divider,
 } from '@chakra-ui/react';
 import { BiDetail } from "react-icons/bi";
 import bank_bca from '../../../assets/img/metode_pembayaran/bank_bca.png'
@@ -10,9 +8,6 @@ import logo from '../../../assets/img/healthymedLogo.png'
 import NextImage from 'next/image';
 import ProductOrderList from '../payment/ProductOrderList';
 import { RiFileCopyFill } from 'react-icons/ri';
-import { useRouter } from "next/router";
-import { useSelector, useDispatch } from 'react-redux';
-import { useState, useEffect } from "react";
 import moment from 'moment';
 import UploadPayment from '../payment/UploadPayment';
 
@@ -226,6 +221,7 @@ export default function MdetailTransaction(props) {
                               </Text>
                            </Box>
                         </Box>
+
                         {statusDet == 'Menunggu Pembayaran' ?
                            // {/* -------------------- Bank -------------------- */}
                            <Box my='25px' p='20px' px='30px' boxShadow='md' bg='#ffffff' borderWidth='1px' borderRadius="10px">

@@ -1,35 +1,10 @@
-import {
-  Box, Text, Avatar, Link, AvatarBadge, Flex, Input, Select, InputLeftElement, InputGroup,
-  Modal, ModalCloseButton, Icon, Tooltip, ModalOverlay, ModalHeader, ModalBody, useDisclosure,
-  FormControl, Button, useToast, FormHelperText, ModalContent, Divider, Checkbox
-} from '@chakra-ui/react';
+import { Box, Text, useDisclosure, useToast } from '@chakra-ui/react';
 import { useDispatch, useSelector } from 'react-redux'
 import { useState, useEffect } from "react";
-import { useFormik } from "formik";
-import { useRouter } from "next/router";
-import { FaTrashAlt, FaEdit } from "react-icons/fa";
-import { IoCloseSharp } from "react-icons/io5";
-import { IoIosSave } from "react-icons/io";
-import { BiPlusMedical } from "react-icons/bi";
-import { GoVerified } from "react-icons/go";
-import { axiosInstance } from '../../lib/api';
-import ModalProfPicture from './mchangepicture/ModalProfPict';
-import * as Yup from "yup";
-import qs from 'qs';
-import MaddAddress from './maddressadd/maddaddress';
-import MeditAddress from './maddressedit/meditaddress';
-import MchangePassword from './mchangepassword/MchangePassword';
 
 export default function ShowDefaultAddress(props) {
   const { idalamat, namaPenerima, phonePenerima, alamat, provinsi, kecamatan, provinsiId, city, city_id, postalCode, defaultAddress } = props
-  const { isOpen: isOpenAlamatEdit, onOpen: onOpenAlamatEdit, onClose: onCloseAlamatEdit } = useDisclosure()
-  const { isOpen: isOpenDelete, onOpen: onOpenDelete, onClose: onCloseDelete } = useDisclosure()
-  const userSelector = useSelector((state) => state.auth)
-  const autoRender = useSelector((state) => state.automateRendering)
   const [addressId, setAddressId] = useState(defaultAddress)
-  const [defaultBtn, setDefaultBtn] = useState(false)
-  const dispatch = useDispatch()
-  const toast = useToast();
 
   useEffect(() => {
     setAddressId(defaultAddress)
@@ -73,10 +48,7 @@ export default function ShowDefaultAddress(props) {
               </Box>
             </Box>
 
-
-
           </Box>
-
         </Box>
       </Box>
     </>

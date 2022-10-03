@@ -1,8 +1,4 @@
-import {
-  Flex, Box, Text, Button, InputGroup, InputLeftElement, Icon, useDisclosure,
-  InputRightElement, Input, Tooltip, Divider, useToast, Link, Image,
-  Modal, ModalOverlay, ModalHeader, ModalBody, ModalCloseButton, ModalContent
-} from '@chakra-ui/react';
+import { Flex, Box, Text, Divider, Link, Image } from '@chakra-ui/react';
 
 export default function ProductOrderList(props) {
   const { image, productName, qtyBuy, price, totalPrice, unit, firstPrice, idCart, productCode, idUser } = props

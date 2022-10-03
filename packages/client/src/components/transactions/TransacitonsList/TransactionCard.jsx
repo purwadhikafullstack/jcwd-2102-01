@@ -1,23 +1,15 @@
 import {
-   Box, Text, Avatar, Link, FormLabel, Textarea, AvatarBadge, Flex, Input, Select, InputLeftElement, InputGroup,
-   Modal, ModalCloseButton, Icon, Tooltip, ModalOverlay, ModalHeader, ModalBody, useDisclosure, ModalFooter,
-   FormControl, Button, useToast, FormHelperText, ModalContent, Center, useMediaQuery, Image,
-   Divider, Tabs, TabList, TabPanel, TabPanels, Tab, InputRightElement, Drawer, DrawerBody, DrawerHeader, DrawerCloseButton, DrawerContent, DrawerOverlay
+   Box, Text, Link, FormLabel, Textarea, Flex,
+   Modal, ModalCloseButton, ModalOverlay, ModalHeader, ModalBody, useDisclosure, ModalFooter,
+   FormControl, Button, useToast, ModalContent, Image,
+   Divider,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux'
-import { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import { useRouter } from "next/router";
-import { FaTrashAlt, FaEdit } from "react-icons/fa";
-import { IoCloseSharp } from "react-icons/io5";
-import { IoIosSave } from "react-icons/io";
-import { BiPlusMedical } from "react-icons/bi";
-import { GoVerified } from "react-icons/go";
-import { BiSearchAlt, BiReset } from 'react-icons/bi';
 import { axiosInstance } from '../../../lib/api';
-// import ModalProfPicture from './mchangepicture/ModalProfPict';
 import * as Yup from "yup";
 import qs from 'qs';
 import UploadPayment from '../payment/UploadPayment';
@@ -36,7 +28,7 @@ export default function TransactionCard(props) {
    const toast = useToast();
    const router = useRouter();
 
-   // ----- cancel transaction
+   // -------------------- cancel transaction -------------------- //
    const formik = useFormik({
       initialValues: {
          note: ``,
@@ -72,7 +64,7 @@ export default function TransactionCard(props) {
       }
    })
 
-   // ----- Transaction Confirmation
+   // -------------------- Transaction Confirmation -------------------- //
    const confirmTransaction = async () => {
       try {
          let body = {
@@ -166,7 +158,6 @@ export default function TransactionCard(props) {
                            <Image mr='20px' objectFit='cover' src={`http://${productImage}`} _hover={{ cursor: 'pointer' }} width='80px' height='80px' />
                         </NextLink>
                         :
-                        // <Image mr='20px' objectFit='cover' src={`http://${recipeImage}`} _hover={{ cursor: 'pointer' }} width='80px' height='80px' />
                         <PrescriptionImage imageUrl={recipeImage} />
                      }
                      <Box>

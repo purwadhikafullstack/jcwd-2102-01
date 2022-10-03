@@ -1,26 +1,17 @@
 import {
-   Box, Text, Avatar, Link, FormLabel, Textarea, AvatarBadge, Flex, Input, Select, InputLeftElement, InputGroup,
-   Modal, ModalCloseButton, Icon, Tooltip, ModalOverlay, ModalHeader, ModalBody, useDisclosure, ModalFooter,
-   FormControl, Button, useToast, FormHelperText, ModalContent, Center, useMediaQuery, Image,
-   Divider, Tabs, TabList, TabPanel, TabPanels, Tab, InputRightElement, Drawer, DrawerBody, DrawerHeader, DrawerCloseButton, DrawerContent, DrawerOverlay
+   Box, Text, Modal, ModalCloseButton, Icon, ModalOverlay, ModalHeader, ModalBody, useDisclosure, ModalFooter,
+   Button, ModalContent, Center, Divider,
 } from '@chakra-ui/react';
 import { BiDetail } from "react-icons/bi";
-import bank_bca from '../../../assets/img/metode_pembayaran/bank_bca.png'
 import logo from '../../../assets/img/healthymedLogo.png'
 import NextImage from 'next/image';
 import AdmProductOrderList from './AdmProductOrderList';
-import { RiFileCopyFill } from 'react-icons/ri';
-import { useRouter } from "next/router";
-import { useSelector, useDispatch } from 'react-redux';
-import { useState, useEffect } from "react";
 import moment from 'moment';
 
 export default function AdmMdetailTransaction(props) {
    const { idDet, productsDet, noInvoiceDet, dateCreatedDet, statusDet, totalOrderDet, shippingCostDet, namaPenerimaDet, alamatPenerimaDet, provDet, cityDet, districtDet, kurirDet,
       grandTotalDet, qtyBuyDet, noHpPenerimaDet, unitDet, productNameDet, productImageDet, idUserDet, noteDet, cancelDet } = props
    const { isOpen: isOpenDetail, onOpen: onOpenDetail, onClose: onCloseDetail } = useDisclosure()
-   const { isOpen: isOpenPayment, onOpen: onOpenPayment, onClose: onClosePayment } = useDisclosure()
-   const toast = useToast();
 
    const renderTransactionList = () => {
       return productsDet.map((val, index) => {

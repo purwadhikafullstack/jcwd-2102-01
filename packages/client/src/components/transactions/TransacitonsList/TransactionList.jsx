@@ -1,8 +1,7 @@
 import {
-  Box, Text, Avatar, Link, AvatarBadge, Flex, Input, Select, InputLeftElement, InputGroup,
-  Modal, ModalCloseButton, Icon, Tooltip, ModalOverlay, ModalHeader, ModalBody, useDisclosure,
-  FormControl, Button, useToast, FormHelperText, ModalContent, Center, useMediaQuery,
-  Divider, Tabs, TabList, TabPanel, TabPanels, Tab, InputRightElement, Drawer,
+  Box, Text, Avatar, Link, Input, Select, InputGroup,
+  Icon, useDisclosure, FormControl, Button, useToast, useMediaQuery,
+  Tabs, TabList, TabPanel, TabPanels, Tab, InputRightElement, Drawer,
   DrawerBody, DrawerHeader, DrawerCloseButton, DrawerContent, DrawerOverlay,
   Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverCloseButton, PopoverHeader, PopoverBody,
   NumberInputField, NumberInput, NumberIncrementStepper, NumberDecrementStepper, NumberInputStepper
@@ -11,14 +10,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import { useRouter } from "next/router";
-import { FaTrashAlt, FaEdit } from "react-icons/fa";
-import { IoCloseSharp } from "react-icons/io5";
-import { IoIosSave } from "react-icons/io";
-import { BiPlusMedical } from "react-icons/bi";
 import { GoVerified } from "react-icons/go";
 import { BiSearchAlt, BiReset } from 'react-icons/bi';
 import { axiosInstance } from '../../../lib/api';
-// import ModalProfPicture from './mchangepicture/ModalProfPict';
 import moment from 'moment';
 import * as Yup from "yup";
 import qs from 'qs';
@@ -39,7 +33,7 @@ export default function TransactionList() {
   const router = useRouter();
   const image = userSelector.image_url;
 
-  // ------ for filter
+  // -------------------- for filter -------------------- //
   const [pageStart, setPageStart] = useState(1)
   const [page, setPage] = useState(1)
   const [totalPage, setTotalPage] = useState(0)
@@ -59,7 +53,7 @@ export default function TransactionList() {
     }
   ]);
 
-  // ----- Search
+  // -------------------- Search -------------------- //
   const formik = useFormik({
     initialValues: {
       searchInvoice: ``,
@@ -78,7 +72,7 @@ export default function TransactionList() {
   // console.log(startDate2);
   // console.log(endDate2);
 
-  // ---------- Fetching Transaction ---------- //
+  // -------------------- Fetching Transaction -------------------- //
   async function fetchTransaction(filter) {
     let order = "";
     let sort = "";

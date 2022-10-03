@@ -1,29 +1,18 @@
 import {
-   Box, Text, Avatar, Link, FormLabel, Textarea, AvatarBadge, Flex, Input, Select, InputLeftElement, InputGroup,
-   Modal, ModalCloseButton, Icon, Tooltip, ModalOverlay, ModalHeader, ModalBody, useDisclosure, ModalFooter,
-   FormControl, Button, useToast, FormHelperText, ModalContent, Center, useMediaQuery, Image,
-   Divider, Tabs, TabList, TabPanel, TabPanels, Tab, InputRightElement, Drawer, DrawerBody, DrawerHeader, DrawerCloseButton, DrawerContent, DrawerOverlay
+   Box, Text, Link, FormLabel, Textarea, Modal, ModalCloseButton, ModalOverlay, ModalHeader, ModalBody, useDisclosure, ModalFooter,
+   FormControl, Button, useToast, ModalContent, Center, Image, Divider,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux'
-import { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import { useRouter } from "next/router";
-import { FaTrashAlt, FaEdit } from "react-icons/fa";
-import { IoCloseSharp } from "react-icons/io5";
-import { IoIosSave } from "react-icons/io";
-import { BiDetail } from "react-icons/bi";
-import { GoVerified } from "react-icons/go";
-import { BiSearchAlt, BiReset } from 'react-icons/bi';
 import { axiosInstance } from '../../../lib/api';
 import AdmMdetailTransaction from './AdmMdetailTransaction';
-// import ModalProfPicture from './mchangepicture/ModalProfPict';
 import * as Yup from "yup";
 import qs from 'qs';
 import ServeOrder from './ServeOrder';
 import PrescriptionImage from '../../transactions/TransacitonsList/PrescriptionImage';
-// import UploadPayment from '../payment/UploadPayment';
 
 export default function AdmTransactionCard(props) {
    const { id, productCode, products, noInvoice, dateCreated, status, totalOrder, grandTotal, qtyBuy, unit, productName, productImage, recipeImage, idRecipe, idUser,
@@ -34,12 +23,10 @@ export default function AdmTransactionCard(props) {
    const { isOpen: isOpenPaymentOk, onOpen: onOpenPaymentOk, onClose: onClosePaymentOk } = useDisclosure()
    const { isOpen: isOpenPaymentNo, onOpen: onOpenPaymentNo, onClose: onClosePaymentNo } = useDisclosure()
    const dispatch = useDispatch()
-   const userSelector = useSelector((state) => state.auth);
    const autoRender = useSelector((state) => state.automateRendering)
    const toast = useToast();
-   const router = useRouter();
 
-   // ----- cancel transaction
+   // -------------------- cancel transaction -------------------- //
    const formik = useFormik({
       initialValues: {
          note: ``,
@@ -75,7 +62,7 @@ export default function AdmTransactionCard(props) {
       }
    })
 
-   // ----- Transaction will be process
+   // -------------------- Transaction will be process -------------------- //
    const confirmPayment = async () => {
       try {
          let body = {
@@ -97,7 +84,7 @@ export default function AdmTransactionCard(props) {
       }
    }
 
-   // ----- Transaction will be process
+   // -------------------- Transaction will be process -------------------- //
    const rejectPayment = async () => {
       try {
          let body = {
@@ -120,7 +107,7 @@ export default function AdmTransactionCard(props) {
       }
    }
 
-   // ----- Transaction will be sent
+   // -------------------- Transaction will be sent -------------------- //
    const confirmTransaction = async () => {
       try {
          let body = {
@@ -144,6 +131,8 @@ export default function AdmTransactionCard(props) {
 
    return (
       <Box wrap={'wrap'} mb="20px" boxShadow='md' bg='#ffffff' borderWidth='1px' borderRadius="7px" py='18px' px='25px' >
+
+         {/* ----- Tanggal ----- */}
          <Box display='flex' justifyContent='space-between' >
             <Text fontSize='md' fontWeight='semibold'>
                {moment(dateCreated).format('dddd') == 'Monday' ? 'Senin' :
@@ -156,6 +145,7 @@ export default function AdmTransactionCard(props) {
                {moment(dateCreated).format('DD MMMM YYYY')} {idRecipe == 1 ? "/ " + noInvoice : null}
             </Text>
 
+            {/* ----- Status ----- */}
             <Box py='2px' px='4px' display='flex' justifyContent='center' borderWidth='1px' borderRadius='6px'
                borderColor={status == 'Menunggu Pembayaran' || status == 'Menunggu Konfirmasi Pembayaran' ? '#CBAF4E' :
                   status == 'Diproses' ? '#757575' :
@@ -167,7 +157,6 @@ export default function AdmTransactionCard(props) {
                      status == 'Dikirim' ? '#bae2ff' :
                         status == 'Pesanan Dikonfirmasi' ? '#c2ffd3' :
                            status == 'Resep Dokter' ? '#EFD7FE' : '#fcd7d7'} >
-
                <Text fontSize='xs' textAlign='center' fontWeight='semibold'
                   color={status == 'Menunggu Pembayaran' || status == 'Menunggu Konfirmasi Pembayaran' ? '#CBAF4E' :
                      status == 'Diproses' ? '#757575' :
@@ -178,9 +167,10 @@ export default function AdmTransactionCard(props) {
             </Box>
          </Box>
          <Divider my='10px' />
+
+         {/* ------ jika transaksi dari resep dokter maka yg tampil resep dokter ------ */}
          <Box display='flex' justifyContent='space-between' flexWrap='wrap'>
             <Box display='flex' mr='20px'>
-               {/* ------ jika transaksi dari resep dokter maka yg tampil resep dokter ------ */}
                {idRecipe == 1 ?
                   <NextLink href={`/productdetails/${productCode}`}>
                      <Image mr='20px' objectFit='cover' src={`http://${productImage}`} _hover={{ cursor: 'pointer' }} width='80px' height='80px' />
@@ -249,6 +239,7 @@ export default function AdmTransactionCard(props) {
             </Box> :
             null}
          <Divider my='10px' />
+
          <Box display='flex' justifyContent='flex-end' alignItems='center' flexWrap='wrap' >
             {status == 'Menunggu Pembayaran' ?
                <>
@@ -279,6 +270,7 @@ export default function AdmTransactionCard(props) {
                      :
                      status == 'Resep Dokter' ?
                         <>
+                           {/* ----- Docter prescription ----- */}
                            <ServeOrder
                               recipeImage={recipeImage}
                               transactionId={id}
@@ -406,6 +398,7 @@ export default function AdmTransactionCard(props) {
             </ModalContent>
          </Modal>
 
+         {/* ----- Modal Tolak Pesanan ------ */}
          <Modal isOpen={isOpenCancel} onClose={onCloseCancel} size='sm'>
             <ModalOverlay />
             <ModalContent>

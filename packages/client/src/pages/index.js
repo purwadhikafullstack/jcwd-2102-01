@@ -35,7 +35,7 @@ export default function Home() {
     <Box m='15px' mb='15px' w='80vw' borderBottomWidth='2px'></Box>
     <HomeMiniBanner />
     <Box m='15px' mb='15px' w='80vw' borderBottomWidth='2px'></Box>
-    {/* <HomePrduct /> */}
+    <HomePrduct />
     <Box m='15px' mb='15px' w='80vw' borderBottomWidth='2px'></Box>
     <HomeBadge />
    </Flex>

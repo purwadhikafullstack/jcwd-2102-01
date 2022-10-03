@@ -3,7 +3,6 @@ import {
  Modal, ModalOverlay, useToast, ModalContent, ModalHeader, ModalCloseButton, ModalBody
 } from "@chakra-ui/react"
 import { FaTrashAlt, FaEdit } from "react-icons/fa";
-import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { axiosInstance } from '../../../lib/api';
 

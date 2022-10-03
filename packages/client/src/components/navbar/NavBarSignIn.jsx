@@ -1,5 +1,5 @@
 import {
-  Box, Input, Flex, Avatar, AvatarBadge, HStack, Stack, Link, IconButton, Button, Menu, Tooltip,
+  Box, Flex, Avatar, AvatarBadge, HStack, Stack, Link, IconButton, Button, Menu, Tooltip,
   MenuButton, MenuList, MenuItem, MenuDivider, useDisclosure, Modal, ModalCloseButton, ModalOverlay, ModalHeader, ModalBody, ModalContent
   , Icon, Text, Accordion, AccordionIcon, AccordionPanel, AccordionItem, AccordionButton, Image,
   Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerOverlay, DrawerFooter, DrawerHeader, Center
@@ -10,12 +10,11 @@ import logo from '../../assets/img/healthymedLogo.png'
 import jsCookie from "js-cookie";
 import auth_types from "../../redux/reducers/auth/type";
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
-import { FaRegHeart, FaTrashAlt } from "react-icons/fa";
 import { MdOutlineCategory, MdUploadFile, MdCategory, MdPersonAddAlt, MdPersonAdd } from 'react-icons/md';
-import { AiFillBell, AiFillSetting, AiOutlineBell, AiOutlineHome, AiFillHome } from "react-icons/ai";
-import { RiLoginCircleLine, RiLoginCircleFill, RiHistoryLine } from "react-icons/ri";
+import { AiFillSetting, AiOutlineBell, AiOutlineHome, AiFillHome } from "react-icons/ai";
+import { RiHistoryLine } from "react-icons/ri";
 import { IoSettingsOutline, IoCartOutline, IoNotificationsOutline, IoLogOutOutline, IoStorefrontOutline, IoStorefrontSharp } from "react-icons/io5"
-import { BiAddToQueue, BiHelpCircle } from "react-icons/bi";
+import { BiHelpCircle } from "react-icons/bi";
 import { axiosInstance } from '../../lib/api';
 import { useState, useEffect } from "react";
 import { useRouter } from 'next/router';
@@ -46,7 +45,7 @@ export default function NavBarSignIn() {
     router.push("/")
   }
 
-  // --------------- Fetching Category --------------- //
+  // -------------------- Fetching Category -------------------- //
   async function fetchCategory() {
     try {
       axiosInstance.get(`/category`)
@@ -95,7 +94,7 @@ export default function NavBarSignIn() {
     })
   }
 
-  // --------------- Fetching Cart --------------- //
+  // -------------------- Fetching Cart -------------------- //
   async function fetchCart() {
     try {
       axiosInstance.get(`/transaction/api/v1/Carts/${userSelector.id}`)

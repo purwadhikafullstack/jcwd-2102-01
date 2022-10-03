@@ -40,6 +40,7 @@ app.use("/products", productRoutes);
 app.use("/transaction", transactionsRoutes);
 app.use("/user", userRoutes);
 
+app.use("/category_images", express.static(`${__dirname}/public/category_images`));
 app.use("/payment_images", express.static(`${__dirname}/public/payment_images`));
 app.use("/product_images", express.static(`${__dirname}/public/product_images`));
 app.use("/profile_pict", express.static(`${__dirname}/public/profile_pict`));

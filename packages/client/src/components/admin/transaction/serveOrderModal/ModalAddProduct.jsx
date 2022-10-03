@@ -1,34 +1,19 @@
 import {
- Box, Text, Avatar, Link, FormLabel, Textarea, AvatarBadge, Flex, Input, Select, InputLeftElement, InputGroup,
+ Box, Text, Input, InputLeftElement, InputGroup,
  Modal, ModalCloseButton, Icon, InputRightElement, Tooltip, ModalOverlay, ModalHeader, ModalBody, useDisclosure, ModalFooter,
- FormControl, Button, useToast, FormHelperText, ModalContent, Center, useMediaQuery, Image,
- Divider, TableContainer, Table, Thead, Tr, Th, Td, Tbody, Tfoot, Drawer, DrawerBody, DrawerHeader, DrawerCloseButton, DrawerContent, DrawerOverlay,
+ Button, useToast, ModalContent,
 } from '@chakra-ui/react';
-import NextLink from 'next/link';
-import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux'
-import { useState, useEffect } from "react";
-import { useFormik } from "formik";
+import { useState, } from "react";
 import { useRouter } from "next/router";
-import { FaTrashAlt, FaEdit } from "react-icons/fa";
-import { IoCloseSharp } from "react-icons/io5";
-import { IoIosSave } from "react-icons/io";
-import { BiDetail } from "react-icons/bi";
-import { GoVerified } from "react-icons/go";
 import { SiConvertio } from 'react-icons/si';
 import { BiPlusMedical } from "react-icons/bi";
 import { axiosInstance } from '../../../../lib/api';
-// import ModalProfPicture from './mchangepicture/ModalProfPict';
 import { HiMinusSm, HiPlusSm } from "react-icons/hi";
-import * as Yup from "yup";
 import qs from 'qs';
-import { RiZzzFill } from 'react-icons/ri';
-// import UploadPayment from '../payment/UploadPayment';
 
 export default function ModalAddProduct(props) {
- const { transactionId, productId, unitId, userId, price, unit, stock, weight, grandTotal, buyer, reciever, recieverPhoneNo, address, courier, shippingCost,
-  province, city, district, postalCode, note
-  , productName } = props
+ const { transactionId, productId, unitId, userId, price, unit, stock, weight, grandTotal, productName } = props
  const { isOpen: isOpenAddQty, onOpen: onOpeSAddQty, onClose: onCloseAddQty } = useDisclosure()
  const dispatch = useDispatch()
  const toast = useToast();
@@ -36,14 +21,12 @@ export default function ModalAddProduct(props) {
  const autoRender = useSelector((state) => state.automateRendering)
  const [qtyProduct, setQtyProduct] = useState(1)
 
- // ----- Add to Cart
+ // -------------------- Add to Order List-------------------- //
  const addToTransactionList = async () => {
   let msg = ''
   try {
    let body = {
     buy_quantity: qtyProduct,
-    // price: parseFloat(sellingPrice),
-    // total_price: parseFloat(sellingPrice) * parseFloat(qtyProduct),
     id_user: userId,
     id_product: productId,
     id_unit: unitId,
@@ -78,19 +61,20 @@ export default function ModalAddProduct(props) {
 
  return (
   <>
-   {/* <Button onClick={onOpeSAddQty} size='xs' bg='#009B90' color='white' mr='5px' _hover={{ background: '#02d1c2' }}> */}
+   {/* ----- Button Tambah Product ke List ----- */}
    <Tooltip label='Tambah Produk Ke List' fontSize='sm' >
     <Button onClick={onOpeSAddQty} variant='link' size='xs' color='#009B90' mr='5px' >
      <Icon boxSize={5} as={BiPlusMedical} _hover={{ color: '#02d1c2' }} />
     </Button>
    </Tooltip>
 
+   {/* ----- Button Convert satuan link ke Product List ----- */}
    <Tooltip label='Convert satuan' fontSize='sm' >
     <Button onClick={onOpeSAddQty} variant='link' size='xs' color='#009B90' mr='5px' >
      <Icon boxSize={5} as={SiConvertio} _hover={{ color: '#02d1c2' }} />
     </Button>
    </Tooltip>
-   { }
+
    <Modal isOpen={isOpenAddQty} onClose={onCloseAddQty} size='lg'>
     <ModalOverlay />
     <ModalContent>
@@ -133,7 +117,6 @@ export default function ModalAddProduct(props) {
        <Text fontWeight='semibold' color='#213360' minW='140px'>
         QTY
        </Text>
-
        <InputGroup w='150px' size='sm'>
         <InputLeftElement bg='#009B90' borderLeftRadius='5px' color='white' sx={{ _hover: { cursor: "pointer" } }}
          onClick={() => setQtyProduct(qtyProduct <= 1 ? 1 : qtyProduct - 1)}>

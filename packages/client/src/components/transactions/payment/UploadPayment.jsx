@@ -1,8 +1,4 @@
-import {
-  Button, ModalBody, ModalHeader, Icon, Text,
-  ModalContent, ModalCloseButton, FormControl,
-  FormLabel, Input, Box, Textarea, useToast, Image
-} from '@chakra-ui/react'
+import { Button, Icon, Text, FormControl, Input, Box, useToast, Image } from '@chakra-ui/react'
 import { useFormik } from "formik";
 import { useState, useRef, useEffect } from 'react';
 import { axiosInstance } from '../../../lib/api';
@@ -37,7 +33,7 @@ export default function UploadPayment(props) {
       const { caption, location } = formik.values
 
       try {
-        // ---------- form data for add to Post table ---------- //
+        // -------------------- form data for add to Post table -------------------- //
         formData.append("caption", caption)
         formData.append("location", location)
         formData.append("user_id", userSelector.id)
@@ -67,7 +63,7 @@ export default function UploadPayment(props) {
     }
   })
 
-  // ----- cancel transaction
+  // -------------------- cancel transaction -------------------- //
   const UploadPayment = async () => {
     let msg = ""
     let cancelDes = ''

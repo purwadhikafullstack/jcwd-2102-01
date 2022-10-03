@@ -1,7 +1,7 @@
 import {
-  Flex, Box, Text, Button, InputGroup, InputLeftElement, Icon, useDisclosure,
-  InputRightElement, Input, Tooltip, Divider, useToast, Link, ModalFooter,
-  Modal, ModalOverlay, ModalHeader, ModalBody, ModalCloseButton, ModalContent, Stack, Center
+  Box, Text, Button, Icon, useDisclosure,
+  Divider, useToast, ModalFooter,
+  Modal, ModalOverlay, ModalHeader, ModalBody, ModalCloseButton, ModalContent, Center
 } from '@chakra-ui/react';
 import Image from 'next/image';
 import bank_bca from '../../../assets/img/metode_pembayaran/bank_bca.png'
@@ -31,7 +31,7 @@ export default function Payment() {
   const [recieverName, setRecieverName] = useState()
   const [phoneReciever, setPhoneReciever] = useState()
 
-  // --------------- Fetching Cart --------------- //
+  // -------------------- Fetching Cart -------------------- //
   async function fetchTransactionOrder() {
     try {
       const { noInvoice } = router.query
@@ -55,7 +55,7 @@ export default function Payment() {
     }
   };
 
-  // ---------- Render cart list ---------- //
+  // -------------------- Render cart list -------------------- //
   const renderOrderList = () => {
     return transactionList.map((val, index) => {
       return (
@@ -78,7 +78,7 @@ export default function Payment() {
     )
   }
 
-  // ----- cancel transaction
+  // -------------------- cancel transaction -------------------- //
   const cancelTransaction = async () => {
     try {
       const { noInvoice } = router.query
@@ -101,9 +101,6 @@ export default function Payment() {
       console.log(err);
     }
   }
-
-  // ------ upload payment
-
 
   useEffect(() => {
     fetchTransactionOrder()

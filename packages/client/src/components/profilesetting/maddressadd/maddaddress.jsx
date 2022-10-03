@@ -1,9 +1,6 @@
 import {
-  Box, Flex, Heading, FormControl, Input, InputGroup, InputRightAddon, Icon, FormLabel, FormHelperText, Avatar, HStack, Button, Menu, MenuButton, MenuList, MenuItem,
-  MenuDivider, Select, Text, useToast, useDisclosure, Link, Modal, ModalOverlay, Divider, InputRightElement, Progress, Textarea
+  Box, FormControl, Input, FormLabel, FormHelperText, Button, Select, Text, useToast, Textarea
 } from '@chakra-ui/react';
-// import {  Select, } from "chakra-react-select";
-import { IoMdEye, IoMdEyeOff } from 'react-icons/io';
 import { useDispatch, useSelector } from 'react-redux';
 import Image from 'next/image';
 import LinkNext from 'next/link';
@@ -27,7 +24,7 @@ export default function MaddAddress(props) {
   const toast = useToast();
   const dispatch = useDispatch()
 
-  // --------------- Simpan data Alamat Baru --------------- //
+  // -------------------- Simpan data Alamat Baru -------------------- //
   const formik = useFormik({
     initialValues: {
       receiver_name: "",
@@ -56,9 +53,6 @@ export default function MaddAddress(props) {
       address: Yup.string().required("Alamat wajib diisi").
         min(10, 'Alamat minimal 10 karakter').
         max(350, 'Alamat maksimal 350 karakter').trim(),
-      // province: Yup.string().required("Provinsi wajib diisi"),
-      // city_name: Yup.string().required("Nama Kota wajib diisi"),
-      // postal_code: Yup.string().required("Kode Post wajib diisi"),
     }),
     validateOnChange: false,
     onSubmit: async () => {
@@ -76,7 +70,6 @@ export default function MaddAddress(props) {
           type: typeCity,
           postal_code: postal_code,
           id_user: userSelector.id,
-          // receiver_name, receiver_phone, address, province, province_id, city_name, city_id, districts, type, postal_code, id_user
         }
 
         // console.log(city);
@@ -99,7 +92,7 @@ export default function MaddAddress(props) {
     }
   });
 
-  // --------------- Fetching Province Raja Ongkir --------------- //
+  // -------------------- Fetching Province Raja Ongkir -------------------- //
   async function fetchProvinceRajaOngkir() {
     try {
       const res = await axios.get('https://api.rajaongkir.com/starter/province', {
@@ -120,7 +113,7 @@ export default function MaddAddress(props) {
     })
   }
 
-  // ---------- Buat ambil nama Provinsi ---------- //
+  // -------------------- Buat ambil nama Provinsi -------------------- //
   async function setTheProvinceName() {
     try {
       const res = await axios.get('https://api.rajaongkir.com/starter/province?id=' + formik.values.province_id, {
@@ -146,7 +139,7 @@ export default function MaddAddress(props) {
   //   }
   // };
 
-  // ---------- Fetching City Raja Ongkir ---------- //
+  // -------------------- Fetching City Raja Ongkir -------------------- //
   async function fetchCityRajaOngkir() {
     let res
     try {
@@ -168,15 +161,7 @@ export default function MaddAddress(props) {
     })
   }
 
-  // const renderPostCodeRajaOngkir = () => {
-  //   return cityRajaOngkir.map((val, index) => {
-  //     return (
-  //       <option value={val.postal_code}>{val.postal_code}</option>
-  //     )
-  //   })
-  // }
-
-  // ---------- Buat ambil nama Kota ---------- //
+  // -------------------- Buat ambil nama Kota -------------------- //
   async function setTheCityName() {
     try {
       const res = await axios.get('https://api.rajaongkir.com/starter/city?id=' + formik.values.city_id, {

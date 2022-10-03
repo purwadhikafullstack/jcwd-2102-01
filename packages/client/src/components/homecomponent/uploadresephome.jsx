@@ -1,6 +1,5 @@
 import {
- Box, Flex, Avatar, HStack, Button, Menu, MenuButton, AlertIcon, Alert,
- MenuDivider, Text, Icon, useDisclosure, Link, Modal, ModalCloseButton, ModalOverlay, ModalHeader, ModalBody, ModalContent
+ Box, Button, Text, useDisclosure, Modal, ModalCloseButton, ModalOverlay, ModalHeader, ModalBody, ModalContent
 } from '@chakra-ui/react';
 import banner from '../../assets/img/bg.png'
 import Image from 'next/image';

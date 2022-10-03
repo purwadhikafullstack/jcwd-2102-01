@@ -1,14 +1,10 @@
-import {
-  Flex, Box, Input, InputGroup, InputRightElement, InputLeftElement, Button,
-  Select, Icon, Text, useToast, Center, CheckboxGroup, Checkbox, Stack, Image
-} from '@chakra-ui/react';
+import { Box, Button, Icon, Text, useToast, Image } from '@chakra-ui/react';
 import { IoCartOutline } from "react-icons/io5";
 import { HiMinusSm, HiPlusSm } from "react-icons/hi";
 import { useDispatch, useSelector } from 'react-redux';
 import NextLink from 'next/link';
 import { axiosInstance } from '../../../lib/api';
 import qs from 'qs';
-// import Image from 'next/image'
 
 export default function ProductCard(props) {
   const { productId, productCode, productName, isiPerkemasan, isDeleted, productCategory, productImage, stock, firstPrice, sellingPrice, converted, unit, idUnit } = props
@@ -69,7 +65,6 @@ export default function ProductCard(props) {
           </NextLink>
         </Box>
 
-        {/* <Box px='10px' h='75px'> */}
         <Box px='10px' h='90px'>
           <Box h='50px'>
             <NextLink href={`/productdetails/${productId}`} as={`/productdetails/${productCode}`}>
