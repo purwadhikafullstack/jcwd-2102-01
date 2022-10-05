@@ -112,9 +112,12 @@ export default function ProductListing() {
       return (
         <>
           <Button key={index} variant='link' onClick={() => setTheParams(val.category)}
-            style={{ textDecoration: 'none' }} my='3px' w='full'>
-            <Checkbox onClick={setTheParams}
-              // checked={routerQuery.category1 || routerQuery.category2 || routerQuery.category3 == val.category ? true : false}
+            style={{ textDecoration: 'none' }} my='3px' w='full'
+            disabled={routerQuery.category1 && routerQuery.category2 && routerQuery.category1 != val.category && routerQuery.category2 != val.category ?
+              true : false}>
+            <Checkbox // onClick={setTheParams}
+              isChecked={routerQuery.category1 == val.category ? true :
+                routerQuery.category2 == val.category ? true : false}
               colorScheme='green' my='3px' w='full'>
               <SideFilterCategory key={index}
                 idcategory={val.id}
@@ -421,8 +424,16 @@ export default function ProductListing() {
             <Button onClick={() => setPage(page == 1 ? 1 : page - 1)} size='sm' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
               _hover={{ bg: '#009B90', color: 'white' }}>Prev</Button>
             {/* {renderButton()} */}
-            <Input w='50px' type='number' textAlign='center' bg='white' value={page}
-              onChange={(event) => setPage(event.target.value > totalPage ? page : event.target.value < 1 ? 1 : event.target.value)} />
+            {/* <Input w='50px' type='number' textAlign='center' bg='white' value={page}
+              onChange={(event) => setPage(event.target.value > totalPage ? page : event.target.value < 1 ? 1 : event.target.value)} /> */}
+            {/* <Input w='50px' textAlign='center' bg='white' defaultValue={page} type="text" onChange={(e) => {
+              !e.target.value ? null : e.target.value <= 0 ? setPage(1) :
+                setPage(e.target.value)
+            }} /> */}
+            <Input w='50px' type='number' textAlign='center' bg='white' defaultValue={page} onChange={(e) => {
+              !e.target.value ? null : e.target.value > totalPage || e.target.value <= 0 ? e.target.value = page :
+                setPage(e.target.value)
+            }} />
             <Text alignSelf='center' mx='5px'>of {totalPage}</Text>
             <Button onClick={() => setPage(totalPage == page ? page : page + 1)} size='sm' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
               _hover={{ bg: '#009B90', color: 'white' }}>Next</Button>

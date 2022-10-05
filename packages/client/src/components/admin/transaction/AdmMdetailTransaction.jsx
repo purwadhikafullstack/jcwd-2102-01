@@ -10,7 +10,7 @@ import moment from 'moment';
 
 export default function AdmMdetailTransaction(props) {
    const { idDet, productsDet, noInvoiceDet, dateCreatedDet, statusDet, totalOrderDet, shippingCostDet, namaPenerimaDet, alamatPenerimaDet, provDet, cityDet, districtDet, kurirDet,
-      grandTotalDet, qtyBuyDet, noHpPenerimaDet, unitDet, productNameDet, productImageDet, idUserDet, noteDet, cancelDet } = props
+      grandTotalDet, qtyBuyDet, noHpPenerimaDet, stock, unitDet, productNameDet, productImageDet, idUserDet, noteDet, cancelDet } = props
    const { isOpen: isOpenDetail, onOpen: onOpenDetail, onClose: onCloseDetail } = useDisclosure()
 
    const renderTransactionList = () => {
@@ -24,12 +24,13 @@ export default function AdmMdetailTransaction(props) {
                totalPrice={val.total_price}
                productCode={val.Product?.product_code}
                unit={val.Unit?.unit_name}
+               stock={val.id_unit == val.Product?.Product_stocks[0]?.id_unit ? val.Product?.Product_stocks[0]?.stock : val.Product?.Product_stocks[1]?.stock}
             />
          )
       })
    }
 
-   // console.log(productsDet);
+   console.log(productsDet);
    return (
       <>
          <Button onClick={onOpenDetail} variant='link' color='#009B90'>

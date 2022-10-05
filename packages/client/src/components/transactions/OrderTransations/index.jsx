@@ -155,6 +155,7 @@ export default function OrderTrasanctions() {
             firstPrice={val.Product.Product_stocks[0].first_price}
             unit={val.Product.Product_stocks[0].Unit.unit_name}
             idUnit={val.Product.Product_stocks[0].Unit.id}
+            stock={val.Product.Product_stocks[0].stock}
             idProduct={val.Product.id}
             productCode={val.Product.product_code}
             idUser={val.id_user}
@@ -343,7 +344,7 @@ export default function OrderTrasanctions() {
               Pilih Kurir :
             </Text>
             <FormControl isInvalid={formik.errors.courier} marginTop={"10px"}>
-              {formik.values.courier}
+              {/* {formik.values.courier} */}
               <Select onChange={(event) => formik.setFieldValue("courier", event.target.value)}>
                 <option value="">- Pilih Kurir -</option>
                 {renderCouriers()}
@@ -358,7 +359,7 @@ export default function OrderTrasanctions() {
             <Text alignSelf='center' fontWeight='semibold' fontSize='sm' mb='5px'>
               Pilih Service :
             </Text>
-            {formik.values.service}
+            {/* {formik.values.service} */}
             <FormControl isInvalid={formik.errors.service} marginTop={"10px"}>
               <Select onChange={(event) => formik.setFieldValue("service", event.target.value)}>
                 {/* {formik.values.service == '' ? <option value="">- Pilih Service -</option>

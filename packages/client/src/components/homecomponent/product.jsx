@@ -15,7 +15,6 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 
-
 export default function HomePrduct() {
   const [product, setProduct] = useState([])
   const autoRender = useSelector((state) => state.automateRendering)

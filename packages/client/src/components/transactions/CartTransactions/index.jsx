@@ -68,6 +68,7 @@ export default function CartTrasanctions() {
             idCart={val.id}
             firstPrice={val.Product.Product_stocks[0].first_price}
             unit={val.Product.Product_stocks[0].Unit.unit_name}
+            stock={val.Product.Product_stocks[0].stock}
             idProduct={val.Product.id}
             productCode={val.Product.product_code}
             idUser={val.id_user}

@@ -112,7 +112,7 @@ export default function TransactionCard(props) {
                </Box>
                <Divider my='10px' />
                <Flex>
-                  <Image mr='20px' objectFit='cover' src={`http://${recipeImage}`} _hover={{ cursor: 'pointer' }} width='80px' height='80px' />
+                  <PrescriptionImage imageUrl={recipeImage} />
                   <Text fontWeight='semibold' fontSize='sm' textColor='#213360' maxW='300px' overflow='hidden'>
                      Catatan : {note}
                   </Text>

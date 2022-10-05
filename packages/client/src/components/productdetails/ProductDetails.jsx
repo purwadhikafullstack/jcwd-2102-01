@@ -188,7 +188,7 @@ export default function ProductDetailsComp(props) {
           </Box>
 
           <Button w='200px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px' my='25px'
-            _hover={{ bg: '#009B90', color: 'white' }} onClick={() => addToCart()}>
+            _hover={{ bg: '#009B90', color: 'white' }} disabled={userSelector.id ? false : true} onClick={() => addToCart()}>
             <Icon boxSize='6' as={IoCartOutline} mr='5px' />
             Keranjang</Button>
         </Box>

@@ -186,6 +186,21 @@ const transactionsController = {
       // let findProduct
       const renderTransactionList = () => {
         return findCartProduct.map((val) => {
+      // ---------------  Mengambil produk stok --------------- //
+      const findproduct = Product_stock.findOne({
+        where: {
+          [Op.and]: [
+            { id_product: val.id_product, },
+            { id_unit: val.id_unit, }
+          ]
+        },
+      });
+
+      // ---------------  Kondisi jika buy qty lebih besar dari stok maka error --------------- //
+      if (val.buy_quantity > findproduct.stock ) 
+      {
+        return false
+      } else {
         // Mapping memasukkan data ke table transaction List
         Transaction_list.create({
         buy_quantity:val.buy_quantity, 
@@ -204,9 +219,10 @@ const transactionsController = {
           { id_product: val.id_product, }
           ]
         },});
-
+      }
       })
       }
+
       renderTransactionList()
 
       return res.status(200).json({
@@ -235,7 +251,7 @@ const transactionsController = {
       });
     } catch (err) {
       console.log(err);
-      res.status(500).json({
+      res.status(200).json({
         message: err.toString(),
       });
     }
@@ -640,7 +656,7 @@ const transactionsController = {
 // -------------------- Serve Custom Order Progress (Docter Ricepe) -------------------- //
   serveCustomOrder: async (req, res) => {
     try {
-      const { buy_quantity, id_user, id_product, id_unit, id_transaction } = req.body;
+      const { buy_quantity,medicine_concoction_name,medicine_concoction, id_user, id_product, id_unit, id_transaction } = req.body;
       
       // ---------------  Mengambil produk stok --------------- //
       const findproduct = await Product_stock.findOne({
@@ -660,10 +676,11 @@ const transactionsController = {
       const findOrderProduct = await Transaction_list.findOne({
         where: {
           [Op.and]: [
-          { id_user: id_user, },
-          { id_product: id_product,},
-          { id_unit: id_unit, },
-          { id_transaction: id_transaction, }
+          { id_user },
+          { id_product},
+          { id_unit },
+          { id_transaction},
+          { medicine_concoction_name }
           ]
         },
       });
@@ -675,6 +692,8 @@ const transactionsController = {
           buy_quantity, 
           price: parseFloat(findproduct.selling_price), 
           total_price:parseFloat(findproduct.selling_price * buy_quantity) , 
+          medicine_concoction_name,
+          medicine_concoction,
           id_user, 
           id_product, 
           id_unit, 

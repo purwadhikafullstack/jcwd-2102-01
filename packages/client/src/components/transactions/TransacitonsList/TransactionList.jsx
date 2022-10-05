@@ -451,9 +451,11 @@ export default function TransactionList() {
           <Button onClick={() => setPage(page == 1 ? 1 : page - 1)} size='sm' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
             _hover={{ bg: '#009B90', color: 'white' }}>Prev</Button>
           {/* {renderButton()} */}
-          <Input w='50px' type='number' textAlign='center' bg='white' value={page}
-            onChange={(event) => setPage(event.target.value > totalPage ? page : event.target.value < 1 ? 1 : event.target.value)} />
-          <Text alignSelf='center' ml='10px'>of {totalPage} pages</Text>
+          <Input w='50px' type='number' textAlign='center' bg='white' defaultValue={page} onChange={(e) => {
+            !e.target.value ? null : e.target.value > totalPage || e.target.value <= 0 ? e.target.value = page :
+              setPage(e.target.value)
+          }} />
+          <Text alignSelf='center' mx='6px'>of {totalPage}</Text>
           <Button onClick={() => setPage(totalPage == page ? page : page + 1)} size='sm' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
             _hover={{ bg: '#009B90', color: 'white' }}>Next</Button>
         </Box>

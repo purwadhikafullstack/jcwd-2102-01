@@ -11,7 +11,7 @@ import { axiosInstance } from '../../../lib/api';
 import qs from 'qs';
 
 export default function ProductCartList(props) {
-  const { image, productName, qtyBuy, price, totalPrice, unit, firstPrice, idCart, idProduct, productCode, idUnit, idUser } = props
+  const { image, productName, qtyBuy, price, totalPrice, stock, unit, firstPrice, idCart, idProduct, productCode, idUnit, idUser } = props
   const { isOpen: isOpenDelete, onOpen: onOpenDelete, onClose: onCloseDelete } = useDisclosure()
   const userSelector = useSelector((state) => state.auth)
   const autoRender = useSelector((state) => state.automateRendering)
@@ -70,7 +70,7 @@ export default function ProductCartList(props) {
 
       if (msg == "Error: Maaf data keranjang anda melebihi produk stok" || msg == "Maaf produk stok tidak mencukupi") {
         toast({
-          title: `Quantity beli Produk ${productName} di keranjang anda sudah melebihi stok / stok tiak mencukupi`,
+          title: `Quantity beli Produk ${productName} di keranjang anda sudah melebihi stok / stok tidak mencukupi`,
           status: "error",
           isClosable: true,
         })

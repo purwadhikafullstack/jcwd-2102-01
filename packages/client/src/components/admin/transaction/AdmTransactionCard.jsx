@@ -16,7 +16,7 @@ import PrescriptionImage from '../../transactions/TransacitonsList/PrescriptionI
 
 export default function AdmTransactionCard(props) {
    const { id, productCode, products, noInvoice, dateCreated, status, totalOrder, grandTotal, qtyBuy, unit, productName, productImage, recipeImage, idRecipe, idUser,
-      buyerName, namaPenerima, noHpPenerima, prov, city, cityId, district, postalCode, addressReciever, courier, shippingCost, imagePayment, note, cancelDes } = props
+      buyerName, namaPenerima, noHpPenerima, prov, city, cityId, district, postalCode, addressReciever, courier, shippingCost, imagePayment, note, cancelDes, stock } = props
    const { isOpen: isOpenCancel, onOpen: onOpenCancel, onClose: onCloseCancel } = useDisclosure()
    const { isOpen: isOpenConfirm, onOpen: onOpenConfirm, onClose: onCloseConfirm } = useDisclosure()
    const { isOpen: isOpenPayment, onOpen: onOpenPayment, onClose: onClosePayment } = useDisclosure()
@@ -318,6 +318,7 @@ export default function AdmTransactionCard(props) {
                   idUserDet={idUser}
                   noteDet={note}
                   cancelDet={cancelDes}
+                  stock={stock}
                />
             </Box>
          </Box>

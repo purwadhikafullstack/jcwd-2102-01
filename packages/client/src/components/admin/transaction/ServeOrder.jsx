@@ -1,7 +1,7 @@
 import {
   Box, Text, Flex, Input, Select, InputGroup, Modal, ModalCloseButton, Icon, InputRightElement, ModalOverlay, ModalHeader, ModalBody,
   useDisclosure, ModalFooter, FormControl, Button, useToast, FormHelperText, ModalContent, Image, TableContainer,
-  Table, Thead, Tr, Th, Td, Tbody, Tfoot,
+  Table, Thead, Tr, Th, Td, Tbody, Tfoot, Tabs, TabList, Tab, TabPanels, TabPanel
 } from '@chakra-ui/react';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux'
@@ -15,6 +15,7 @@ import AdmMdetailTransaction from './AdmMdetailTransaction';
 import * as Yup from "yup";
 import qs from 'qs';
 import ModalAddProduct from './serveOrderModal/ModalAddProduct';
+import ModalAddProductRacik from './serveOrderModal/ModalAddProductRacik';
 import ModalEditProductList from './serveOrderModal/ModalEditProductList';
 import axios from 'axios';
 
@@ -56,6 +57,13 @@ export default function ServeOrder(props) {
       setSearchProduct(searchName)
       setPage(1)
     }
+  })
+
+  // -------------------- filter name and code product -------------------- //
+  const formikPrescription = useFormik({
+    initialValues: {
+      namaRacikan: ``,
+    },
   })
 
   // -------------------- Transaction will be process -------------------- //
@@ -127,7 +135,7 @@ export default function ServeOrder(props) {
     })
   }
 
-  // console.log(productList);
+  console.log(productList);
   // -------------------- Fetching Product -------------------- //
   async function fetchProduct() {
     try {
@@ -153,7 +161,7 @@ export default function ServeOrder(props) {
     return product.map((val, index) => {
       return (
         <Tr _hover={{ background: '#c7fcfc' }} key={index}>
-          <Td textAlign='right'>
+          <Td textAlign='left'>
             <ModalAddProduct
               weight={val.Product?.Product_description?.weight}
               stock={val.stock}
@@ -164,6 +172,37 @@ export default function ServeOrder(props) {
               transactionId={transactionId}
               productName={val.Product?.product_name}
               productId={val.Product?.id}
+              converted={val.converted}
+            />
+          </Td>
+          <Td textAlign='left'>{val.Product?.product_code}</Td>
+          <Td textAlign='left'>{val.Product?.product_name.substring(0, 30)}{!val.Product?.product_name ? null : val.Product?.product_name.length >= 32 ? '...' : null}</Td>
+          <Td textAlign='right'>{val.Product?.Product_description?.weight} gram</Td>
+          <Td textAlign='right'>{val.stock} {val.Unit?.unit_name}</Td>
+          <Td textAlign='right'>Rp {val.selling_price?.toLocaleString()}</Td>
+        </Tr>
+      )
+    })
+  }
+
+  // -------------------- Render for combine Prescription -------------------- //
+  const renderProductRacik = () => {
+    return product.map((val, index) => {
+      return (
+        <Tr _hover={{ background: '#c7fcfc' }} key={index}>
+          <Td textAlign='left'>
+            <ModalAddProductRacik
+              weight={val.Product?.Product_description?.weight}
+              stock={val.stock}
+              unit={val.Unit?.unit_name}
+              price={val.selling_price}
+              unitId={val.Unit?.id}
+              userId={userId}
+              transactionId={transactionId}
+              productName={val.Product?.product_name}
+              productId={val.Product?.id}
+              converted={val.converted}
+              concoctionName={formikPrescription.values.namaRacikan}
             />
           </Td>
           <Td textAlign='left'>{val.Product?.product_code}</Td>
@@ -286,7 +325,7 @@ export default function ServeOrder(props) {
                 </Box>
                 <Box display='flex' fontSize='sm'>
                   <Text fontWeight='semibold' color='#213360' minW='160px'>
-                    Alamat Penerima {cityId} {weight}
+                    Alamat Penerima
                   </Text>:
                   <Text fontWeight='semibold' color='#213360' ml='5px' maxW='300px'>
                     {address}, Prov. {province}, Kec. {district}, Kota/Kab. {city}. {postalCode}
@@ -385,74 +424,167 @@ export default function ServeOrder(props) {
               </Box>
             </Flex>
 
-            {/* ----- daftar produk ----- */}
-            <Box pt='10px' borderTopWidth='2px'>
-              <Text fontWeight='bold'>Daftar Produk :</Text>
-              <Box display='flex' justifyContent='space-between'>
-                {/* {formik.values.searchName} */}
-                <FormControl isInvalid={formik.errors.searchName} w='200px' alignSelf='center' >
-                  <InputGroup size='sm' w='200px' borderRadius='6px' alignSelf='center'>
-                    <Input placeholder="Cari Nama Produk" type='text' bg='white'
-                      onChange={(event) => formik.setFieldValue("searchName", event.target.value)} />
-                    <InputRightElement>
-                      <Icon
-                        fontSize="xl"
-                        as={BiSearchAlt}
-                        sx={{ _hover: { cursor: "pointer" } }}
-                        onClick={() => formik.handleSubmit()}
-                      />
-                    </InputRightElement>
-                  </InputGroup>
-                  <FormHelperText color="red">
-                    {formik.errors.searchName}
-                  </FormHelperText>
-                </FormControl>
+            <Tabs>
+              <TabList>
+                <Tab><Text fontWeight='bold'>Daftar Produk</Text></Tab>
+                <Tab><Text fontWeight='bold'>Racik Obat</Text></Tab>
+              </TabList>
+              <TabPanels>
+                {/* ---------- daftar produk ---------- */}
+                <TabPanel>
+                  <Box>
+                    <Box display='flex' justifyContent='space-between'>
+                      {/* {formik.values.searchName} */}
+                      <FormControl isInvalid={formik.errors.searchName} w='200px' alignSelf='center' >
+                        <InputGroup size='sm' w='200px' borderRadius='6px' alignSelf='center'>
+                          <Input placeholder="Cari Nama Produk" type='text' bg='white'
+                            onChange={(event) => formik.setFieldValue("searchName", event.target.value)} />
+                          <InputRightElement>
+                            <Icon
+                              fontSize="xl"
+                              as={BiSearchAlt}
+                              sx={{ _hover: { cursor: "pointer" } }}
+                              onClick={() => formik.handleSubmit()}
+                            />
+                          </InputRightElement>
+                        </InputGroup>
+                        <FormHelperText color="red">
+                          {formik.errors.searchName}
+                        </FormHelperText>
+                      </FormControl>
 
-                {/* ---------- Pagination ---------- */}
-                <Box display='flex' justifyContent='center' alignSelf='center'>
-                  <Button onClick={() => setPage(page == 1 ? 1 : page - 1)} size='xs' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
-                    _hover={{ bg: '#009B90', color: 'white' }}>Prev</Button>
-                  {/* {renderButton()} */}
-                  <Input alignSelf='center' size='xs' w='50px' type='number' textAlign='center' bg='white' value={page}
-                    onChange={(event) => setPage(event.target.value > totalPage ? page : event.target.value < 1 ? 1 : event.target.value)} />
-                  <Text alignSelf='center' ml='5px'>of {totalPage}</Text>
-                  <Button onClick={() => setPage(totalPage == page ? page : page + 1)} size='xs' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
-                    _hover={{ bg: '#009B90', color: 'white' }}>Next</Button>
-                </Box>
-              </Box>
+                      {/* ---------- Pagination ---------- */}
+                      <Box display='flex' justifyContent='center' alignSelf='center'>
+                        <Button onClick={() => setPage(page == 1 ? 1 : page - 1)} size='xs' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
+                          _hover={{ bg: '#009B90', color: 'white' }}>Prev</Button>
+                        {/* {renderButton()} */}
+                        <Input alignSelf='center' size='xs' w='50px' type='number' textAlign='center' bg='white' value={page}
+                          onChange={(event) => setPage(event.target.value > totalPage ? page : event.target.value < 1 ? 1 : event.target.value)} />
+                        <Text alignSelf='center' ml='5px'>of {totalPage}</Text>
+                        <Button onClick={() => setPage(totalPage == page ? page : page + 1)} size='xs' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
+                          _hover={{ bg: '#009B90', color: 'white' }}>Next</Button>
+                      </Box>
+                    </Box>
 
-              <Box mt='5px' maxH='300px' maxW='850px' overflow='scroll' >
-                {/* ----- table transaction list */}
-                <TableContainer borderTopRadius='6px'>
-                  <Table size='sm' >
-                    {/* <Table size='sm' variant='striped' colorScheme='cyan'> */}
-                    <Thead bg='#213360' color='white' fontWeight='bold' >
-                      <Tr>
-                        <Th textAlign='center' w='60px' color='white'>Act</Th>
-                        <Th w='170px' color='white' textAlign='center'>Kode Produk</Th>
-                        <Th w='200px' color='white' textAlign='center'>Nama Produk</Th>
-                        <Th w='100px' color='white' textAlign='center'>Berat</Th>
-                        <Th w='110px' textAlign='center' color='white' maxW='140px'>Stok</Th>
-                        <Th w='140px' textAlign='center' color='white'>Harga</Th>
-                      </Tr>
-                    </Thead>
-                    <Tbody fontWeight='semibold' >
-                      {renderProduct()}
-                    </Tbody>
-                    <Tfoot bg='#213360' color='white' fontWeight='bold'>
-                      <Tr>
-                        <Th textAlign='center' color='white'>Act</Th>
-                        <Th maxW='150px' color='white' textAlign='center'>Kode Produk</Th>
-                        <Th maxW='150px' color='white' textAlign='center'>Nama Produk</Th>
-                        <Th maxW='150px' color='white' textAlign='center'>Berat</Th>
-                        <Th textAlign='center' color='white' maxW='140px'>Stok</Th>
-                        <Th textAlign='center' color='white'>Harga</Th>
-                      </Tr>
-                    </Tfoot>
-                  </Table>
-                </TableContainer>
-              </Box>
-            </Box>
+                    <Box mt='5px' maxH='300px' maxW='850px' overflow='scroll' >
+                      {/* ----- table transaction list */}
+                      <TableContainer borderTopRadius='6px'>
+                        <Table size='sm' >
+                          {/* <Table size='sm' variant='striped' colorScheme='cyan'> */}
+                          <Thead bg='#213360' color='white' fontWeight='bold' >
+                            <Tr>
+                              <Th textAlign='center' w='60px' color='white'>Act</Th>
+                              <Th w='170px' color='white' textAlign='center'>Kode Produk</Th>
+                              <Th w='200px' color='white' textAlign='center'>Nama Produk</Th>
+                              <Th w='100px' color='white' textAlign='center'>Berat</Th>
+                              <Th w='110px' textAlign='center' color='white' maxW='140px'>Stok</Th>
+                              <Th w='140px' textAlign='center' color='white'>Harga</Th>
+                            </Tr>
+                          </Thead>
+                          <Tbody fontWeight='semibold' >
+                            {renderProduct()}
+                          </Tbody>
+                          <Tfoot bg='#213360' color='white' fontWeight='bold'>
+                            <Tr>
+                              <Th textAlign='center' color='white'>Act</Th>
+                              <Th maxW='150px' color='white' textAlign='center'>Kode Produk</Th>
+                              <Th maxW='150px' color='white' textAlign='center'>Nama Produk</Th>
+                              <Th maxW='150px' color='white' textAlign='center'>Berat</Th>
+                              <Th textAlign='center' color='white' maxW='140px'>Stok</Th>
+                              <Th textAlign='center' color='white'>Harga</Th>
+                            </Tr>
+                          </Tfoot>
+                        </Table>
+                      </TableContainer>
+                    </Box>
+                  </Box>
+                </TabPanel>
+
+                {/* ---------- Racik Obat ---------- */}
+                <TabPanel>
+                  <Box >
+                    {/* <Box display='flex'>
+                      <Text fontWeight='semibold' alignSelf='center' mr='5px'>
+                        Nama Obat Racikan :
+                      </Text>
+                      <Input size='sm' w='200px' placeholder='Nama Obat Racikan' />
+                    </Box> */}
+                    <Box display='flex' justifyContent='space-between' mt='10px'>
+                      {/* {formikPrescription.values.namaRacikan} */}
+                      <FormControl w='200px' isInvalid={formikPrescription.errors.namaRacikan}>
+                        <Input size='sm' w='200px' placeholder='Nama Obat Racikan'
+                          onChange={(event) => formikPrescription.setFieldValue("namaRacikan", event.target.value)} />
+                        <FormHelperText color="red">
+                          {formikPrescription.errors.namaRacikan}
+                        </FormHelperText>
+                      </FormControl>
+
+                      <FormControl isInvalid={formik.errors.searchName} w='200px' alignSelf='center' >
+                        <InputGroup size='sm' w='200px' borderRadius='6px' alignSelf='center'>
+                          <Input placeholder="Cari Nama Produk" type='text' bg='white'
+                            onChange={(event) => formik.setFieldValue("searchName", event.target.value)} />
+                          <InputRightElement>
+                            <Icon
+                              fontSize="xl"
+                              as={BiSearchAlt}
+                              sx={{ _hover: { cursor: "pointer" } }}
+                              onClick={() => formik.handleSubmit()}
+                            />
+                          </InputRightElement>
+                        </InputGroup>
+                        <FormHelperText color="red">
+                          {formik.errors.searchName}
+                        </FormHelperText>
+                      </FormControl>
+
+                      {/* ---------- Pagination ---------- */}
+                      <Box display='flex' justifyContent='center' alignSelf='center'>
+                        <Button onClick={() => setPage(page == 1 ? 1 : page - 1)} size='xs' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
+                          _hover={{ bg: '#009B90', color: 'white' }}>Prev</Button>
+                        {/* {renderButton()} */}
+                        <Input alignSelf='center' size='xs' w='50px' type='number' textAlign='center' bg='white' value={page}
+                          onChange={(event) => setPage(event.target.value > totalPage ? page : event.target.value < 1 ? 1 : event.target.value)} />
+                        <Text alignSelf='center' ml='5px'>of {totalPage}</Text>
+                        <Button onClick={() => setPage(totalPage == page ? page : page + 1)} size='xs' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
+                          _hover={{ bg: '#009B90', color: 'white' }}>Next</Button>
+                      </Box>
+                    </Box>
+
+                    <Box mt='5px' maxH='300px' maxW='850px' overflow='scroll' >
+                      {/* ----- table transaction list */}
+                      <TableContainer borderTopRadius='6px'>
+                        <Table size='sm' >
+                          {/* <Table size='sm' variant='striped' colorScheme='cyan'> */}
+                          <Thead bg='#213360' color='white' fontWeight='bold' >
+                            <Tr>
+                              <Th textAlign='center' w='60px' color='white'>Act</Th>
+                              <Th w='170px' color='white' textAlign='center'>Kode Produk</Th>
+                              <Th w='200px' color='white' textAlign='center'>Nama Produk</Th>
+                              <Th w='100px' color='white' textAlign='center'>Berat</Th>
+                              <Th w='110px' textAlign='center' color='white' maxW='140px'>Stok</Th>
+                              <Th w='140px' textAlign='center' color='white'>Harga</Th>
+                            </Tr>
+                          </Thead>
+                          <Tbody fontWeight='semibold' >
+                            {renderProductRacik()}
+                          </Tbody>
+                          <Tfoot bg='#213360' color='white' fontWeight='bold'>
+                            <Tr>
+                              <Th textAlign='center' color='white'>Act</Th>
+                              <Th maxW='150px' color='white' textAlign='center'>Kode Produk</Th>
+                              <Th maxW='150px' color='white' textAlign='center'>Nama Produk</Th>
+                              <Th maxW='150px' color='white' textAlign='center'>Berat</Th>
+                              <Th textAlign='center' color='white' maxW='140px'>Stok</Th>
+                              <Th textAlign='center' color='white'>Harga</Th>
+                            </Tr>
+                          </Tfoot>
+                        </Table>
+                      </TableContainer>
+                    </Box>
+                  </Box>
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
 
           </ModalBody>
 
