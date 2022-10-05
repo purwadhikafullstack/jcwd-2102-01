@@ -109,33 +109,93 @@ export default function ServeOrder(props) {
   }, [productList])
 
   // -------------------- render Transaction List -------------------- //
-  const renderTransactionList = () => {
-    return productList.map((val, index) => {
-      totalWeight += (val.buy_quantity * val.Product?.Product_description?.weight)
+  // const renderTransactionList = () => {
+  //   return productList.map((val, index) => {
+  //     totalWeight += (val.buy_quantity * val.Product?.Product_description?.weight)
+  //     return (
+  //       <Tr _hover={{ background: '#c7fcfc' }} key={index}>
+  //         <Td>
+  //           <ModalEditProductList
+  //             transactionId={val.id_transaction}
+  //             orderListId={val.id}
+  //             productName={val.Product?.product_name}
+  //             totalPrice={val.total_price}
+  //             price={val.price}
+  //             buyQuantity={val.buy_quantity}
+  //             stokProduk={val.Product?.Product_stocks[0]?.id_unit == val.Unit?.id ? val.Product?.Product_stocks[0]?.stock : val.Product?.Product_stocks[1]?.stock}
+  //             unitName={val.Unit?.unit_name}
+  //           />
+  //         </Td>
+  //         <Td>{val.Product?.product_name.substring(0, 30)}{!val.Product?.product_name ? null : val.Product?.product_name.length >= 32 ? '...' : null}</Td>
+  //         <Td textAlign='right'>Rp {val.price?.toLocaleString()}</Td>
+  //         <Td textAlign='right'>{val.buy_quantity?.toLocaleString()} {val.Unit?.unit_name}</Td>
+  //         <Td textAlign='right'>Rp {val.total_price?.toLocaleString()}</Td>
+  //       </Tr>
+  //     )
+  //   })
+  // }
+
+  // -------------------- pengecekkan NamaRacikan untuk di filter versi maping -------------------- //
+  let temp = productList.map(function (x) { return x.medicine_concoction_name })
+  let cekNamaRacikan = new Set(temp);
+  let filterNamaRacikan = [...cekNamaRacikan];
+  // console.log(filterNamaRacikan);
+  // console.log(productList);
+
+  const renderTransactionList2 = () => {
+    return filterNamaRacikan.map((x, index) => {
       return (
-        <Tr _hover={{ background: '#c7fcfc' }} key={index}>
-          <Td>
-            <ModalEditProductList
-              transactionId={val.id_transaction}
-              orderListId={val.id}
-              productName={val.Product?.product_name}
-              totalPrice={val.total_price}
-              price={val.price}
-              buyQuantity={val.buy_quantity}
-              stokProduk={val.Product?.Product_stocks[0]?.id_unit == val.Unit?.id ? val.Product?.Product_stocks[0]?.stock : val.Product?.Product_stocks[1]?.stock}
-              unitName={val.Unit?.unit_name}
-            />
-          </Td>
-          <Td>{val.Product?.product_name.substring(0, 30)}{!val.Product?.product_name ? null : val.Product?.product_name.length >= 32 ? '...' : null}</Td>
-          <Td textAlign='right'>Rp {val.price?.toLocaleString()}</Td>
-          <Td textAlign='right'>{val.buy_quantity?.toLocaleString()} {val.Unit?.unit_name}</Td>
-          <Td textAlign='right'>Rp {val.total_price?.toLocaleString()}</Td>
-        </Tr>
+        <>
+          <Text key={index} fontSize='md' fontWeight='bold'>
+            {x == '' ? 'Umum' : 'Racikan ' + x}
+          </Text>
+          <TableContainer borderTopRadius='6px' mb='8px'>
+            <Table size='sm' >
+              <Thead bg='#213360' color='white' fontWeight='bold' >
+                <Tr>
+                  <Th textAlign='center' color='white'>Act</Th>
+                  <Th maxW='150px' color='white' textAlign='center'>Nama Produk</Th>
+                  <Th textAlign='center' color='white'>Harga</Th>
+                  <Th textAlign='center' color='white' maxW='140px'>Qty</Th>
+                  <Th textAlign='center' color='white'>Total Harga</Th>
+                </Tr>
+              </Thead>
+              <Tbody fontWeight='semibold'>
+                {productList.map((val, index) => {
+                  totalWeight += (val.buy_quantity * val.Product?.Product_description?.weight)
+                  if (val.medicine_concoction_name == x) {
+                    return (
+
+                      <Tr _hover={{ background: '#c7fcfc' }} key={index}>
+                        <Td>
+                          <ModalEditProductList
+                            transactionId={val.id_transaction}
+                            orderListId={val.id}
+                            productName={val.Product?.product_name}
+                            totalPrice={val.total_price}
+                            price={val.price}
+                            buyQuantity={val.buy_quantity}
+                            stokProduk={val.Product?.Product_stocks[0]?.id_unit == val.Unit?.id ? val.Product?.Product_stocks[0]?.stock : val.Product?.Product_stocks[1]?.stock}
+                            unitName={val.Unit?.unit_name}
+                          />
+                        </Td>
+                        <Td>{val.Product?.product_name.substring(0, 30)}{!val.Product?.product_name ? null : val.Product?.product_name.length >= 32 ? '...' : null}</Td>
+                        <Td textAlign='right'>Rp {val.price?.toLocaleString()}</Td>
+                        <Td textAlign='right'>{val.buy_quantity?.toLocaleString()} {val.Unit?.unit_name}</Td>
+                        <Td textAlign='right'>Rp {val.total_price?.toLocaleString()}</Td>
+                      </Tr>
+                    )
+                  } else { null }
+                })}
+                {/* {renderTransactionList()} */}
+              </Tbody>
+            </Table>
+          </TableContainer>
+        </>
       )
     })
   }
 
-  console.log(productList);
   // -------------------- Fetching Product -------------------- //
   async function fetchProduct() {
     try {
@@ -345,8 +405,12 @@ export default function ServeOrder(props) {
                   </Text>:
                 </Box>
 
-                {/* ----- Table Ringkasan Pesanan ----- */}
-                <Box mt='5px' maxH='200px' maxW='460px' overflow='scroll' >
+                {/* ----- Table Ringkasan Pesanan ver2 racikan ----- */}
+                <Box mt='5px' maxH='250px' maxW='460px' overflow='scroll' >
+                  {renderTransactionList2()}
+                </Box>
+                {/* ----- Table Ringkasan Pesanan ver1 normal ----- */}
+                {/* <Box mt='5px' maxH='200px' maxW='460px' overflow='scroll' >
                   <TableContainer borderTopRadius='6px'>
                     <Table size='sm' >
                       <Thead bg='#213360' color='white' fontWeight='bold' >
@@ -363,7 +427,8 @@ export default function ServeOrder(props) {
                       </Tbody>
                     </Table>
                   </TableContainer>
-                </Box>
+                </Box> */}
+
                 <Box display='flex' fontSize='sm' justifyContent='space-between'>
                   <Text fontWeight='semibold' color='#213360' minW='160px'>
                     Total Keseluruhan :

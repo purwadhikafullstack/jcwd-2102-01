@@ -10,24 +10,64 @@ import moment from 'moment';
 
 export default function AdmMdetailTransaction(props) {
    const { idDet, productsDet, noInvoiceDet, dateCreatedDet, statusDet, totalOrderDet, shippingCostDet, namaPenerimaDet, alamatPenerimaDet, provDet, cityDet, districtDet, kurirDet,
-      grandTotalDet, qtyBuyDet, noHpPenerimaDet, stock, unitDet, productNameDet, productImageDet, idUserDet, noteDet, cancelDet } = props
+      grandTotalDet, qtyBuyDet, noHpPenerimaDet, stock, unitDet, productNameDet, productImageDet, idUserDet, idRecipe, noteDet, cancelDet } = props
    const { isOpen: isOpenDetail, onOpen: onOpenDetail, onClose: onCloseDetail } = useDisclosure()
 
+   // -------------------- pengecekkan NamaRacikan untuk di filter versi maping -------------------- //
+   let temp = productsDet.map(function (x) { return x.medicine_concoction_name })
+   let cekNamaRacikan = new Set(temp);
+   let filterNamaRacikan = [...cekNamaRacikan];
+   // console.log(filterNamaRacikan);
+   // console.log(productList);
+
    const renderTransactionList = () => {
-      return productsDet.map((val, index) => {
-         return (
-            <AdmProductOrderList key={index}
-               image={val.Product?.Product_images[0]?.image_url}
-               productName={val.Product?.product_name}
-               qtyBuy={val.buy_quantity}
-               price={val.price}
-               totalPrice={val.total_price}
-               productCode={val.Product?.product_code}
-               unit={val.Unit?.unit_name}
-               stock={val.id_unit == val.Product?.Product_stocks[0]?.id_unit ? val.Product?.Product_stocks[0]?.stock : val.Product?.Product_stocks[1]?.stock}
-            />
-         )
-      })
+      if (idRecipe == 1) {
+         return productsDet.map((val, index) => {
+            return (
+               <AdmProductOrderList key={index}
+                  image={val.Product?.Product_images[0]?.image_url}
+                  productName={val.Product?.product_name}
+                  qtyBuy={val.buy_quantity}
+                  price={val.price}
+                  totalPrice={val.total_price}
+                  productCode={val.Product?.product_code}
+                  unit={val.Unit?.unit_name}
+                  stock={val.id_unit == val.Product?.Product_stocks[0]?.id_unit ? val.Product?.Product_stocks[0]?.stock : val.Product?.Product_stocks[1]?.stock}
+               />
+            )
+         })
+      } else {
+         return filterNamaRacikan.map((x, index) => {
+            return (
+               <>
+                  <Text key={index} fontSize='md' color='#009B90' fontWeight='bold' mt='20px'>
+                     {x == '' ? 'Umum' : 'Racikan ' + x}
+                  </Text>
+                  {
+                     productsDet.map((val, index) => {
+                        if (val.medicine_concoction_name == x) {
+                           return (
+                              <>
+                                 <AdmProductOrderList key={index}
+                                    image={val.Product?.Product_images[0]?.image_url}
+                                    productName={val.Product?.product_name}
+                                    qtyBuy={val.buy_quantity}
+                                    price={val.price}
+                                    totalPrice={val.total_price}
+                                    productCode={val.Product?.product_code}
+                                    unit={val.Unit?.unit_name}
+                                    stock={val.id_unit == val.Product?.Product_stocks[0]?.id_unit ? val.Product?.Product_stocks[0]?.stock : val.Product?.Product_stocks[1]?.stock}
+                                 />
+                              </>
+                           )
+                        }
+                     })
+                  }
+               </>
+            )
+         })
+      }
+
    }
 
    console.log(productsDet);

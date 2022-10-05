@@ -319,6 +319,7 @@ export default function AdmTransactionCard(props) {
                   noteDet={note}
                   cancelDet={cancelDes}
                   stock={stock}
+                  idRecipe={idRecipe}
                />
             </Box>
          </Box>

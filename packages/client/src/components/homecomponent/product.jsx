@@ -69,7 +69,8 @@ export default function HomePrduct() {
     fetchProduct()
   }, [autoRender]);
   return (
-    <Box m='15px' mb='15px' w='1090px'>
+    // <Box m='15px' mb='15px' maxW='1090px'>
+    <Box m='15px' mb='15px' maxW='1090px'>
       <Box display='flex' justifyContent='space-between' mb='10px'>
         <Text fontWeight='bold' fontSize='lg'>Produk Populer</Text>
         <NextLink href='/productlist'>
@@ -83,7 +84,7 @@ export default function HomePrduct() {
 
       <Swiper
         slidesPerView={5}
-        centeredSlides={true}
+        // centeredSlides={true}
         spaceBetween={30}
         pagination={{
           clickable: true,
