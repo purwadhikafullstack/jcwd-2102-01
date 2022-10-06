@@ -70,7 +70,7 @@ export default function AdmMdetailTransaction(props) {
 
    }
 
-   console.log(productsDet);
+   // console.log(productsDet);
    return (
       <>
          <Button onClick={onOpenDetail} variant='link' color='#009B90'>
