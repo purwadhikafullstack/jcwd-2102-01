@@ -1,12 +1,87 @@
 import {
- Box, Flex, Avatar, HStack, Button, Menu, MenuButton, AlertIcon, Alert,
+ Box, Flex, Avatar, HStack, Button, Menu, MenuButton, AlertIcon, Alert, Image,
  MenuDivider, Text, Icon, useDisclosure, Link, Modal, ModalOverlay
 } from '@chakra-ui/react';
 import NextLink from 'next/link'
 import banner from '../../assets/img/bg.png'
-import Image from 'next/image';
+import NextImage from 'next/image';
+import { useRouter } from "next/router";
+import { useState, useEffect, useRef } from "react";
+import { axiosInstance } from '../../lib/api';
+import { Swiper, SwiperSlide } from "swiper/react";
+// import required modules
+import { Pagination } from "swiper";
+// Import Swiper styles
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
 
 export default function HomeCategory() {
+ const [category, setCategory] = useState([])
+ const router = useRouter();
+
+ // --------------- Fetching Category --------------- //
+ async function fetchCategory() {
+  try {
+   axiosInstance.get(`/category`)
+    .then((res) => {
+     setCategory(res.data.result)
+     console.log(res.data.result)
+    })
+  } catch (err) {
+   console.log(err)
+  }
+ };
+
+ // const renderCategoryWeb = () => {
+ //  return category?.map((val, index) => {
+ //   return (
+ //    <>
+ //     <Link href={`/productlist?category1=` + val.category} style={{ textDecoration: "none" }}>
+ //      <Box key={index} borderRadius='16px' w='130px' h='110px' bg='white'
+ //       borderWidth='1px' boxShadow='sm' align='center' py='5px' _hover={{ boxShadow: 'lg' }}>
+ //       <Box>
+ //        <Image objectFit='contain' src={`http://${val.image_url}`} width='60px' height='60px' />
+ //       </Box>
+ //       <Box mt='5px'>
+ //        <Text fontSize='sm' fontWeight='semibold'>
+ //         {val.category}
+ //        </Text>
+ //       </Box>
+ //      </Box>
+ //     </Link>
+ //    </>
+ //   )
+ //  })
+ // }
+
+ const renderCategoryWeb = () => {
+  return category?.map((val, index) => {
+   return (
+    <>
+     <SwiperSlide>
+      <Link href={`/productlist?category1=` + val.category} style={{ textDecoration: "none" }}>
+       <Box key={index} borderRadius='16px' w='130px' h='110px' bg='white'
+        borderWidth='1px' boxShadow='sm' align='center' py='5px' _hover={{ boxShadow: 'lg' }}>
+        <Box width='60px' height='60px'>
+         <Image objectFit='contain' src={`http://${val.image_url}`} width='60px' height='60px' />
+        </Box>
+        <Box mt='5px'>
+         <Text fontSize='sm' fontWeight='semibold'>
+          {val.category}
+         </Text>
+        </Box>
+       </Box>
+      </Link>
+     </SwiperSlide>
+    </>
+   )
+  })
+ }
+
+ useEffect(() => {
+  fetchCategory()
+ }, [router.isReady]);
  return (
   <Box m='30px' mb='15px' h='160px' w='1090px' >
    <Box display='flex' justifyContent='space-between' mb='10px'>
@@ -15,51 +90,21 @@ export default function HomeCategory() {
      <Text fontWeight='bold' color='#009B90' fontSize='sm' _hover={{ cursor: "pointer", color: '#224B0C' }}>Lihat semua</Text>
     </NextLink>
    </Box>
+   {/* <Box display='flex' justifyContent='space-between' overflow='scroll' >
+    {renderCategoryWeb()}
+   </Box> */}
 
-   <Box display='flex' justifyContent='space-between' >
-    <Box borderRadius='16px' w='130px' h='110px' display='flex' bg='white'
-     borderWidth='1px' boxShadow='lg' alignSelf='center'>
-     <Text>
-      Obat-obatan
-     </Text>
-    </Box>
-    <Box borderRadius='16px' w='130px' h='110px' display='flex' bg='white'
-     borderWidth='1px' boxShadow='lg' alignSelf='center'>
-     <Text>
-      Obat-obatan
-     </Text>
-    </Box>
-    <Box borderRadius='16px' w='130px' h='110px' display='flex' bg='white'
-     borderWidth='1px' boxShadow='lg' alignSelf='center'>
-     <Text>
-      Obat-obatan
-     </Text>
-    </Box>
-    <Box borderRadius='16px' w='130px' h='110px' display='flex' bg='white'
-     borderWidth='1px' boxShadow='lg' alignSelf='center'>
-     <Text>
-      Obat-obatan
-     </Text>
-    </Box>
-    <Box borderRadius='16px' w='130px' h='110px' display='flex' bg='white'
-     borderWidth='1px' boxShadow='lg' alignSelf='center'>
-     <Text>
-      Obat-obatan
-     </Text>
-    </Box>
-    <Box borderRadius='16px' w='130px' h='110px' display='flex' bg='white'
-     borderWidth='1px' boxShadow='lg' alignSelf='center'>
-     <Text>
-      Obat-obatan
-     </Text>
-    </Box>
-    <Box borderRadius='16px' w='130px' h='110px' display='flex' bg='white'
-     borderWidth='1px' boxShadow='lg' alignSelf='center'>
-     <Text>
-      Obat-obatan
-     </Text>
-    </Box>
-   </Box>
+   <Swiper
+    slidesPerView={7}
+    spaceBetween={30}
+    pagination={{
+     clickable: true,
+    }}
+    modules={[Pagination]}
+    className="mySwiper"
+   >
+    {renderCategoryWeb()}
+   </Swiper>
   </Box >
  )
 }

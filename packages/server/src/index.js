@@ -24,7 +24,7 @@ const {
   userRoutes,
 } = require("./routes");
 
-sequelize.sync({ alter: true }); 
+// sequelize.sync({ alter: true }); 
 // sintax diatas digunakan untuk mapping colom table untuk mencek dan update. jika sudah kita bisa commant agar tidak berat saat  running
 
 app.use(cors());
@@ -40,6 +40,7 @@ app.use("/products", productRoutes);
 app.use("/transaction", transactionsRoutes);
 app.use("/user", userRoutes);
 
+app.use("/category_images", express.static(`${__dirname}/public/category_images`));
 app.use("/payment_images", express.static(`${__dirname}/public/payment_images`));
 app.use("/product_images", express.static(`${__dirname}/public/product_images`));
 app.use("/profile_pict", express.static(`${__dirname}/public/profile_pict`));

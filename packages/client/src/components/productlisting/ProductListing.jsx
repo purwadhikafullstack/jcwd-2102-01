@@ -29,7 +29,7 @@ export default function ProductListing() {
   const [category, setCategory] = useState([])
   const [product, setProduct] = useState([])
 
-  // --------------- for Filtering --------------- //
+  // ---------------------- for Filtering ---------------------- //
   const [pageStart, setPageStart] = useState(1)
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(16)
@@ -40,6 +40,7 @@ export default function ProductListing() {
   const [totalPage, setTotalPage] = useState(0)
   let routerQuery = router.query
 
+  // ---------------------- filter name and product code ---------------------- //
   const formik = useFormik({
     initialValues: {
       searchName: ``,
@@ -57,7 +58,7 @@ export default function ProductListing() {
     }
   })
 
-  // --------------- Fetching Category --------------- //
+  // ---------------------- Fetching Category ---------------------- //
   async function fetchCategory() {
     try {
       axiosInstance.get(`/category`)
@@ -71,7 +72,7 @@ export default function ProductListing() {
     }
   };
 
-  // --------------- Filtering Category Product --------------- //
+  // ---------------------- Filtering Category Product ---------------------- //
   const setTheParams = async (category) => {
     if (routerQuery.category1 == category && routerQuery.category2 != category) {
       await router.push(`?category1&category2=${!routerQuery.category2 ? '' : routerQuery.category2}`);
@@ -90,7 +91,6 @@ export default function ProductListing() {
       setPage(1)
     }
     // else if (routerQuery.category1 && routerQuery.category2) {
-
     // }
     if (!category) {
       await router.push(`/productlist`);
@@ -112,9 +112,12 @@ export default function ProductListing() {
       return (
         <>
           <Button key={index} variant='link' onClick={() => setTheParams(val.category)}
-            style={{ textDecoration: 'none' }} my='3px' w='full'>
-            <Checkbox onClick={setTheParams}
-              // checked={routerQuery.category1 || routerQuery.category2 || routerQuery.category3 == val.category ? true : false}
+            style={{ textDecoration: 'none' }} my='3px' w='full'
+            disabled={routerQuery.category1 && routerQuery.category2 && routerQuery.category1 != val.category && routerQuery.category2 != val.category ?
+              true : false}>
+            <Checkbox // onClick={setTheParams}
+              isChecked={routerQuery.category1 == val.category ? true :
+                routerQuery.category2 == val.category ? true : false}
               colorScheme='green' my='3px' w='full'>
               <SideFilterCategory key={index}
                 idcategory={val.id}
@@ -127,7 +130,7 @@ export default function ProductListing() {
     })
   }
 
-  // --------------- Fetching Product --------------- //
+  // ---------------------- Fetching Product ---------------------- //
   async function fetchProduct(filter) {
     const { category1, category2, category3, pages } = router.query
     let order = "";
@@ -159,11 +162,7 @@ export default function ProductListing() {
       order = '';
       sort = ""
     }
-
     try {
-      // axiosInstance.get(`/comment/post/${id}?page=${startComment}&limit=${5}`)
-      // get all product length
-      // axiosInstance.get(`/products?search=${searchProduct}&sort=${sort}&orderby=${order}&category=${category1 ? category1 : null}&category2=${category2 ? category2 : null}&category3=${category3 ? category3 : null}
       axiosInstance.get(`/products?search=${searchProduct}&sort=${sort}&orderby=${order}&category${category1 ? '=' + category1 : null}&category2${category2 ? '=' + category2 : null}&category3${category3 ? '=' + category3 : null}&limit=100000&page=1`)
         .then((res) => {
           const temp = res.data.result
@@ -177,7 +176,6 @@ export default function ProductListing() {
           const temp = res.data.result
           // console.log(res.data.result)
         })
-
     } catch (err) {
       console.log(err)
     }
@@ -211,11 +209,12 @@ export default function ProductListing() {
 
   }, [router.isReady]);
 
-  console.log('total produk ' + totalProduct)
-  console.log('total page ' + totalPage)
-  console.log('limit ' + limit);
+  // console.log('total produk ' + totalProduct)
+  // console.log('total page ' + totalPage)
+  // console.log('limit ' + limit);
   // console.log(page)
 
+  // ---------------------- render button page ---------------------- //
   // const renderButton = () => {
   //   const array = [...Array(totalPage)]
   //   return (
@@ -256,14 +255,9 @@ export default function ProductListing() {
               </Box>
             </Box>
             <Box p='15px'>
-              {formik.values.sortByProduct}
+              {/* {formik.values.sortByProduct} */}
               <FormControl isInvalid={formik.errors.sortByProduct}>
                 <Select onChange={(event) => {
-                  // async function submit() {
-                  //   formik.setFieldValue("sortByProduct", event.target.value);
-                  //   setTheOrderSort();
-                  // }
-                  // submit()
                   fetchProduct(event.target.value)
                 }}>
                   <option value=''>-- Pilih --</option>
@@ -372,32 +366,18 @@ export default function ProductListing() {
               </DrawerContent>
             </Drawer>
 
-            {/* ---------- Sort by Name an Price Mobile ---------- */}
-            <Button onClick={onOpen} size='md' w='180px' borderRadius='8px' bg='#009B90'
-              _hover={{ background: '#02d1c2' }}>
-              <Icon boxSize='5' as={BsFilterLeft} color='white' />
-              <Text mx='10px' fontWeight='bold' color='white'>
-                Urut Berdasarkan
-              </Text>
-            </Button>
-            <Drawer onClose={onClose} placement='top' isOpen={isOpen} size='full'>
-              <DrawerOverlay />
-              <DrawerContent>
-                <DrawerCloseButton color='white' />
-                <DrawerHeader bg='#009B90' color='white'>Urut Berdasarkan</DrawerHeader>
-                <DrawerBody>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                    eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                    Consequat nisl vel pretium lectus quam id. Semper quis lectus
-                    nulla at volutpat diam ut venenatis. Dolor morbi non arcu risus
-                    quis varius quam quisque. Massa ultricies mi quis hendrerit dolor
-                    magna eget est lorem. Erat imperdiet sed euismod nisi porta.
-                    Lectus vestibulum mattis ullamcorper velit.
-                  </p>
-                </DrawerBody>
-              </DrawerContent>
-            </Drawer>
+            {/* ---------- Sort by Name and Price Mobile ---------- */}
+            {/* {formik.values.sortByProduct} */}
+            <FormControl isInvalid={formik.errors.sortByProduct} w='180px'>
+              <Select bg='white' size='md' w='180px' borderRadius='8px'
+                onChange={(event) => { fetchProduct(event.target.value) }}>
+                <option value=''>-- Pilih --</option>
+                <option value='product_asc'>Nama A-Z</option>
+                <option value='product_des'>Nama Z-A</option>
+                <option value='price_des'>Harga Tertinggi</option>
+                <option value='price_asc'>Harga Terendah</option>
+              </Select>
+            </FormControl>
           </Box>
 
           {!searchProduct ?
@@ -444,8 +424,16 @@ export default function ProductListing() {
             <Button onClick={() => setPage(page == 1 ? 1 : page - 1)} size='sm' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
               _hover={{ bg: '#009B90', color: 'white' }}>Prev</Button>
             {/* {renderButton()} */}
-            <Input w='50px' type='number' textAlign='center' bg='white' value={page}
-              onChange={(event) => setPage(event.target.value > totalPage ? page : event.target.value < 1 ? 1 : event.target.value)} />
+            {/* <Input w='50px' type='number' textAlign='center' bg='white' value={page}
+              onChange={(event) => setPage(event.target.value > totalPage ? page : event.target.value < 1 ? 1 : event.target.value)} /> */}
+            {/* <Input w='50px' textAlign='center' bg='white' defaultValue={page} type="text" onChange={(e) => {
+              !e.target.value ? null : e.target.value <= 0 ? setPage(1) :
+                setPage(e.target.value)
+            }} /> */}
+            <Input w='50px' type='number' textAlign='center' bg='white' defaultValue={page} onChange={(e) => {
+              !e.target.value ? null : e.target.value > totalPage || e.target.value <= 0 ? e.target.value = page :
+                setPage(e.target.value)
+            }} />
             <Text alignSelf='center' mx='5px'>of {totalPage}</Text>
             <Button onClick={() => setPage(totalPage == page ? page : page + 1)} size='sm' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
               _hover={{ bg: '#009B90', color: 'white' }}>Next</Button>

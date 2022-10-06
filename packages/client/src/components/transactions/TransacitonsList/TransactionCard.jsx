@@ -1,27 +1,20 @@
 import {
-   Box, Text, Avatar, Link, FormLabel, Textarea, AvatarBadge, Flex, Input, Select, InputLeftElement, InputGroup,
-   Modal, ModalCloseButton, Icon, Tooltip, ModalOverlay, ModalHeader, ModalBody, useDisclosure, ModalFooter,
-   FormControl, Button, useToast, FormHelperText, ModalContent, Center, useMediaQuery, Image,
-   Divider, Tabs, TabList, TabPanel, TabPanels, Tab, InputRightElement, Drawer, DrawerBody, DrawerHeader, DrawerCloseButton, DrawerContent, DrawerOverlay
+   Box, Text, Link, FormLabel, Textarea, Flex,
+   Modal, ModalCloseButton, ModalOverlay, ModalHeader, ModalBody, useDisclosure, ModalFooter,
+   FormControl, Button, useToast, ModalContent, Image,
+   Divider,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux'
-import { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import { useRouter } from "next/router";
-import { FaTrashAlt, FaEdit } from "react-icons/fa";
-import { IoCloseSharp } from "react-icons/io5";
-import { IoIosSave } from "react-icons/io";
-import { BiPlusMedical } from "react-icons/bi";
-import { GoVerified } from "react-icons/go";
-import { BiSearchAlt, BiReset } from 'react-icons/bi';
 import { axiosInstance } from '../../../lib/api';
-// import ModalProfPicture from './mchangepicture/ModalProfPict';
 import * as Yup from "yup";
 import qs from 'qs';
 import UploadPayment from '../payment/UploadPayment';
 import MdetailTransaction from './MdetailTransaction';
+import PrescriptionImage from './PrescriptionImage';
 
 export default function TransactionCard(props) {
    const { id, productCode, noInvoice, dateCreated, status, grandTotal, qtyBuy, note, cancelDes, unit, productName, productImage, idUser, recipeImage, idRecipe, products,
@@ -35,7 +28,7 @@ export default function TransactionCard(props) {
    const toast = useToast();
    const router = useRouter();
 
-   // ----- cancel transaction
+   // -------------------- cancel transaction -------------------- //
    const formik = useFormik({
       initialValues: {
          note: ``,
@@ -71,7 +64,7 @@ export default function TransactionCard(props) {
       }
    })
 
-   // ----- Transaction Confirmation
+   // -------------------- Transaction Confirmation -------------------- //
    const confirmTransaction = async () => {
       try {
          let body = {
@@ -119,7 +112,7 @@ export default function TransactionCard(props) {
                </Box>
                <Divider my='10px' />
                <Flex>
-                  <Image mr='20px' objectFit='cover' src={`http://${recipeImage}`} _hover={{ cursor: 'pointer' }} width='80px' height='80px' />
+                  <PrescriptionImage imageUrl={recipeImage} />
                   <Text fontWeight='semibold' fontSize='sm' textColor='#213360' maxW='300px' overflow='hidden'>
                      Catatan : {note}
                   </Text>
@@ -165,18 +158,24 @@ export default function TransactionCard(props) {
                            <Image mr='20px' objectFit='cover' src={`http://${productImage}`} _hover={{ cursor: 'pointer' }} width='80px' height='80px' />
                         </NextLink>
                         :
-                        <Image mr='20px' objectFit='cover' src={`http://${recipeImage}`} _hover={{ cursor: 'pointer' }} width='80px' height='80px' />
+                        <PrescriptionImage imageUrl={recipeImage} />
                      }
                      <Box>
-                        <Link href={`/productdetails/${productCode}`} style={{ textDecoration: 'none' }}>
-                           <Text fontWeight='semibold' fontSize='sm' textColor='#213360' maxW='250px' overflow='hidden'>
-                              {productName?.substring(0, 50)}{!productName ? null : productName.length >= 32 ? '...' : null}
-                              {/* {productName} */}
-                           </Text>
-                        </Link>
-                        <Text fontWeight='semibold' fontSize='sm' textColor='#213360'>
-                           {qtyBuy} {unit} x
-                        </Text>
+                        {idRecipe == 1 ?
+                           <>
+                              <Link href={`/productdetails/${productCode}`} style={{ textDecoration: 'none' }}>
+                                 <Text fontWeight='semibold' fontSize='sm' textColor='#213360' maxW='250px' overflow='hidden'>
+                                    {productName?.substring(0, 50)}{!productName ? null : productName.length >= 32 ? '...' : null}
+                                    {/* {productName} */}
+                                 </Text>
+                              </Link>
+                              <Text fontWeight='semibold' fontSize='sm' textColor='#213360'>
+                                 {qtyBuy} {unit} x
+                              </Text>
+                           </> :
+                           <Text fontWeight='semibold' fontSize='sm' textColor='#213360' maxW='300px' overflow='hidden'>
+                              Catatan : {note}
+                           </Text>}
                      </Box>
                   </Box>
                   <Box w='100px'>

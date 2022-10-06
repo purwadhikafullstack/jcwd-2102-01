@@ -1,9 +1,6 @@
 import {
-  Box, Text, Avatar, Link, AvatarBadge, Flex, Input, Select, InputLeftElement, InputGroup,
-  Modal, ModalCloseButton, Icon, Tooltip, ModalOverlay, ModalHeader, ModalBody, useDisclosure,
-  FormControl, Button, useToast, FormHelperText, ModalContent, Center, useMediaQuery,
-  Divider, Tabs, TabList, TabPanel, TabPanels, Tab, InputRightElement, Drawer,
-  DrawerBody, DrawerHeader, DrawerCloseButton, DrawerContent, DrawerOverlay,
+  Box, Text, Input, Select, InputGroup, Icon,
+  FormControl, Button, useMediaQuery, TabPanel, Tab, InputRightElement,
   Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverCloseButton, PopoverHeader, PopoverBody,
   NumberInputField, NumberInput, NumberIncrementStepper, NumberDecrementStepper, NumberInputStepper
 } from '@chakra-ui/react';
@@ -11,34 +8,21 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import { useRouter } from "next/router";
-import { FaTrashAlt, FaEdit } from "react-icons/fa";
-import { IoCloseSharp } from "react-icons/io5";
-import { IoIosSave } from "react-icons/io";
-import { BiPlusMedical } from "react-icons/bi";
-import { GoVerified } from "react-icons/go";
-import { BiSearchAlt, BiReset } from 'react-icons/bi';
+import { BiSearchAlt } from 'react-icons/bi';
 import { axiosInstance } from '../../../lib/api';
-// import ModalProfPicture from './mchangepicture/ModalProfPict';
 import moment from 'moment';
 import * as Yup from "yup";
-import qs from 'qs';
-// import TransactionCard from './TransactionCard';
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import { DateRange } from 'react-date-range';
 import AdmTransactionCard from './AdmTransactionCard';
 
 export default function AllTransactions() {
-  const { isOpen: isOpenStatus, onOpen: onOpenStatus, onClose: onCloseStatus } = useDisclosure()
-  const [filtermobile] = useMediaQuery('(min-width: 1059px)')
-  const [filtermobile2] = useMediaQuery('(min-width: 670px)')
   const [transactionFetch, setTransactionFetch] = useState([])
   const userSelector = useSelector((state) => (state.auth))
   const autoRender = useSelector((state) => state.automateRendering)
-  const toast = useToast();
   const dispatch = useDispatch()
   const router = useRouter();
-  const image = userSelector.image_url;
 
   // ------ for filter
   const [pageStart, setPageStart] = useState(1)
@@ -60,7 +44,7 @@ export default function AllTransactions() {
     }
   ]);
 
-  // ----- Search
+  // -------------------- Search -------------------- //
   const formik = useFormik({
     initialValues: {
       searchInvoice: ``,
@@ -79,7 +63,7 @@ export default function AllTransactions() {
   // console.log(startDate2);
   // console.log(endDate2);
 
-  // ---------- Fetching Transaction ---------- //
+  // -------------------- Fetching Transaction -------------------- //
   async function fetchTransaction(filter) {
     const { status } = router.query
 
@@ -101,7 +85,6 @@ export default function AllTransactions() {
       order = '';
       sort = ""
     }
-
     try {
       axiosInstance.post(`/transaction/api/v1/Trasanctions?idUser&page=1&limit=1000000&search=${searchInvNo}&startDate${startDate2 == dateNow && !endDate2 ? null : '=' + startDate2}&endDate=${endDate2}&status${status ? '=' + status : null}&sort=${sort}&orderby=${order}`)
         .then((res) => {
@@ -115,7 +98,7 @@ export default function AllTransactions() {
           setTransactionFetch(res.data.result)
           const temp = res.data.result
           setTransactionLength(temp.length)
-          console.log(temp)
+          console.log(res.data.result)
           console.log('test' + res.data.result.length)
         })
     } catch (err) {
@@ -154,16 +137,17 @@ export default function AllTransactions() {
           alamatPenerima={val.Address?.address}
           prov={val.Address?.province}
           city={val.Address?.city_name}
+          cityId={val.Address?.city_id}
           district={val.Address?.districts}
           postalCode={val.Address?.postal_code}
           totalOrder={val.total_transaction}
           shippingCost={val.shipping_cost}
         />
-
       )
     })
   }
 
+  //  -------------------- reset filter -------------------- //
   const resetFilter = async () => {
     setSearchInvNo('')
     setHoursStart(0)
@@ -195,6 +179,8 @@ export default function AllTransactions() {
   return (
     <Box maxW='1050px'>
       <Box display='flex' flexWrap='wrap'>
+
+        {/* ----- filter search Inv ----- */}
         <Box w='190px' m='3px'>
           {/* {formik.values.searchInvoice} */}
           <FormControl isInvalid={formik.errors.searchInvoice}>
@@ -213,14 +199,14 @@ export default function AllTransactions() {
           </FormControl>
         </Box>
 
+        {/* ----- filter Sord dan order ----- */}
         <Box m='3px' w='210px'>
-          {formik.values.sortByProduct}
+          {/* {formik.values.sortByProduct} */}
           <FormControl isInvalid={formik.errors.sortByProduct}>
             <Select size='md' borderRadius='8px' bg='white'
               onChange={(event) => {
                 fetchTransaction(event.target.value)
-              }}
-            >
+              }}>
               <option value='' color='grey'>Urut Berdasarkan</option>
               <option value='no_invoice_asc'>No Invoice A-Z</option>
               <option value='no_invoice_desc'>No Invoice Z-A</option>
@@ -230,6 +216,7 @@ export default function AllTransactions() {
           </FormControl>
         </Box>
 
+        {/* ----- filter Date and time ----- */}
         <Box m='3px' mr='8px'>
           <Popover>
             <PopoverTrigger>
@@ -289,9 +276,7 @@ export default function AllTransactions() {
                   editableDateInputs={true}
                   onChange={item => setDateRange([item.selection])}
                   moveRangeOnFirstSelection={false}
-                  ranges={dateRange}
-                />
-
+                  ranges={dateRange} />
               </PopoverBody>
             </PopoverContent>
           </Popover>
@@ -306,6 +291,7 @@ export default function AllTransactions() {
         </Box>
       </Box>
 
+      {/* ----- filter search Inv ----- */}
       {!searchInvNo ?
         null
         :
@@ -319,18 +305,21 @@ export default function AllTransactions() {
         </Box>
       }
 
+      {/* ----- Transaction Rendering ----- */}
       <Box my='15px'>
-        {/* <AdmTransactionCard /> */}
         {renderTransaction()}
       </Box>
+
       {/* ---------- Pagination ---------- */}
       <Box display='flex' justifyContent='center' alignContent='center'>
         <Button onClick={() => setPage(page == 1 ? 1 : page - 1)} size='sm' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
           _hover={{ bg: '#009B90', color: 'white' }}>Prev</Button>
         {/* {renderButton()} */}
-        <Input w='50px' type='number' textAlign='center' bg='white' value={page}
-          onChange={(event) => setPage(event.target.value > totalPage ? page : event.target.value < 1 ? 1 : event.target.value)} />
-        <Text alignSelf='center' ml='10px'>of {totalPage} pages</Text>
+        <Input w='50px' type='number' textAlign='center' bg='white' defaultValue={page} onChange={(e) => {
+          !e.target.value ? null : e.target.value > totalPage || e.target.value <= 0 ? e.target.value = page :
+            setPage(e.target.value)
+        }} />
+        <Text alignSelf='center' mx='6px'>of {totalPage}</Text>
         <Button onClick={() => setPage(totalPage == page ? page : page + 1)} size='sm' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
           _hover={{ bg: '#009B90', color: 'white' }}>Next</Button>
       </Box>

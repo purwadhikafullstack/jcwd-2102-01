@@ -1,9 +1,4 @@
-import {
-  Box, Flex, Heading, FormControl, Input, InputGroup, InputRightAddon, Icon, FormLabel, FormHelperText, Avatar, HStack, Button, Menu, MenuButton, MenuList, MenuItem,
-  MenuDivider, Select, Text, useToast, useDisclosure, Link, Modal, ModalOverlay, Divider, InputRightElement, Progress, Textarea
-} from '@chakra-ui/react';
-// import {  Select, } from "chakra-react-select";
-import { IoMdEye, IoMdEyeOff } from 'react-icons/io';
+import { Box, FormControl, Input, FormLabel, FormHelperText, Button, Select, Text, useToast, Textarea } from '@chakra-ui/react';
 import { useDispatch, useSelector } from 'react-redux';
 import Image from 'next/image';
 import LinkNext from 'next/link';
@@ -28,7 +23,7 @@ export default function MeditAddress(props) {
   const dispatch = useDispatch()
 
 
-  // --------------- Simpan data Alamat Baru --------------- //
+  // -------------------- Simpan data Alamat Baru -------------------- //
   const formik = useFormik({
     initialValues: {
       receiver_name: `${namaPenerimaEd}`,
@@ -93,7 +88,7 @@ export default function MeditAddress(props) {
     }
   });
 
-  // --------------- Fetching Province Raja Ongkir --------------- //
+  // -------------------- Fetching Province Raja Ongkir -------------------- //
   async function fetchProvinceRajaOngkir() {
     try {
       const res = await axios.get('https://api.rajaongkir.com/starter/province', {
@@ -114,7 +109,7 @@ export default function MeditAddress(props) {
     })
   }
 
-  // ---------- Buat ambil nama Provinsi ---------- //
+  // -------------------- Buat ambil nama Provinsi -------------------- //
   async function setTheProvinceName() {
     try {
       const res = await axios.get('https://api.rajaongkir.com/starter/province?id=' + formik.values.province_id, {
@@ -127,7 +122,7 @@ export default function MeditAddress(props) {
     }
   };
 
-  // ---------- Fetching City Raja Ongkir ---------- //
+  // -------------------- Fetching City Raja Ongkir -------------------- //
   async function fetchCityRajaOngkir() {
     let res
     try {
@@ -157,7 +152,7 @@ export default function MeditAddress(props) {
     })
   }
 
-  // ---------- Buat ambil nama Kota ---------- //
+  // -------------------- Buat ambil nama Kota -------------------- //
   async function setTheCityName() {
     try {
       const res = await axios.get('https://api.rajaongkir.com/starter/city?id=' + formik.values.city_id, {

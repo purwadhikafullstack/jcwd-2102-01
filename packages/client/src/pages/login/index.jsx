@@ -13,29 +13,27 @@ export default function LoginPage() {
   const router = useRouter();
   const url = "http://localhost:3000" + router.pathname;
 
-  useEffect(() => {
-    if (userSelector?.id) {
-      // setIsLoading(true);
-      router.push("/");
-    } else {
-      setIsLoading(false);
-    }
-  }, [userSelector?.id]);
-
   // useEffect(() => {
-  //   if (!userSelector?.id) {
-  //     router.push("/login")
-  //   }
-  //   else if (userSelector.roles == "Admin") {
-  //     router.push("/admin/dashboard")
-  //   }
-  //   else if (userSelector.roles == "User") {
-  //     router.push("/home")
-  //   }
-  //   else {
+  //   if (userSelector?.id) {
+  //     // setIsLoading(true);
+  //     router.push("/");
+  //   } else {
   //     setIsLoading(false);
   //   }
-  // }, [userSelector?.value]);
+  // }, [userSelector?.id]);
+
+  useEffect(() => {
+    if (!userSelector?.id) {
+      router.push("/login")
+      setIsLoading(false);
+    }
+    else if (userSelector?.id && userSelector.roles == "Admin") {
+      router.push("/admin")
+    }
+    else if (userSelector?.id && userSelector.roles == "User") {
+      router.push("/")
+    }
+  }, [userSelector?.id]);
 
   return (
     <Metatag title={"Login Healthymed"} description={"Healthymed Login Page"}

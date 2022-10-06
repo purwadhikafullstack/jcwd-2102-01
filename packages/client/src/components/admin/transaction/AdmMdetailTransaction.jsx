@@ -1,41 +1,73 @@
 import {
-   Box, Text, Avatar, Link, FormLabel, Textarea, AvatarBadge, Flex, Input, Select, InputLeftElement, InputGroup,
-   Modal, ModalCloseButton, Icon, Tooltip, ModalOverlay, ModalHeader, ModalBody, useDisclosure, ModalFooter,
-   FormControl, Button, useToast, FormHelperText, ModalContent, Center, useMediaQuery, Image,
-   Divider, Tabs, TabList, TabPanel, TabPanels, Tab, InputRightElement, Drawer, DrawerBody, DrawerHeader, DrawerCloseButton, DrawerContent, DrawerOverlay
+   Box, Text, Modal, ModalCloseButton, Icon, ModalOverlay, ModalHeader, ModalBody, useDisclosure, ModalFooter,
+   Button, ModalContent, Center, Divider,
 } from '@chakra-ui/react';
 import { BiDetail } from "react-icons/bi";
-import bank_bca from '../../../assets/img/metode_pembayaran/bank_bca.png'
 import logo from '../../../assets/img/healthymedLogo.png'
 import NextImage from 'next/image';
 import AdmProductOrderList from './AdmProductOrderList';
-import { RiFileCopyFill } from 'react-icons/ri';
-import { useRouter } from "next/router";
-import { useSelector, useDispatch } from 'react-redux';
-import { useState, useEffect } from "react";
 import moment from 'moment';
 
 export default function AdmMdetailTransaction(props) {
    const { idDet, productsDet, noInvoiceDet, dateCreatedDet, statusDet, totalOrderDet, shippingCostDet, namaPenerimaDet, alamatPenerimaDet, provDet, cityDet, districtDet, kurirDet,
-      grandTotalDet, qtyBuyDet, noHpPenerimaDet, unitDet, productNameDet, productImageDet, idUserDet, noteDet, cancelDet } = props
+      grandTotalDet, qtyBuyDet, noHpPenerimaDet, stock, unitDet, productNameDet, productImageDet, idUserDet, idRecipe, noteDet, cancelDet } = props
    const { isOpen: isOpenDetail, onOpen: onOpenDetail, onClose: onCloseDetail } = useDisclosure()
-   const { isOpen: isOpenPayment, onOpen: onOpenPayment, onClose: onClosePayment } = useDisclosure()
-   const toast = useToast();
+
+   // -------------------- pengecekkan NamaRacikan untuk di filter versi maping -------------------- //
+   let temp = productsDet.map(function (x) { return x.medicine_concoction_name })
+   let cekNamaRacikan = new Set(temp);
+   let filterNamaRacikan = [...cekNamaRacikan];
+   // console.log(filterNamaRacikan);
+   // console.log(productList);
 
    const renderTransactionList = () => {
-      return productsDet.map((val, index) => {
-         return (
-            <AdmProductOrderList key={index}
-               image={val.Product?.Product_images[0]?.image_url}
-               productName={val.Product?.product_name}
-               qtyBuy={val.buy_quantity}
-               price={val.price}
-               totalPrice={val.total_price}
-               productCode={val.Product?.product_code}
-               unit={val.Unit?.unit_name}
-            />
-         )
-      })
+      if (idRecipe == 1) {
+         return productsDet.map((val, index) => {
+            return (
+               <AdmProductOrderList key={index}
+                  image={val.Product?.Product_images[0]?.image_url}
+                  productName={val.Product?.product_name}
+                  qtyBuy={val.buy_quantity}
+                  price={val.price}
+                  totalPrice={val.total_price}
+                  productCode={val.Product?.product_code}
+                  unit={val.Unit?.unit_name}
+                  stock={val.id_unit == val.Product?.Product_stocks[0]?.id_unit ? val.Product?.Product_stocks[0]?.stock : val.Product?.Product_stocks[1]?.stock}
+               />
+            )
+         })
+      } else {
+         return filterNamaRacikan.map((x, index) => {
+            return (
+               <>
+                  <Text key={index} fontSize='md' color='#009B90' fontWeight='bold' mt='20px'>
+                     {x == '' ? 'Umum' : 'Racikan ' + x}
+                  </Text>
+                  {
+                     productsDet.map((val, index) => {
+                        if (val.medicine_concoction_name == x) {
+                           return (
+                              <>
+                                 <AdmProductOrderList key={index}
+                                    image={val.Product?.Product_images[0]?.image_url}
+                                    productName={val.Product?.product_name}
+                                    qtyBuy={val.buy_quantity}
+                                    price={val.price}
+                                    totalPrice={val.total_price}
+                                    productCode={val.Product?.product_code}
+                                    unit={val.Unit?.unit_name}
+                                    stock={val.id_unit == val.Product?.Product_stocks[0]?.id_unit ? val.Product?.Product_stocks[0]?.stock : val.Product?.Product_stocks[1]?.stock}
+                                 />
+                              </>
+                           )
+                        }
+                     })
+                  }
+               </>
+            )
+         })
+      }
+
    }
 
    // console.log(productsDet);
@@ -140,14 +172,17 @@ export default function AdmMdetailTransaction(props) {
                                  {noteDet ? noteDet : "-"}
                               </Text>
                            </Box>
-                           <Box display='flex' >
-                              <Text fontWeight='semibold' color='#213360' w='160px'>
-                                 Deskripsi Batal
-                              </Text>:
-                              <Text fontWeight='semibold' color='red' ml='5px'>
-                                 {cancelDet ? cancelDet : "-"}
-                              </Text>
-                           </Box>
+                           {cancelDet ?
+                              <Box display='flex' >
+                                 <Text fontWeight='semibold' color='#213360' w='160px'>
+                                    Deskripsi Batal
+                                 </Text>:
+                                 <Text fontWeight='semibold' color='red' ml='5px'>
+                                    {cancelDet}
+                                 </Text>
+                              </Box> :
+                              null
+                           }
                         </Box>
 
                         <Box>

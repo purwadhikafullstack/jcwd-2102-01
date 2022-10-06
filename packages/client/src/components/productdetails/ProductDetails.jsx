@@ -1,6 +1,6 @@
 import {
-  Box, Flex, InputGroup, InputLeftElement, InputRightElement, Input, Menu, MenuButton, AlertIcon, Alert,
-  MenuDivider, Text, Image, Icon, useToast, useDisclosure, Link, Modal, Button, Center, FormControl, FormHelperText
+  Box, InputGroup, InputLeftElement, InputRightElement, Input,
+  Text, Image, Icon, useToast, Button,
 } from '@chakra-ui/react';
 import Footer from "../../components/footer/Footer"
 import { HiMinusSm, HiPlusSm } from "react-icons/hi";
@@ -30,7 +30,7 @@ export default function ProductDetailsComp(props) {
   const autoRender = useSelector((state) => state.automateRendering)
   const router = useRouter();
 
-  // ----- Add to Cart
+  // -------------------- Add to Cart -------------------- //
   const addToCart = async () => {
     let msg = ''
     try {
@@ -71,7 +71,7 @@ export default function ProductDetailsComp(props) {
 
   // console.log(qtyProduct);
 
-  // --------------- Fetching Category Per Product --------------- //
+  // -------------------- Fetching Category Per Product -------------------- //
   async function fetchCategory() {
     try {
       axiosInstance.get(`/category/idProduct/${productId}`)
@@ -94,7 +94,7 @@ export default function ProductDetailsComp(props) {
     })
   }
 
-  // ---------- Fetching Image Per Product ---------- //
+  // -------------------- Fetching Image Per Product -------------------- //
   async function fetchImageProduct() {
     try {
       axiosInstance.get(`/products/productImage/${productId}`)
@@ -133,6 +133,7 @@ export default function ProductDetailsComp(props) {
   return (
     <>
       <Box m='5px'>
+        {/* ----- RenderingImage ----- */}
         <Box h='350px' w='350px' bg='white' borderRadius='8px'>
           {!imageView ?
             <Image objectFit='contain' src={`http://${productImage}`} width='350px' height='350px' />
@@ -187,7 +188,7 @@ export default function ProductDetailsComp(props) {
           </Box>
 
           <Button w='200px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px' my='25px'
-            _hover={{ bg: '#009B90', color: 'white' }} onClick={() => addToCart()}>
+            _hover={{ bg: '#009B90', color: 'white' }} disabled={userSelector.id ? false : true} onClick={() => addToCart()}>
             <Icon boxSize='6' as={IoCartOutline} mr='5px' />
             Keranjang</Button>
         </Box>

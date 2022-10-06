@@ -53,4 +53,10 @@ router.post(
 // -------------------- delete Cart
 router.delete("/:id", transactionsController.deleteCart);
 
+// -------------------- edit Transaction List
+router.post("/api/v1/recipes/transactionList/:id", transactionsController.editTransactionList);
+
+// -------------------- delete Transaction List
+router.post("/api/v2/recipes/transactionList/:id", transactionsController.deleteTransaction);
+
 module.exports = router;

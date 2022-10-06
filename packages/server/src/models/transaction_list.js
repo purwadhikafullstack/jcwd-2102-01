@@ -14,7 +14,14 @@ const Transaction_list = (sequelize) => {
       type: DataTypes.FLOAT,
       defaultValue: 0,
     },
-
+    medicine_concoction_name: {
+      type: DataTypes.STRING(150),
+      allowNull: true,
+    },
+    medicine_concoction: {
+      type: DataTypes.ENUM('yes', 'no'),
+      defaultValue: 'no',
+    },
   });
 };
 

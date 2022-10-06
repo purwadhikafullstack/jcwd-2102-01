@@ -16,11 +16,11 @@ export default function AllTransactions() {
   const url = "http://localhost:3000/" + router.pathname;
 
   useEffect(() => {
-    if (userSelector.id) {
-      // setIsLoading(true);
+    if (!userSelector?.id) {
+      router.push("/login")
+    }
+    else {
       setIsLoading(false);
-    } else {
-      router.push("/");
     }
   }, [userSelector?.id]);
 

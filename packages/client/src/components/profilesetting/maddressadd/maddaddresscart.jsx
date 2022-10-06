@@ -1,9 +1,6 @@
 import {
-  Box, Flex, Heading, FormControl, Input, InputGroup, InputRightAddon, Icon, FormLabel, FormHelperText, Avatar, HStack, Button, Menu, MenuButton, MenuList, MenuItem,
-  MenuDivider, Select, Text, useToast, useDisclosure, Link, Modal, ModalOverlay, Divider, InputRightElement, Progress, Textarea
+  Box, FormControl, Input, FormLabel, FormHelperText, Button, Select, Text, useToast, Textarea
 } from '@chakra-ui/react';
-// import {  Select, } from "chakra-react-select";
-import { IoMdEye, IoMdEyeOff } from 'react-icons/io';
 import { useDispatch, useSelector } from 'react-redux';
 import Image from 'next/image';
 import LinkNext from 'next/link';
@@ -28,7 +25,7 @@ export default function MaddAddressCart() {
   const dispatch = useDispatch()
   const router = useRouter();
 
-  // --------------- Simpan data Alamat Baru --------------- //
+  // -------------------- Simpan data Alamat Baru -------------------- //
   const formik = useFormik({
     initialValues: {
       receiver_name: "",
@@ -77,7 +74,6 @@ export default function MaddAddressCart() {
           type: typeCity,
           postal_code: postal_code,
           id_user: userSelector.id,
-          // receiver_name, receiver_phone, address, province, province_id, city_name, city_id, districts, type, postal_code, id_user
         }
 
         // console.log(city);
@@ -102,7 +98,7 @@ export default function MaddAddressCart() {
     }
   });
 
-  // --------------- Fetching Province Raja Ongkir --------------- //
+  // -------------------- Fetching Province Raja Ongkir -------------------- //
   async function fetchProvinceRajaOngkir() {
     try {
       const res = await axios.get('https://api.rajaongkir.com/starter/province', {
@@ -123,7 +119,7 @@ export default function MaddAddressCart() {
     })
   }
 
-  // ---------- Buat ambil nama Provinsi ---------- //
+  // -------------------- Buat ambil nama Provinsi -------------------- //
   async function setTheProvinceName() {
     try {
       const res = await axios.get('https://api.rajaongkir.com/starter/province?id=' + formik.values.province_id, {
@@ -136,20 +132,7 @@ export default function MaddAddressCart() {
     }
   };
 
-  // ---------- Fetching City Raja Ongkir ---------- //
-  // async function fetchCityRajaOngkir() {
-  //   try {
-  //     const res = await axios.get('https://api.rajaongkir.com/starter/city', {
-  //       headers: { 'key': '461415f8b280e7996178dd23957c633e' }
-  //     })
-  //     setCityRajaOngkir(res.data.rajaongkir.results)
-  //     // console.log(res.data.rajaongkir.results)
-  //   } catch (err) {
-  //     console.log(err)
-  //   }
-  // };
-
-  // ---------- Fetching City Raja Ongkir ---------- //
+  // -------------------- Fetching City Raja Ongkir -------------------- //
   async function fetchCityRajaOngkir() {
     let res
     try {
@@ -179,7 +162,7 @@ export default function MaddAddressCart() {
     })
   }
 
-  // ---------- Buat ambil nama Kota ---------- //
+  // -------------------- Buat ambil nama Kota -------------------- //
   async function setTheCityName() {
     try {
       const res = await axios.get('https://api.rajaongkir.com/starter/city?id=' + formik.values.city_id, {

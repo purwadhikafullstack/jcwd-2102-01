@@ -186,6 +186,21 @@ const transactionsController = {
       // let findProduct
       const renderTransactionList = () => {
         return findCartProduct.map((val) => {
+      // ---------------  Mengambil produk stok --------------- //
+      const findproduct = Product_stock.findOne({
+        where: {
+          [Op.and]: [
+            { id_product: val.id_product, },
+            { id_unit: val.id_unit, }
+          ]
+        },
+      });
+
+      // ---------------  Kondisi jika buy qty lebih besar dari stok maka error --------------- //
+      if (val.buy_quantity > findproduct.stock ) 
+      {
+        return false
+      } else {
         // Mapping memasukkan data ke table transaction List
         Transaction_list.create({
         buy_quantity:val.buy_quantity, 
@@ -204,9 +219,10 @@ const transactionsController = {
           { id_product: val.id_product, }
           ]
         },});
-
+      }
       })
       }
+
       renderTransactionList()
 
       return res.status(200).json({
@@ -235,7 +251,7 @@ const transactionsController = {
       });
     } catch (err) {
       console.log(err);
-      res.status(500).json({
+      res.status(200).json({
         message: err.toString(),
       });
     }
@@ -361,7 +377,8 @@ const transactionsController = {
       await Transaction.update(
         { 
           id_payment: newPaymentId,
-          transaction_status:"Menunggu Konfirmasi Pembayaran"
+          transaction_status:"Menunggu Konfirmasi Pembayaran",
+          cancel_description:'',
         },
         {
           where: {no_invoice : noInvoice},
@@ -437,7 +454,6 @@ const transactionsController = {
     }
   },
 
-
    // -------------------- Change transaction status -------------------- //
   editTransactionStatus: async (req, res) => {
     try {
@@ -469,8 +485,8 @@ const transactionsController = {
       const renderTransactionList = () => { 
         return findTransactionList.map((val) => {
         // Mapping Panggil Product Stock untuk diupdate
-        let newStokUpdate = val.Product.Product_stocks[0].stock - val.buy_quantity
-        let newTotalSold = val.buy_quantity + val.Product.Product_stocks[0].total_sold
+        let newStokUpdate = val.id_unit == val.Product.Product_stocks[0].id_unit ? val.Product.Product_stocks[0].stock - val.buy_quantity : val.Product.Product_stocks[1].stock - val.buy_quantity 
+        let newTotalSold = val.id_unit == val.Product.Product_stocks[0].id_unit ? val.Product.Product_stocks[0].total_sold + val.buy_quantity : val.Product.Product_stocks[1].total_sold + val.buy_quantity
         // console.log('tes find ' +  val.Product.Product_stocks[0].stock);
         // console.log('tes find ' +  val.Product.Product_stocks[0].Unit.id);
         // console.log('tes find id uni' + val.id_unit);
@@ -479,7 +495,7 @@ const transactionsController = {
         Product_stock.update({stock: newStokUpdate, total_sold:newTotalSold}, {
         where: {
           [Op.and]: [
-            { id_unit:val.id_unit},
+            { id_unit: val.id_unit},
             { id_product: val.id_product, }
           ]
         },});
@@ -505,6 +521,23 @@ const transactionsController = {
     return res.status(200).json({
         message: "Berhasil mengirimpesanan",
       });
+    } else if (transaction_status == 'Resep Dokter') 
+    {
+      await Transaction.update(
+          { 
+            ...req.body, 
+            transaction_status: 'Menunggu Pembayaran', 
+          },
+          {
+            where: {
+              no_invoice : noInvoice,
+            },
+          }
+        )
+        return res.status(200).json({
+          message: "Transaction status changed",
+        });
+      
     } else {
       await Transaction.update(
           { 
@@ -529,10 +562,101 @@ const transactionsController = {
     }
   },
 
+  //  // -------------------- Change transaction status -------------------- //
+  // editTransactionStatus: async (req, res) => {
+  //   try {
+  //     const { noInvoice } = req.params;
+  //     const { transaction_status } = req.body;
+      
+  //     // Jika status dikirim maka potong stok
+  //     if(transaction_status == 'Dikirim') {
+  //     // Mengambil Id Transaksi 
+  //     const findTransactionId = await Transaction.findOne({
+  //       where: { no_invoice: noInvoice },
+  //     });
+
+  //     // Mengambil data list Transaksi
+  //     const findTransactionList = await Transaction_list.findAll({
+  //       include: [
+  //         { model : User },
+  //         { model : Product,
+  //           include : [
+  //             { model: Product_stock,
+  //               include : [{model: Unit}],
+  //             }, 
+  //             ],
+  //         },
+  //       ],
+  //       where: {id_transaction: findTransactionId.id},
+  //     });
+
+  //     const renderTransactionList = () => { 
+  //       return findTransactionList.map((val) => {
+  //       // Mapping Panggil Product Stock untuk diupdate
+  //       let newStokUpdate = val.Product.Product_stocks[0].stock - val.buy_quantity
+  //       let newTotalSold = val.buy_quantity + val.Product.Product_stocks[0].total_sold
+  //       // console.log('tes find ' +  val.Product.Product_stocks[0].stock);
+  //       // console.log('tes find ' +  val.Product.Product_stocks[0].Unit.id);
+  //       // console.log('tes find id uni' + val.id_unit);
+  //       // console.log('tes val cart ' + val.buy_quantity);
+        
+  //       Product_stock.update({stock: newStokUpdate, total_sold:newTotalSold}, {
+  //       where: {
+  //         [Op.and]: [
+  //           { id_unit:val.id_unit},
+  //           { id_product: val.id_product, }
+  //         ]
+  //       },});
+        
+  //       // tambah data stock history
+  //       Stock_history.create({
+  //       type: 'Penjualan', description: 'pengurangan', quantity : val.buy_quantity, id_product: val.id_product, id_unit: val.Product.Product_stocks[0].Unit.id, 
+  //       });
+  //     })
+  //   }
+  //   renderTransactionList()
+  //   await Transaction.update(
+  //         { 
+  //           ...req.body, 
+  //         },
+  //         {
+  //           where: {
+  //             no_invoice : noInvoice,
+  //           },
+  //         }
+  //       )
+
+  //   return res.status(200).json({
+  //       message: "Berhasil mengirimpesanan",
+  //     });
+  //   } else {
+  //     await Transaction.update(
+  //         { 
+  //           ...req.body, 
+  //         },
+  //         {
+  //           where: {
+  //             no_invoice : noInvoice,
+  //           },
+  //         }
+  //       )
+  //       return res.status(200).json({
+  //         message: "Transaction status changed",
+  //       });
+  //   }
+
+  //   } catch (err) {
+  //     console.log(err);
+  //     res.status(500).json({
+  //       message: err.toString(),
+  //     });
+  //   }
+  // },
+
 // -------------------- Serve Custom Order Progress (Docter Ricepe) -------------------- //
   serveCustomOrder: async (req, res) => {
     try {
-      const { buy_quantity, price, total_price, id_user, id_product, id_unit, id_transaction } = req.body;
+      const { buy_quantity,medicine_concoction_name,medicine_concoction, id_user, id_product, id_unit, id_transaction } = req.body;
       
       // ---------------  Mengambil produk stok --------------- //
       const findproduct = await Product_stock.findOne({
@@ -552,22 +676,28 @@ const transactionsController = {
       const findOrderProduct = await Transaction_list.findOne({
         where: {
           [Op.and]: [
-          { id_user: id_user, },
-          { id_product: id_product,},
-          { id_unit: id_unit, },
-          { id_transaction: id_transaction, }
+          { id_user },
+          { id_product},
+          { id_unit },
+          { id_transaction},
+          { medicine_concoction_name }
           ]
         },
       });
+      
       // mengecek kondisi jika data order dengan id user dan id product dan id transaksi sudah ada maka melakukan update qty buy saja --------------- //
       let addProduct
       if (!findOrderProduct) {
           addProduct= await Transaction_list.create({
-          buy_quantity, price: parseFloat(findproduct.selling_price), total_price, id_user, id_product, id_unit, id_transaction
-          });
-          return res.status(201).json({
-            message: "Berhasil menambah ke Transaction List",
-            result: addProduct
+          buy_quantity, 
+          price: parseFloat(findproduct.selling_price), 
+          total_price:parseFloat(findproduct.selling_price * buy_quantity) , 
+          medicine_concoction_name,
+          medicine_concoction,
+          id_user, 
+          id_product, 
+          id_unit, 
+          id_transaction
           });
         } else {
           let newQuantity = parseInt(buy_quantity) + parseInt(findOrderProduct.buy_quantity)
@@ -579,10 +709,6 @@ const transactionsController = {
           buy_quantity: newQuantity, 
           price: parseFloat(findproduct.selling_price), 
           total_price:parseFloat(newQuantity) * parseFloat(findproduct.selling_price), 
-          // id_user, 
-          // id_product,
-          // id_unit,
-          // id_transaction
           },
           {where: {
           [Op.and]: [
@@ -593,15 +719,120 @@ const transactionsController = {
           ]
           },}
           );
-          return res.status(201).json({
-          message: "Berhasil upadate data list transaksi",
-          result: addProduct})
+          
           }
         }
 
+      // Mengambil data Transaksi untuk update total price //
+      const findOrderTransaction= await Transaction.findOne({
+        where: {
+          [Op.and]: [
+          { id_user: id_user, },
+          { id: id_transaction, }
+          ]
+        },
+      });
+      
+      let newTotalTransaction = findOrderTransaction.total_transaction + parseFloat(findproduct.selling_price * buy_quantity)
+      await Transaction.update(
+        {
+          total_transaction: parseFloat(newTotalTransaction), 
+          total_paid: parseFloat(newTotalTransaction), 
+        },
+        {
+          where: {id: id_transaction},
+        }
+      )
+          return res.status(201).json({
+          message: "Berhasil menambah data list transaksi",
+          result: addProduct})
     } catch (err) {
       console.log(err);
       return res.status(200).json({
+        message: err.toString(),
+      });
+    }
+  },
+
+  // -------------------- Edit Transaction List (Serve Custome Order / Docter Recipe) -------------------- //
+  editTransactionList: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { id_transaction, buy_quantity, total_price, price } = req.body;
+
+      // Mengambil data Transaksi untuk update total price //
+      const findOrderTransaction= await Transaction.findOne({
+        where: {
+          id: id_transaction,
+        },
+      });
+      
+      let newTotalPrice = buy_quantity * price
+      let newTotalTransaction = (findOrderTransaction.total_transaction - total_price) + newTotalPrice
+      await Transaction.update(
+        {
+          total_transaction: parseFloat(newTotalTransaction), 
+          total_paid: parseFloat(newTotalTransaction), 
+        },
+        {
+          where: {id: id_transaction},
+        }
+      )
+
+      await Transaction_list.update(
+        {
+          buy_quantity: buy_quantity, 
+          total_price: parseFloat(newTotalPrice), 
+        },
+        {
+        where: { id },
+        });
+
+      return res.status(200).json({
+        message: "Berhasil Update data Order List",
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({
+        message: err.toString(),
+      });
+    }
+  },
+
+  // -------------------- Delete Transaction List (Serve Custome Order / Docter Recipe) -------------------- //
+  deleteTransaction: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { id_transaction, total_price } = req.body;
+
+      // Mengambil data Transaksi untuk update total price //
+      const findOrderTransaction= await Transaction.findOne({
+        where: {
+          id: id_transaction,
+        },
+      });
+      
+      let newTotalTransaction = findOrderTransaction.total_transaction - total_price
+      await Transaction.update(
+        {
+          total_transaction: parseFloat(newTotalTransaction), 
+          total_paid: parseFloat(newTotalTransaction), 
+        },
+        {
+          where: {id: id_transaction},
+        }
+      )
+
+      await Transaction_list.destroy({
+        where: { id },
+        });
+
+      return res.status(200).json({
+        message: "Berhasil menghapus data List Transaksi",
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({
         message: err.toString(),
       });
     }

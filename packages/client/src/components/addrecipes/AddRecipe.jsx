@@ -1,22 +1,15 @@
 import {
   Button, Text, useDisclosure, Modal, ModalOverlay, ModalHeader, ModalCloseButton, ModalBody, ModalContent,
-  FormControl, Flex, Icon,
-  FormLabel, Input, Box, Textarea, useToast, Image
+  FormControl, Flex, Icon, FormLabel, Input, Box, Textarea, useToast, Image
 } from '@chakra-ui/react'
 import { useFormik } from "formik";
 import { useState, useRef, useEffect } from 'react';
 import { axiosInstance } from '../../lib/api';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from "next/router";
-import qs from 'qs'
 import { IoClose } from "react-icons/io5"
-// import { Uploader } from "uploader";
-// import { UploadButton } from "react-uploader";
 import ShowAddress from '../profilesetting/ShowAddress';
 import ShowDefaultAddress from '../profilesetting/ShowDefAddress';
-import uploadLoading from '../../assets/img/Frame1.png'
-import NextImage from 'next/image'
-
 
 export default function AddRecipe(props) {
   const { onClose } = props
@@ -36,7 +29,6 @@ export default function AddRecipe(props) {
   // ---------- Fetching Address by User ---------- //
   async function fetchAddress() {
     try {
-      // axiosInstance.get(`/ comment / post / ${ id } ? page = ${ startComment } & limit=${ 5}`)
       axiosInstance.get(`address/user/` + userSelector.id)
         .then((res) => {
           setAddressFetch(res.data.result)
@@ -74,7 +66,6 @@ export default function AddRecipe(props) {
       axiosInstance.get(`address/addressid/` + userSelector.default_address)
         .then((res) => {
           setAddressFetchById(res.data.result)
-          // setGetCityId(res.data.result[0].city_id)
           const temp = res.data.result
           // console.log(res.data.result[0].city_id)
           // console.log(getCityId)
@@ -84,6 +75,7 @@ export default function AddRecipe(props) {
       console.log(err)
     }
   };
+
   const renderAddressById = () => {
     return addressFetchById.map((val, index) => {
       return (
@@ -104,7 +96,7 @@ export default function AddRecipe(props) {
     })
   }
 
-
+  // ---------- Tambah data ke Resep Dokter ---------- //
   const formik = useFormik({
     initialValues: {
       note: "",
@@ -113,7 +105,6 @@ export default function AddRecipe(props) {
       const formData = new FormData();
       const { note } = formik.values
       let msg = ""
-      // ---------- form data for add to Post table ---------- //
       formData.append("note", note)
       formData.append("id_user", userSelector.id)
       formData.append("id_address", userSelector.default_address)
@@ -125,7 +116,6 @@ export default function AddRecipe(props) {
           type: "FETCH_RENDER",
           payload: { value: !autoRender.value }
         })
-        // console.log(res);
 
         msg = res.data.message;
         console.log(msg);
@@ -142,7 +132,6 @@ export default function AddRecipe(props) {
             isClosable: true,
           });
         }
-
       } catch (err) {
         console.log(err);
         toast({
@@ -160,6 +149,7 @@ export default function AddRecipe(props) {
     setImageShow(URL.createObjectURL(uploaded))
     // console.log(event.target.files[0]);
   }
+
   useEffect(() => {
     fetchAddressbyId()
     fetchAddress()
@@ -251,7 +241,6 @@ export default function AddRecipe(props) {
           </Box>
         </Box>
       </Box>
-
     </>
   )
 }

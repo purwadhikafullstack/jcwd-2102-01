@@ -1,28 +1,13 @@
 import {
- Box, Input,
- Flex,
- Avatar,
- HStack,
- Link,
- IconButton,
- Button,
- Menu,
- MenuButton,
- MenuList,
- MenuItem,
- MenuDivider,
- useDisclosure,
- useColorModeValue, Divider,
- Stack, Icon, Text, Accordion, VStack, AccordionIcon, AccordionPanel, AccordionItem, AccordionButton,
- Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerOverlay, DrawerFooter, DrawerHeader, Center
+ Box, HStack, Link, Icon, Text, Center,
+ Accordion, AccordionIcon, AccordionPanel, AccordionItem, AccordionButton
 } from '@chakra-ui/react';
 import LinkNext from 'next/link';
 import Image from 'next/image';
 import logo from '../../../assets/img/healthymedLogo.png'
 import { BsGraphUp } from 'react-icons/bs';
-import { MdOutlineCategory, MdCategory, MdPersonAddAlt, MdPersonAdd } from 'react-icons/md';
-import { FaPills, FaRegClipboard, FaClipboardList } from 'react-icons/fa';
-import { AiFillBell, AiFillSetting, AiOutlineBell, AiOutlineHome, AiFillHome } from "react-icons/ai";
+import { FaPills, FaRegClipboard } from 'react-icons/fa';
+import { AiOutlineHome } from "react-icons/ai";
 import { useRouter } from 'next/router';
 
 export default function SideBar() {
@@ -30,14 +15,14 @@ export default function SideBar() {
  return (
   <Box boxShadow='xl' className='sideBar' borderRightWidth='1px' bg='white' w='240px' >
    <Box className='sideBar'>
+
     <Link href='/home' >
      <HStack h={16} w='240px' justifyContent={'center'} spacing={8} alignItems={'center'} _hover={{ cursor: "pointer" }}>
       <Center><Image src={logo} width='180px' height='40px' /></Center>
      </HStack>
     </Link>
 
-    <Box display='flex' my='5px' _hover={{ background: '#E8F5FD', cursor: "pointer", color: '#00ACEE' }}
-    >
+    <Box display='flex' my='5px' _hover={{ background: '#E8F5FD', cursor: "pointer", color: '#00ACEE' }}>
      <Center ml='5px' justifyContent={'center'} alignContent='center' h='60px' w='50px'>
       <Icon boxSize='7' as={AiOutlineHome} />
      </Center>
@@ -45,15 +30,16 @@ export default function SideBar() {
       <Text fontWeight='bold'>Dashboard</Text>
      </Center>
     </Box>
+
     <Accordion my='5px' defaultIndex={[0]} borderColor='white' allowMultiple _hover={{ background: '#E8F5FD' }} >
      <AccordionItem >
       <h2>
        <AccordionButton justifyContent='space-between' >
-        <HStack ml='-15px' color='#4c4c4d' w='full'>
+        <HStack ml='-15px' color='#4c4c4d' w='full' style={router.pathname == '/admin/inventory/category' ? { color: '#00ACEE' } : null}>
          <Center ml='5px' display='flex' justifyContent='center' h='50px' w='50px'>
           <Icon boxSize='7' as={FaPills} />
          </Center>
-         <Box display='flex' ml='10px' fontWeight='bold' >
+         <Box display='flex' ml='10px' fontWeight='bold'  >
           <Text fontWeight='bold'>Produk</Text>
          </Box>
         </HStack>
@@ -71,9 +57,12 @@ export default function SideBar() {
        <HStack _hover={{ background: '#ccdefc' }}>
         <Center ml='5px' display='flex' justifyContent='center' h='40px' w='70px'>
         </Center>
-        <Box ml='5px' display='flex' w='full' fontWeight='semibold'>
-         <Text fontWeight='semibold'>Daftar Kategori</Text>
-        </Box>
+        <LinkNext href='/admin/inventory/category'>
+         <Box ml='5px' display='flex' w='full' fontWeight='semibold' _hover={{ cursor: 'pointer' }}
+          style={router.pathname == '/admin/inventory/category' ? { color: '#00ACEE' } : null}>
+          <Text fontWeight='semibold'>Daftar Kategori</Text>
+         </Box>
+        </LinkNext>
        </HStack>
        <HStack _hover={{ background: '#ccdefc' }}>
         <Center ml='5px' display='flex' justifyContent='center' h='40px' w='70px'>
@@ -106,12 +95,17 @@ export default function SideBar() {
         <HStack _hover={{ background: '#ccdefc', cursor: 'pointer' }}>
          <Center ml='5px' display='flex' justifyContent='center' h='40px' w='70px'>
          </Center>
-         <Box ml='5px' display='flex' w='full' fontWeight='semibold' style={router.query.status ? null : { color: '#00ACEE' }} >
-          <Text fontWeight='semibold'>Semua Transaksi</Text>
+         {/* <Box ml='5px' display='flex' w='full' fontWeight='semibold' style={router.query.status ? null : { color: '#00ACEE' }} > */}
+         <Box ml='5px' display='flex' w='full' fontWeight='semibold' >
+          {router.pathname != '/admin/transaction' && !router.query.status ?
+           <Text fontWeight='semibold' >Semua Transaksi</Text>
+           : !router.query.status ? <Text fontWeight='semibold' color='#00ACEE'>Semua Transaksi</Text>
+            : <Text fontWeight='semibold' >Semua Transaksi</Text>
+          }
          </Box>
         </HStack>
        </LinkNext>
-       <LinkNext href='?status=Menunggu Pembayaran'>
+       <LinkNext href='/admin/transaction?status=Menunggu Pembayaran'>
         <HStack _hover={{ background: '#ccdefc', cursor: 'pointer' }}>
          <Center ml='5px' display='flex' justifyContent='center' h='40px' w='70px'>
          </Center>
@@ -120,7 +114,7 @@ export default function SideBar() {
          </Box>
         </HStack>
        </LinkNext>
-       <LinkNext href='?status=Diproses'>
+       <LinkNext href='/admin/transaction?status=Diproses'>
         <HStack _hover={{ background: '#ccdefc', cursor: 'pointer' }}>
          <Center ml='5px' display='flex' justifyContent='center' h='40px' w='70px'>
          </Center>
@@ -129,7 +123,7 @@ export default function SideBar() {
          </Box>
         </HStack>
        </LinkNext>
-       <LinkNext href='?status=Dikirim'>
+       <LinkNext href='/admin/transaction?status=Dikirim'>
         <HStack _hover={{ background: '#ccdefc', cursor: 'pointer' }}>
          <Center ml='5px' display='flex' justifyContent='center' h='40px' w='70px'>
          </Center>
@@ -138,7 +132,7 @@ export default function SideBar() {
          </Box>
         </HStack>
        </LinkNext>
-       <LinkNext href='?status=Pesanan Dikonfirmasi'>
+       <LinkNext href='/admin/transaction?status=Pesanan Dikonfirmasi'>
         <HStack _hover={{ background: '#ccdefc', cursor: 'pointer' }}>
          <Center ml='5px' display='flex' justifyContent='center' h='40px' w='70px'>
          </Center>
@@ -147,7 +141,7 @@ export default function SideBar() {
          </Box>
         </HStack>
        </LinkNext>
-       <LinkNext href='?status=Dibatalkan'>
+       <LinkNext href='/admin/transaction?status=Dibatalkan'>
         <HStack _hover={{ background: '#ccdefc', cursor: 'pointer' }}>
          <Center ml='5px' display='flex' justifyContent='center' h='40px' w='70px'>
          </Center>
@@ -172,10 +166,10 @@ export default function SideBar() {
           <Text fontWeight='bold'>Sales & Revenue</Text>
          </Box>
         </HStack>
-
         <AccordionIcon />
        </AccordionButton>
       </h2>
+
       <AccordionPanel pb={2} p='0px'>
        <HStack _hover={{ background: '#ccdefc' }}>
         <Center ml='5px' display='flex' justifyContent='center' h='40px' w='70px'>

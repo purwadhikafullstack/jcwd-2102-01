@@ -1,12 +1,9 @@
 import {
   Flex, Box, Text, Button, InputGroup, InputLeftElement, Icon, useDisclosure,
-  InputRightElement, Input, Tooltip, Divider, useToast, Link, Image,
+  InputRightElement, Input, Tooltip, useToast, Link, Image,
   Modal, ModalOverlay, ModalHeader, ModalBody, ModalCloseButton, ModalContent
 } from '@chakra-ui/react';
-import Footer from '../../../components/footer/Footer';
 import { HiMinusSm, HiPlusSm } from "react-icons/hi";
-import Metatag from '../../../components/metatag/Metatag';
-import { useRouter } from "next/router";
 import { FaTrashAlt, FaEdit } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,7 +11,7 @@ import { axiosInstance } from '../../../lib/api';
 import qs from 'qs';
 
 export default function ProductCartList(props) {
-  const { image, productName, qtyBuy, price, totalPrice, unit, firstPrice, idCart, idProduct, productCode, idUnit, idUser } = props
+  const { image, productName, qtyBuy, price, totalPrice, stock, unit, firstPrice, idCart, idProduct, productCode, idUnit, idUser } = props
   const { isOpen: isOpenDelete, onOpen: onOpenDelete, onClose: onCloseDelete } = useDisclosure()
   const userSelector = useSelector((state) => state.auth)
   const autoRender = useSelector((state) => state.automateRendering)
@@ -48,7 +45,7 @@ export default function ProductCartList(props) {
     }
   }
 
-  // ----- Add to Cart
+  // -------------------- Add to Cart -------------------- //
   async function addToCart(quantity) {
     let msg = ''
     // let newQty = quantity
@@ -73,7 +70,7 @@ export default function ProductCartList(props) {
 
       if (msg == "Error: Maaf data keranjang anda melebihi produk stok" || msg == "Maaf produk stok tidak mencukupi") {
         toast({
-          title: `Quantity beli Produk ${productName} di keranjang anda sudah melebihi stok / stok tiak mencukupi`,
+          title: `Quantity beli Produk ${productName} di keranjang anda sudah melebihi stok / stok tidak mencukupi`,
           status: "error",
           isClosable: true,
         })

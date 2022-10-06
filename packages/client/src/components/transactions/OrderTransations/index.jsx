@@ -1,17 +1,14 @@
 import {
-  Flex, Box, Text, Button, InputGroup, InputLeftElement, Icon, Modal, ModalCloseButton, ModalContent,
-  ModalOverlay, ModalHeader, ModalBody, useDisclosure, FormControl, FormLabel, FormHelperText,
+  Box, Text, Button, Icon, Modal, ModalCloseButton, ModalContent,
+  ModalOverlay, ModalHeader, ModalBody, useDisclosure, FormControl, FormHelperText,
   InputRightElement, Input, Tooltip, Divider, Select
 } from '@chakra-ui/react';
-import Footer from '../../../components/footer/Footer';
 import { BiPlusMedical } from "react-icons/bi";
-import { HiMinusSm, HiPlusSm } from "react-icons/hi";
-import Metatag from '../../../components/metatag/Metatag';
 import { useSelector, useDispatch } from 'react-redux';
 import { useState, useEffect } from "react";
+import { useFormik } from "formik";
 import { useRouter } from "next/router";
 import { FaTrashAlt, FaEdit } from "react-icons/fa";
-import { useFormik } from "formik";
 import { axiosInstance } from '../../../lib/api';
 import MaddAddress from '../../profilesetting/maddressadd/maddaddress';
 import ShowAddress from '../../profilesetting/ShowAddress';
@@ -42,7 +39,7 @@ export default function OrderTrasanctions() {
   const { isOpen: isOpenPayment, onOpen: onOpenPayment, onClose: onClosePayment } = useDisclosure()
   const { isOpen: isOpenChangeAddress, onOpen: onOpenChangeAddress, onClose: onCloseChangeAddress } = useDisclosure()
 
-  // ---------- Fetching Address by User ---------- //
+  // -------------------- Fetching Address by User -------------------- //
   async function fetchAddress() {
     try {
       // axiosInstance.get(`/ comment / post / ${ id } ? page = ${ startComment } & limit=${ 5}`)
@@ -78,7 +75,7 @@ export default function OrderTrasanctions() {
     })
   }
 
-  // ---------- Fetching Address by id Address ---------- //
+  // -------------------- Fetching Address by id Address -------------------- //
   async function fetchAddressbyId() {
     try {
       axiosInstance.get(`address/addressid/` + userSelector.default_address)
@@ -114,14 +111,13 @@ export default function OrderTrasanctions() {
     })
   }
 
-  // --------------- Fetching Cart --------------- //
+  // -------------------- Fetching Cart -------------------- //
   async function fetchCart() {
     try {
       axiosInstance.get(`/transaction/api/v1/Carts/${userSelector.id}`)
         .then((res) => {
           setCart(res.data.result)
           setCartLength(res.data.result.length)
-
           // console.log(res.data.result[1].Product.Product_stocks[0].Unit.unit_name);
         })
     } catch (err) {
@@ -129,7 +125,7 @@ export default function OrderTrasanctions() {
     }
   };
 
-  // ---------- ambil data subtotal dan total berat produk ---------- //
+  // -------------------- ambil data subtotal dan total berat produk -------------------- //
   let subTotal = 0;
   let totalWeight = 0;
 
@@ -140,7 +136,7 @@ export default function OrderTrasanctions() {
     setCartSubTotal(subTotal);
   }, [cart])
 
-  // ---------- Render cart list ---------- //
+  // -------------------- Render cart list -------------------- //
   const renderCartList = () => {
     return cart.map((val, index) => {
       subTotal += val.total_price;
@@ -159,6 +155,7 @@ export default function OrderTrasanctions() {
             firstPrice={val.Product.Product_stocks[0].first_price}
             unit={val.Product.Product_stocks[0].Unit.unit_name}
             idUnit={val.Product.Product_stocks[0].Unit.id}
+            stock={val.Product.Product_stocks[0].stock}
             idProduct={val.Product.id}
             productCode={val.Product.product_code}
             idUser={val.id_user}
@@ -169,7 +166,7 @@ export default function OrderTrasanctions() {
     )
   }
 
-  // --------------- Fetching courier --------------- //
+  // -------------------- Fetching courier -------------------- //
   async function fetchCouriers() {
     try {
       axiosInstance.get(`/transaction/api/v1/Couriers`)
@@ -189,7 +186,7 @@ export default function OrderTrasanctions() {
     })
   }
 
-  // ---------- Fetching Cost Raja Ongkir ---------- //
+  // -------------------- Fetching Cost Raja Ongkir -------------------- //
   async function fetchCostRajaOngkir() {
     try {
       if (getCityId && cartWeight && formik.values.courier) {
@@ -218,7 +215,7 @@ export default function OrderTrasanctions() {
     })
   }
 
-  // --------------- Simpan data ke Transaction --------------- //
+  // -------------------- Simpan data ke Transaction -------------------- //
   const formik = useFormik({
     initialValues: {
       courier: "",
@@ -347,7 +344,7 @@ export default function OrderTrasanctions() {
               Pilih Kurir :
             </Text>
             <FormControl isInvalid={formik.errors.courier} marginTop={"10px"}>
-              {formik.values.courier}
+              {/* {formik.values.courier} */}
               <Select onChange={(event) => formik.setFieldValue("courier", event.target.value)}>
                 <option value="">- Pilih Kurir -</option>
                 {renderCouriers()}
@@ -362,7 +359,7 @@ export default function OrderTrasanctions() {
             <Text alignSelf='center' fontWeight='semibold' fontSize='sm' mb='5px'>
               Pilih Service :
             </Text>
-            {formik.values.service}
+            {/* {formik.values.service} */}
             <FormControl isInvalid={formik.errors.service} marginTop={"10px"}>
               <Select onChange={(event) => formik.setFieldValue("service", event.target.value)}>
                 {/* {formik.values.service == '' ? <option value="">- Pilih Service -</option>

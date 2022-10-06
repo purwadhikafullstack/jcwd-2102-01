@@ -1,14 +1,7 @@
-import {
-  Flex, Box, Text, Button, InputGroup, InputLeftElement, Icon,
-  InputRightElement, Input, Tooltip, Divider, Image
-} from '@chakra-ui/react';
-import Footer from '../../../components/footer/Footer';
-import { HiMinusSm, HiPlusSm } from "react-icons/hi";
-import Metatag from '../../../components/metatag/Metatag';
+import { Box, Text, Button, Divider, Image } from '@chakra-ui/react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { FaTrashAlt, FaEdit } from "react-icons/fa";
 import ProductCartList from './ProductCartList';
 import { axiosInstance } from '../../../lib/api';
 
@@ -22,7 +15,7 @@ export default function CartTrasanctions() {
   const [cartSubTotal, setCartSubTotal] = useState(0)
   const [addressLength, setAddressLength] = useState()
 
-  // ---------- Fetching Address ---------- //
+  // -------------------- Fetching Address -------------------- //
   async function fetchAddress() {
     try {
       axiosInstance.get(`address/user/` + userSelector.id)
@@ -37,7 +30,7 @@ export default function CartTrasanctions() {
     }
   };
 
-  // --------------- Fetching Cart --------------- //
+  // -------------------- Fetching Cart -------------------- //
   async function fetchCart() {
     try {
       axiosInstance.get(`/transaction/api/v1/Carts/${userSelector.id}`)
@@ -75,6 +68,7 @@ export default function CartTrasanctions() {
             idCart={val.id}
             firstPrice={val.Product.Product_stocks[0].first_price}
             unit={val.Product.Product_stocks[0].Unit.unit_name}
+            stock={val.Product.Product_stocks[0].stock}
             idProduct={val.Product.id}
             productCode={val.Product.product_code}
             idUser={val.id_user}

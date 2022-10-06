@@ -12,8 +12,8 @@ import { axiosInstance } from '../../../../lib/api';
 import { HiMinusSm, HiPlusSm } from "react-icons/hi";
 import qs from 'qs';
 
-export default function ModalAddProduct(props) {
- const { transactionId, productId, unitId, userId, price, unit, stock, weight, grandTotal, productName, converted } = props
+export default function ModalAddProductRacik(props) {
+ const { transactionId, productId, unitId, userId, price, unit, stock, weight, grandTotal, productName, converted, concoctionName } = props
  const { isOpen: isOpenAddQty, onOpen: onOpeSAddQty, onClose: onCloseAddQty } = useDisclosure()
  const dispatch = useDispatch()
  const toast = useToast();
@@ -31,8 +31,8 @@ export default function ModalAddProduct(props) {
     id_product: productId,
     id_unit: unitId,
     id_transaction: transactionId,
-    medicine_concoction_name: '',
-    medicine_concoction: "no"
+    medicine_concoction_name: concoctionName,
+    medicine_concoction: "yes"
    }
    let res = await axiosInstance.post(`/transaction/api/v1/CustomOrder`, qs.stringify(body))
    msg = res.data.message;
@@ -65,7 +65,7 @@ export default function ModalAddProduct(props) {
   <>
    {/* ----- Button Tambah Product ke List ----- */}
    <Tooltip label='Tambah Produk Ke List' fontSize='sm' >
-    <Button onClick={onOpeSAddQty} variant='link' size='xs' color='#009B90' mr='5px' >
+    <Button disabled={concoctionName?.length < 4 ? true : false} onClick={onOpeSAddQty} variant='link' size='xs' color='#009B90' mr='5px' >
      <Icon boxSize={5} as={BiPlusMedical} _hover={{ color: '#02d1c2' }} />
     </Button>
    </Tooltip>
@@ -86,6 +86,11 @@ export default function ModalAddProduct(props) {
      <ModalHeader>Tambah Produk ke List Pesanan</ModalHeader>
      <ModalCloseButton />
      <ModalBody pb={6}>
+      <Box display='flex' >
+       <Text fontWeight='semibold' fontSize='xl' color='#009B90' minW='140px'>
+        Racikan {concoctionName}
+       </Text>
+      </Box>
       <Box display='flex' >
        <Text fontWeight='semibold' color='#213360' minW='140px'>
         Product Name

@@ -1,43 +1,22 @@
-import { ReactNode } from 'react';
 import {
-  Box, Input,
-  Flex,
-  Avatar,
-  HStack,
-  Link,
-  IconButton,
-  Button,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  MenuDivider,
-  useDisclosure,
-  useColorModeValue, Divider,
-  Stack, Icon, Text, Accordion, VStack, AccordionIcon, AccordionPanel, AccordionItem, AccordionButton,
-  Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerOverlay, DrawerFooter, DrawerHeader, Center
+  Box, Flex, Avatar, HStack, Link, IconButton, Button, Menu, MenuButton, MenuList, MenuItem, MenuDivider, useDisclosure,
+  Stack, Icon, Text, Accordion, AccordionIcon, AccordionPanel, AccordionItem, AccordionButton, Center
 } from '@chakra-ui/react';
-import LinkNext from 'next/link';
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
-import { FaRegHeart, FaTrashAlt } from "react-icons/fa";
-import { MdOutlineCategory, MdCategory, MdPersonAddAlt, MdPersonAdd } from 'react-icons/md';
-import { AiFillBell, AiFillSetting, AiOutlineBell, AiOutlineHome, AiFillHome } from "react-icons/ai";
-import { RiLoginCircleLine, RiLoginCircleFill, RiHistoryLine } from "react-icons/ri";
-import { IoSettingsOutline, IoLogOutOutline, IoStorefrontOutline, IoStorefrontSharp } from "react-icons/io5"
+import { AiFillSetting, AiOutlineHome, AiFillHome } from "react-icons/ai";
+import { IoSettingsOutline, IoLogOutOutline } from "react-icons/io5"
+import { FaPills, FaRegClipboard } from 'react-icons/fa';
+import { BsGraphUp } from 'react-icons/bs';
+import { BiHelpCircle } from "react-icons/bi";
+import { IoMdNotificationsOutline } from "react-icons/io";
 import { useRouter } from 'next/router';
-import Image from 'next/image';
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import { axiosInstance } from '../../../lib/api';
-import logo from '../../../assets/img/healthymedLogo.png'
-import { FaPills, FaRegClipboard, FaClipboardList } from 'react-icons/fa';
-import { FcLike } from "react-icons/fc";
-import { BsGraphUp } from 'react-icons/bs';
-import { BiAddToQueue, BiHelpCircle } from "react-icons/bi";
-import { IoMdNotificationsOutline } from "react-icons/io";
-import { IoCartOutline } from "react-icons/io5";
+import LinkNext from 'next/link';
+import Image from 'next/image';
 import jsCookie from "js-cookie";
 import auth_types from "../../../redux/reducers/auth/type";
+import logo from '../../../assets/img/healthymedLogo.png'
 
 export default function AdminNavBar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -79,14 +58,13 @@ export default function AdminNavBar() {
               as={'nav'}
               spacing={4}
               display={{ base: 'none', md: 'flex' }}>
-
               <Link onClick={onOpenCart} >
                 <Button background='white' _hover={{ background: '#E8F5FD', color: '#00ACEE', borderBottomWidth: '3px', borderBottomColor: '#3B9AE1' }} borderRadius={0} h={16} mr='8px'>
                   <Icon boxSize='7' as={IoMdNotificationsOutline} />
                 </Button>
               </Link>
-
             </HStack>
+
             <Menu>
               <MenuButton style={{ textDecoration: "none" }}
                 as={Button}
@@ -95,7 +73,6 @@ export default function AdminNavBar() {
                 cursor={'pointer'}
                 minW={0}>
                 <Box display='flex' >
-
                   <Avatar mx='10px' alignSelf='center'
                     name={userSelector.first_name + userSelector.last_name} size='sm' src={`http://${userSelector.image_url}`}
                   />
@@ -112,20 +89,17 @@ export default function AdminNavBar() {
                 </LinkNext>
                 <MenuItem><Icon boxSize='6' as={BiHelpCircle} /><Text ml='10px'>Bantuan</Text></MenuItem>
                 <MenuDivider />
-                <MenuItem ><Icon boxSize='6' as={IoLogOutOutline} /><Text ml='10px'>Log Out</Text></MenuItem>
+                <MenuItem onClick={btnlogout} ><Icon boxSize='6' as={IoLogOutOutline} /><Text ml='10px'>Log Out</Text></MenuItem>
               </MenuList>
             </Menu>
           </Flex>
         </Flex>
 
+        {/* ---------- Mobile Version ---------- */}
         {isOpen ? (
           <Box pb={4} display={{ md: 'none' }}>
             <Stack as={'nav'} spacing={4}>
-
-              {/* {Links.map((link) => (
-                <NavLink key={link}>{link}</NavLink>
-              ))} */}
-              <Link href='./home' borderRadius={5} style={{ textDecoration: "none" }} _hover={{ background: '#E8F5FD' }}>
+              <Link href='/home' borderRadius={5} style={{ textDecoration: "none" }} _hover={{ background: '#E8F5FD' }}>
                 <HStack color='#4c4c4d'>
                   <Center display='flex' justifyContent='center' h='50px' w='50px'>
                     <Icon boxSize='8' as={router.pathname == '/home' ? AiFillHome : AiOutlineHome} />
@@ -159,13 +133,15 @@ export default function AdminNavBar() {
                         Daftar Produk
                       </Box>
                     </HStack>
-                    <HStack _hover={{ background: '#ccdefc' }}>
-                      <Center display='flex' justifyContent='center' h='40px' w='58px'>
-                      </Center>
-                      <Box display='flex' w='full' fontWeight='semibold'>
-                        Daftar Kategori
-                      </Box>
-                    </HStack>
+                    <LinkNext href='/admin/inventory/category'>
+                      <HStack _hover={{ background: '#ccdefc' }}>
+                        <Center display='flex' justifyContent='center' h='40px' w='58px'>
+                        </Center>
+                        <Box display='flex' w='full' fontWeight='semibold'>
+                          Daftar Kategori
+                        </Box>
+                      </HStack>
+                    </LinkNext>
                     <HStack _hover={{ background: '#ccdefc' }}>
                       <Center display='flex' justifyContent='center' h='40px' w='58px'>
                       </Center>

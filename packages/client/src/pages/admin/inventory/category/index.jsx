@@ -1,5 +1,5 @@
 import {
-  Box, Flex, InputGroup, InputLeftElement, InputRightElement, Input, Menu, MenuButton, AlertIcon, Alert,
+  Box, Flex, Spinner, InputGroup, InputLeftElement, InputRightElement, Input, Menu, MenuButton, AlertIcon, Alert,
   MenuDivider, Text, Icon, useDisclosure, Link, Modal,
   ModalOverlay,
   ModalContent,
@@ -30,7 +30,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useFormik } from "formik";
 import { useState } from 'react';
 import { useEffect } from 'react';
-
+import { useRouter } from 'next/router';
 import { axiosInstance } from '../../../../lib/api';
 import qs from "qs";
 import * as yup from "yup";
@@ -39,7 +39,9 @@ import Buttonedit from '../../../../components/admin/inventory/category/Buttoned
 import Buttondeleted from '../../../../components/admin/inventory/category/Buttondeleted';
 
 export default function Category() {
-
+  const userSelector = useSelector((state) => state.auth);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
   // const { isOpen: isOpenEditCat, onOpen: onOpenEditCat, onCLose: onCloseEditCat } = useDisclosure();
   // const { isOpen: isOpenDeleteCat, onOpen: onOpenDeleteCat, onClose: onCloseDeleteCat } = useDisclosure();
   // const { isOpen: isOpenEditProf, onOpen: onOpenEditProf, onClose: onCloseEditProf } = useDisclosure()
@@ -61,6 +63,17 @@ export default function Category() {
     }
   })
 
+  useEffect(() => {
+    if (!userSelector?.id) {
+      router.push("/login")
+    }
+    else if (userSelector?.id && userSelector.roles == "User") {
+      router.push("/")
+    }
+    else {
+      setIsLoading(false);
+    }
+  }, [userSelector?.id]);
 
   async function fetchCategory() {
     try {
@@ -134,46 +147,56 @@ export default function Category() {
   // }
   return (
     <>
-      <Flex bgGradient='linear(to-tr, #ffffff 50%, #ddf1f9 )'>
-        <SideBar />
-        <Box>
-          <AdminNavBar />
-          <Flex flexWrap={'wrap'} p='15px'>
-            <Box px='2'>
-              <Buttonadd />
+      {isLoading ?
+        <Flex minH={'100vh'} align={'center'} justify={'center'}>
+          <Spinner thickness='4px'
+            speed='0.65s'
+            emptyColor='gray.200'
+            color='blue.500'
+            size='xl' /> &nbsp; loading...
+        </Flex>
+        :
+        <>
+          <Flex bgGradient='linear(to-tr, #ffffff 50%, #ddf1f9 )'>
+            <SideBar />
+            <Box>
+              <AdminNavBar />
+              <Flex flexWrap={'wrap'} p='15px'>
+                <Box px='2'>
+                  <Buttonadd />
+                </Box>
+
+                <TableContainer>
+                  <Table variant='striped' colorScheme='teal'>
+                    <TableCaption>Table Category</TableCaption>
+                    <Thead>
+                      <Tr>
+                        <Th>No</Th>
+                        <Th>Kategori</Th>
+                        <Th>Edit</Th>
+                        <Th> Delete</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {rendergetCategory()}
+                    </Tbody>
+                    <Tfoot>
+                      <Tr>
+                        <Th>No</Th>
+                        <Th>Kategori</Th>
+                        <Th>Edit</Th>
+                        <Th>Delete</Th>
+                      </Tr>
+                    </Tfoot>
+                  </Table>
+                </TableContainer>
+              </Flex>
+              <AdmFooter />
+
             </Box>
 
-            <TableContainer>
-              <Table variant='striped' colorScheme='teal'>
-                <TableCaption>Table Category</TableCaption>
-                <Thead>
-                  <Tr>
-                    <Th>No</Th>
-                    <Th>Kategori</Th>
-                    <Th>Edit</Th>
-                    <Th> Delete</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {rendergetCategory()}
-                </Tbody>
-                <Tfoot>
-                  <Tr>
-                    <Th>No</Th>
-                    <Th>Kategori</Th>
-                    <Th>Edit</Th>
-                    <Th>Delete</Th>
-                  </Tr>
-                </Tfoot>
-              </Table>
-            </TableContainer>
           </Flex>
-          <AdmFooter />
-
-        </Box>
-
-      </Flex>
-
+        </>}
     </>
   )
 }

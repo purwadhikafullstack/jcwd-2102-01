@@ -1,10 +1,5 @@
-import {
- Box, Flex, Avatar, HStack, Button, Menu, MenuButton, AlertIcon, Alert,
- MenuDivider, Text, Icon, useDisclosure, Link, Modal, ModalOverlay, Center
-} from '@chakra-ui/react';
-import banner from '../../assets/img/bg.png'
+import { Box, Text, Center } from '@chakra-ui/react';
 import Image from 'next/image';
-import NextLink from 'next/link'
 import jaminan1 from '../../assets/img/jaminan1.png'
 import jaminan2 from '../../assets/img/jaminan2.png'
 import jaminan3 from '../../assets/img/jaminan3.png'
@@ -17,7 +12,6 @@ export default function HomeBadge() {
    </Box>
 
    <Box display='flex' flexWrap='wrap' mt='15px' mb='30px' justifyContent='center' >
-
     <Box display='flex' w='350px' h='168px' mr='5px' my='10px' bg='#F6FAFB' borderRadius='16px' borderWidth='1px' boxShadow='md'>
      <Center borderLeftRadius='16px' w='150px' h='168px'>
       <Image src={jaminan1} height='100px' width='80px' />

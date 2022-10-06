@@ -1,11 +1,7 @@
-import {
-  Flex, Box, Text, Button, InputGroup, InputLeftElement, Icon, useDisclosure,
-  InputRightElement, Input, Tooltip, Divider, useToast, Link, Image,
-  Modal, ModalOverlay, ModalHeader, ModalBody, ModalCloseButton, ModalContent
-} from '@chakra-ui/react';
+import { Flex, Box, Text, Divider, Link, Image } from '@chakra-ui/react';
 
 export default function AdmProductOrderList(props) {
-  const { image, productName, qtyBuy, price, totalPrice, unit, firstPrice, idCart, productCode, idUser } = props
+  const { image, productName, qtyBuy, price, totalPrice, unit, firstPrice, idCart, productCode, idUser, stock } = props
   const percentage = parseInt((firstPrice - price) / firstPrice * 100);
 
   return (
@@ -28,6 +24,9 @@ export default function AdmProductOrderList(props) {
             <Text fontWeight='semibold' fontSize='sm' textColor='#213360'>
               {qtyBuy} {unit} x
             </Text>
+            <Text fontWeight='semibold' fontSize='sm' textColor={qtyBuy > stock ? 'red' : '#213360'} >
+              Sisa Stok : {stock} {unit} {qtyBuy > stock ? '(Stok Tidak Mencukupi)' : null}
+            </Text>
           </Box>
         </Box>
         <Box w='150px' textAlign='right'>
@@ -49,7 +48,6 @@ export default function AdmProductOrderList(props) {
           </Text>
         </Box>
       </Flex>
-
     </>
   )
 }
