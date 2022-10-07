@@ -33,39 +33,47 @@ export default function ProductDetailsComp(props) {
   // -------------------- Add to Cart -------------------- //
   const addToCart = async () => {
     let msg = ''
-    try {
-      let body = {
-        buy_quantity: qtyProduct,
-        price: parseFloat(sellingPrice),
-        total_price: parseFloat(sellingPrice) * parseFloat(qtyProduct),
-        id_user: userSelector.id,
-        id_product: productId,
-        id_unit: idUnit
-      }
-      let res = await axiosInstance.post(`/transaction/api/v1/Cart/${userSelector.id}`, qs.stringify(body))
-      msg = res.data.message;
-      console.log(res.data.message);
-
-      dispatch({
-        type: "FETCH_RENDER",
-        payload: { value: !autoRender.value }
+    if (qtyProduct == 0) {
+      toast({
+        title: `Quantity tidak boleh kosong atau 0`,
+        status: "error",
+        isClosable: true,
       })
+    } else {
+      try {
+        let body = {
+          buy_quantity: qtyProduct,
+          price: parseFloat(sellingPrice),
+          total_price: parseFloat(sellingPrice) * parseFloat(qtyProduct),
+          id_user: userSelector.id,
+          id_product: productId,
+          id_unit: idUnit
+        }
+        let res = await axiosInstance.post(`/transaction/api/v1/Cart/${userSelector.id}`, qs.stringify(body))
+        msg = res.data.message;
+        console.log(res.data.message);
 
-      if (msg == "Error: Maaf data keranjang anda melebihi produk stok" || msg == "Maaf produk stok tidak mencukupi") {
-        toast({
-          title: `Quantity beli Produk ${productName} di keranjang anda sudah melebihi stok / stok tiak mencukupi`,
-          status: "error",
-          isClosable: true,
+        dispatch({
+          type: "FETCH_RENDER",
+          payload: { value: !autoRender.value }
         })
-      } else {
-        toast({
-          title: `Berhasil Menambah ${qtyProduct} ${unit} Produk ${productName} ke keranjang`,
-          status: "success",
-          isClosable: true,
-        })
+
+        if (msg == "Error: Maaf data keranjang anda melebihi produk stok" || msg == "Maaf produk stok tidak mencukupi") {
+          toast({
+            title: `Quantity beli Produk ${productName} di keranjang anda sudah melebihi stok / stok tiak mencukupi`,
+            status: "error",
+            isClosable: true,
+          })
+        } else {
+          toast({
+            title: `Berhasil Menambah ${qtyProduct} ${unit} Produk ${productName} ke keranjang`,
+            status: "success",
+            isClosable: true,
+          })
+        }
+      } catch (err) {
+        console.log(err);
       }
-    } catch (err) {
-      console.log(err);
     }
   }
 
@@ -166,22 +174,39 @@ export default function ProductDetailsComp(props) {
             <Text fontWeight='bold' fontSize='md' mt='5px'>Rp {sellingPrice?.toLocaleString()}</Text>
             <Text fontWeight='semibold' fontSize='sm' mt='5px'> &nbsp; / {unit}</Text>
           </Box>
-          <Box display='flex' mt='15px' justifyContent='flex-start'>
 
+          <Box display='flex' mt='15px' justifyContent='flex-start'>
             <InputGroup w='150px' size='sm'>
               <InputLeftElement bg='#009B90' borderLeftRadius='5px' color='white' sx={{ _hover: { cursor: "pointer" } }}
-                onClick={() => setQtyProduct(qtyProduct <= 1 ? 1 : qtyProduct - 1)}>
+                onClick={() => {
+                  async function submit() {
+                    setQtyProduct(qtyProduct <= parseInt(1) ? parseInt(1) : qtyProduct - parseInt(1))
+                  } submit()
+                  var qtyNow = qtyProduct - 1
+                  qtyNow = qtyNow <= 0 ? parseInt(1) : qtyNow
+                  document.getElementById("qtyInput").value = parseInt(qtyNow);
+                }}>
                 <Icon boxSize='5' as={HiMinusSm} />
               </InputLeftElement>
-              <Input textAlign='center' type='number' borderRadius='5px' placeholder='qty' required bg='white'
-                onChange={(event) => setQtyProduct(event.target.value > stock ? stock : event.target.value < 1 ? 1 : event.target.value)} value={qtyProduct}
+              <Input textAlign='center' id='qtyInput' type='number' borderRadius='5px' placeholder='qty' required bg='white'
+                defaultValue={qtyProduct}
+                onChange={(e) => {
+                  !e.target.value ? setQtyProduct(parseInt(0)) : e.target.value > stock || e.target.value <= 0 ? e.target.value = qtyProduct :
+                    setQtyProduct(parseInt(e.target.value))
+                }}
               />
               <InputRightElement bg='#009B90' borderRightRadius='5px' color='white' sx={{ _hover: { cursor: "pointer" } }}
-                onClick={() => setQtyProduct(qtyProduct >= stock ? stock : parseInt(qtyProduct) + parseInt(1))}>
+                onClick={() => {
+                  async function submit() {
+                    setQtyProduct(qtyProduct >= stock ? stock : parseInt(qtyProduct) + parseInt(1))
+                  } submit()
+                  var qtyNow = qtyProduct + 1
+                  qtyNow = qtyNow > stock ? qtyProduct : qtyNow
+                  document.getElementById("qtyInput").value = parseInt(qtyNow);
+                }}>
                 <Icon boxSize='5' as={HiPlusSm} />
               </InputRightElement>
             </InputGroup>
-
             <Box>
               <Text size='sm' alignSelf='end' ml='15px'>Sisa {stock} {unit}</Text>
             </Box>

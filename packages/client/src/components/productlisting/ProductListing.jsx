@@ -206,6 +206,7 @@ export default function ProductListing() {
     fetchCategory()
     fetchProduct()
     setIsLoading(false);
+    page
 
   }, [router.isReady]);
 
@@ -235,6 +236,8 @@ export default function ProductListing() {
 
   useEffect(() => {
     fetchProduct()
+    page
+
   }, [autoRender, searchProduct, page, limit]);
 
   return (
@@ -421,7 +424,15 @@ export default function ProductListing() {
 
           {/* ---------- Pagination ---------- */}
           <Box display='flex' justifyContent='center' alignContent='center'>
-            <Button onClick={() => setPage(page == 1 ? 1 : page - 1)} size='sm' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
+            <Button onClick={() => {
+              async function submit() {
+                setPage(page == 1 ? 1 : page - 1)
+              } submit()
+              var pageNow = page - 1
+              pageNow = pageNow <= 0 ? 1 : pageNow
+              document.getElementById("pagingInput").value = parseInt(pageNow)
+            }}
+              size='sm' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
               _hover={{ bg: '#009B90', color: 'white' }}>Prev</Button>
             {/* {renderButton()} */}
             {/* <Input w='50px' type='number' textAlign='center' bg='white' value={page}
@@ -430,12 +441,22 @@ export default function ProductListing() {
               !e.target.value ? null : e.target.value <= 0 ? setPage(1) :
                 setPage(e.target.value)
             }} /> */}
-            <Input w='50px' type='number' textAlign='center' bg='white' defaultValue={page} onChange={(e) => {
+            <Input w='50px' type='number' id='pagingInput' textAlign='center' bg='white' defaultValue={page} onChange={(e) => {
               !e.target.value ? null : e.target.value > totalPage || e.target.value <= 0 ? e.target.value = page :
-                setPage(e.target.value)
+                setPage(parseInt(e.target.value))
             }} />
             <Text alignSelf='center' mx='5px'>of {totalPage}</Text>
-            <Button onClick={() => setPage(totalPage == page ? page : page + 1)} size='sm' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
+            <Button onClick={() => {
+              async function submit() {
+                setPage(totalPage == page ? page : page + 1)
+              } submit()
+              var pageNow = page + 1
+              pageNow = pageNow > totalPage ? page : pageNow
+              document.getElementById("pagingInput").value = parseInt(pageNow);
+              // console.log("PageNow" + pageNow);
+              // console.log("page" + page);
+              // console.log("totalPage" + totalPage);
+            }} size='sm' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
               _hover={{ bg: '#009B90', color: 'white' }}>Next</Button>
           </Box>
         </Box>

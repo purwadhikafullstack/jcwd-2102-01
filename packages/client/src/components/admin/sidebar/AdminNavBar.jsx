@@ -126,13 +126,15 @@ export default function AdminNavBar() {
                     </AccordionButton>
                   </h2>
                   <AccordionPanel pb={2} p='0px'>
-                    <HStack _hover={{ background: '#ccdefc' }}>
-                      <Center display='flex' justifyContent='center' h='40px' w='58px'>
-                      </Center>
-                      <Box display='flex' w='full' fontWeight='semibold'>
-                        Daftar Produk
-                      </Box>
-                    </HStack>
+                    <LinkNext href='/admin/inventory/product'>
+                      <HStack _hover={{ background: '#ccdefc' }}>
+                        <Center display='flex' justifyContent='center' h='40px' w='58px'>
+                        </Center>
+                        <Box display='flex' w='full' fontWeight='semibold'>
+                          Daftar Produk
+                        </Box>
+                      </HStack>
+                    </LinkNext>
                     <LinkNext href='/admin/inventory/category'>
                       <HStack _hover={{ background: '#ccdefc' }}>
                         <Center display='flex' justifyContent='center' h='40px' w='58px'>

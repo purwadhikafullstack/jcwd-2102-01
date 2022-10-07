@@ -100,7 +100,7 @@ export default function NavBar() {
 
               <LinkNext href='/'>
                 <Button background='white'
-                  style={router.pathname == '/' ? { textDecoration: "none", borderBottomWidth: '3px', borderBottomColor: '#3B9AE1' }
+                  style={router.pathname == '/' ? { textDecoration: "none", borderBottomWidth: '3px', borderBottomColor: '#3B9AE1', color: '#00ACEE' }
                     : { textDecoration: "none" }}
                   _hover={{ background: '#E8F5FD', color: '#00ACEE', borderBottomWidth: '3px', borderBottomColor: '#3B9AE1' }} borderRadius={0} h={16}>
                   Beranda
@@ -109,7 +109,7 @@ export default function NavBar() {
 
               <Link href='/productlist' className='Button-Navbar' style={{ textDecoration: "none" }}>
                 <Button background='white'
-                  style={router.pathname == '/productlist' ? { textDecoration: "none", borderBottomWidth: '3px', borderBottomColor: '#3B9AE1' }
+                  style={router.pathname == '/productlist' ? { textDecoration: "none", borderBottomWidth: '3px', borderBottomColor: '#3B9AE1', color: '#00ACEE' }
                     : { textDecoration: "none" }}
                   _hover={{ background: '#E8F5FD', color: '#00ACEE', borderBottomWidth: '3px', borderBottomColor: '#3B9AE1' }} borderRadius={0} h={16}>
                   Produk

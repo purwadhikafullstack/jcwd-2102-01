@@ -226,6 +226,7 @@ export default function TransactionCard(props) {
                      totalOrderDet={totalOrder}
                      shippingCostDet={shippingCost}
                      idUserDet={idUser}
+                     idRecipe={idRecipe}
                      noteDet={note}
                      cancelDet={cancelDes}
                   />

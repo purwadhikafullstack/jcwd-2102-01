@@ -61,12 +61,12 @@ export default function NavBarSignIn() {
     return category.map((val, index) => {
       return (
         <>
-          <Link href={`/productlist?category1=` + val.category} style={{ textDecoration: "none" }}>
+          <Link key={index} href={`/productlist?category1=` + val.category} style={{ textDecoration: "none" }}>
             <HStack _hover={{ background: '#ccdefc' }}>
               <Center display='flex' justifyContent='center' h='40px' w='58px'>
               </Center>
               <Box display='flex' w='full' fontWeight='semibold'>
-                <SideFilterCategory key={index}
+                <SideFilterCategory
                   idcategory={val.id}
                   category={val.category}
                 />
@@ -82,9 +82,9 @@ export default function NavBarSignIn() {
     return category.map((val, index) => {
       return (
         <>
-          <Link href={`/productlist?category1=` + val.category} style={{ textDecoration: "none" }}>
+          <Link key={index} href={`/productlist?category1=` + val.category} style={{ textDecoration: "none" }}>
             <MenuItem>
-              <SideFilterCategory key={index}
+              <SideFilterCategory
                 idcategory={val.id}
                 category={val.category}
               /></MenuItem>
@@ -173,7 +173,7 @@ export default function NavBarSignIn() {
 
               <LinkNext href='/'>
                 <Button background='white'
-                  style={router.pathname == '/' ? { textDecoration: "none", borderBottomWidth: '3px', borderBottomColor: '#3B9AE1' }
+                  style={router.pathname == '/' ? { textDecoration: "none", borderBottomWidth: '3px', borderBottomColor: '#3B9AE1', color: '#00ACEE' }
                     : { textDecoration: "none" }}
                   _hover={{ background: '#E8F5FD', color: '#00ACEE', borderBottomWidth: '3px', borderBottomColor: '#3B9AE1' }} borderRadius={0} h={16}>
                   Beranda
@@ -182,7 +182,7 @@ export default function NavBarSignIn() {
 
               <Link href='/productlist' className='Button-Navbar' style={{ textDecoration: "none" }}>
                 <Button background='white'
-                  style={router.pathname == '/productlist' ? { textDecoration: "none", borderBottomWidth: '3px', borderBottomColor: '#3B9AE1' }
+                  style={router.pathname == '/productlist' ? { textDecoration: "none", borderBottomWidth: '3px', borderBottomColor: '#3B9AE1', color: '#00ACEE' }
                     : { textDecoration: "none" }}
                   _hover={{ background: '#E8F5FD', color: '#00ACEE', borderBottomWidth: '3px', borderBottomColor: '#3B9AE1' }} borderRadius={0} h={16}>
                   Produk
@@ -199,11 +199,11 @@ export default function NavBarSignIn() {
                 </MenuList>
               </Menu>
 
-              <Link onClick={onOpen}>
+              {/* <Link onClick={onOpen}>
                 <Button background='white' _hover={{ background: '#E8F5FD', color: '#00ACEE', borderBottomWidth: '3px', borderBottomColor: '#3B9AE1' }} borderRadius={0} h={16}>
                   <Icon boxSize='6' as={IoNotificationsOutline} />
                 </Button>
-              </Link>
+              </Link> */}
 
               <Link onClick={onOpenRecipe}>
                 <Tooltip label='Upload Resep'>
