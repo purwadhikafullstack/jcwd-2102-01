@@ -37,6 +37,7 @@ import qs from "qs";
 import * as yup from "yup";
 import Buttonadd from "../../../../components/admin/inventory/product/Buttonadd";
 import Buttonedit from "../../../../components/admin/inventory/product/Buttoneditprod";
+import Buttonmcu from "../../../../components/admin/inventory/product/Buttonmcu";
 //  import Buttondeleted from "../../../../components/admin/inventory/product/Buttondelete";
 export default function Product(props) {
   // const { isOpen, onOpen, onClose } = useDisclosure();
@@ -116,6 +117,39 @@ export default function Product(props) {
       console.log("error")
     }
   }
+
+
+  // async function filterProd (){
+  //   console.log();
+  // }
+  // try{
+  //   axiosInstance
+  // }
+  // async function konversiProduk (id) {
+  //   console.log(id)
+  //   try{
+  //     axiosInstance.patch("/products/api/v1/product/" + id)
+  //   } catch (err) {
+  //     console.log("error")
+  //   }
+  //   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   // catch(err){
   //   console.log(err);
   // }
@@ -232,7 +266,6 @@ export default function Product(props) {
             <Td>{val.category3}</Td>
             <Td>{val.sort}</Td>
           <Td>{val.orderby}</Td> */}
-          <Td>d</Td>
           <Td>
             <Buttonedit
               key={index}
@@ -273,6 +306,21 @@ export default function Product(props) {
               onClick={() => deletedProduct(val.id)}>
               Delete</Button>
           </Td>
+          <Td>
+            <Buttonmcu
+              key={index}
+              stock={val.stock}
+              id_product={val.id_product}
+              isi_perkemasan={val.isi_perkemasan}
+              id_unit={val.id_unit}
+              id_unit2={val.id_unit2}
+              capital_price={val.capital_price}
+              selling_price={val.selling_price}
+              Product_stocks={val.Product_stocks}
+              Unit={val.Unit}
+
+            />
+          </Td>
         </Tr>
       )
     })
@@ -306,9 +354,9 @@ export default function Product(props) {
                       <Th>Stock</Th>
                       <Th>Unit</Th>
                       <Th>Harga Obat</Th>
-                      <Th>Detail Obat</Th>
                       <Th>Edit</Th>
                       <Th>Delete</Th>
+                      <Th>Konversi</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
@@ -327,13 +375,13 @@ export default function Product(props) {
                       <Th>Detail Obat</Th>
                       <Th>Edit</Th>
                       <Th>Delete</Th>
+                      <Th>Konversi</Th>
                     </Tr>
                   </Tfoot>
                 </Table>
               </TableContainer> </Box>
 
           </Flex>
-          {/* <AdmFooter /> */}
 
         </Box>
 

@@ -31,10 +31,13 @@ export default function Home() {
    <Flex flexWrap={'wrap'} justifyContent={'center'} bgGradient='linear(to-tr, #ffffff 50%, #ddf1f9 )'>
     <Banner />
     <HomeUploadResep />
-    <HomeCategory />
+    <Box display='flex' m='15px' mb='15px'>
+     <HomeCategory />
+    </Box>
     <Box m='15px' mb='15px' w='80vw' borderBottomWidth='2px'></Box>
     <HomeMiniBanner />
-    <Box m='15px' mb='15px' w='80vw' borderBottomWidth='2px'></Box>
+    <Box m='15px' mb='15px' borderBottomWidth='2px'>
+    </Box>
     <HomePrduct />
     <Box m='15px' mb='15px' w='80vw' borderBottomWidth='2px'></Box>
     <HomeBadge />

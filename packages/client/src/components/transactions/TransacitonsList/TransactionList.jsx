@@ -1,5 +1,5 @@
 import {
-  Box, Text, Avatar, Link, Input, Select, InputGroup,
+  Box, Text, Avatar, Link, Input, Select, InputGroup, HStack, Center,
   Icon, useDisclosure, FormControl, Button, useToast, useMediaQuery,
   Tabs, TabList, TabPanel, TabPanels, Tab, InputRightElement, Drawer,
   DrawerBody, DrawerHeader, DrawerCloseButton, DrawerContent, DrawerOverlay,
@@ -32,6 +32,10 @@ export default function TransactionList() {
   const dispatch = useDispatch()
   const router = useRouter();
   const image = userSelector.image_url;
+  const [successTransaction, setSuccessTransaction] = useState(0)
+  const [processTransaction, setProcessTransaction] = useState(0)
+  const [sentTransaction, setSentTransaction] = useState(0)
+  const [cancelTransaction, setCancelTransaction] = useState(0)
 
   // -------------------- for filter -------------------- //
   const [pageStart, setPageStart] = useState(1)
@@ -99,6 +103,26 @@ export default function TransactionList() {
           const temp = res.data.result
           setTransactionLength(temp.length) // total transaksi keseluruhan
           setTotalPage(Math.ceil(temp.length / limit))
+        })
+      axiosInstance.post(`/transaction/api/v1/Trasanctions?idUser=${userSelector.id}&page=1&limit=1000000&status=Pesanan%20Dikonfirmasi`)
+        .then((res) => {
+          const temp = res.data.result
+          setSuccessTransaction(temp.length) // total transaksi Sukses
+        })
+      axiosInstance.post(`/transaction/api/v1/Trasanctions?idUser=${userSelector.id}&page=1&limit=1000000&status=Diproses`)
+        .then((res) => {
+          const temp = res.data.result
+          setProcessTransaction(temp.length) // total transaksi keseluruhan
+        })
+      axiosInstance.post(`/transaction/api/v1/Trasanctions?idUser=${userSelector.id}&page=1&limit=1000000&status=Dikirim`)
+        .then((res) => {
+          const temp = res.data.result
+          setSentTransaction(temp.length) // total transaksi terkirim
+        })
+      axiosInstance.post(`/transaction/api/v1/Trasanctions?idUser=${userSelector.id}&page=1&limit=1000000&status=Dibatalkan`)
+        .then((res) => {
+          const temp = res.data.result
+          setCancelTransaction(temp.length) // total transaksi betal
         })
 
       axiosInstance.post(`/transaction/api/v1/Trasanctions?idUser=${userSelector.id}&page=${page}&limit=${limit}&search=${searchInvNo}&startDate${startDate2 == dateNow && !endDate2 ? null : '=' + startDate2}&endDate=${endDate2}&status=${statusTransaction}&sort=${sort}&orderby=${order}`)
@@ -190,22 +214,22 @@ export default function TransactionList() {
         <Box h='50px' display='flex' align='center'
           justifyContent='space-between' borderTopWidth='2px' px='20px'>
           <Text alignSelf='center' fontWeight='semibold' color='#4c4c4d'>Transaksi Sukses</Text>
-          <Text alignSelf='center' fontWeight='semibold' color='#4c4c4d'>0</Text>
+          <Text alignSelf='center' fontWeight='semibold' color='#4c4c4d'>{successTransaction}</Text>
         </Box>
         <Box h='50px' display='flex' align='center'
           justifyContent='space-between' px='20px'>
           <Text alignSelf='center' fontWeight='semibold' color='#4c4c4d'>Proses</Text>
-          <Text alignSelf='center' fontWeight='semibold' color='#4c4c4d'>0</Text>
+          <Text alignSelf='center' fontWeight='semibold' color='#4c4c4d'>{processTransaction}</Text>
         </Box>
         <Box h='50px' display='flex' align='center'
           justifyContent='space-between' px='20px'>
           <Text alignSelf='center' fontWeight='semibold' color='#4c4c4d'>Pengiriman</Text>
-          <Text alignSelf='center' fontWeight='semibold' color='#4c4c4d'>0</Text>
+          <Text alignSelf='center' fontWeight='semibold' color='#4c4c4d'>{sentTransaction}</Text>
         </Box>
         <Box h='50px' display='flex' align='center'
           justifyContent='space-between' px='20px'>
           <Text alignSelf='center' fontWeight='semibold' color='#4c4c4d'>Transaksi Batal</Text>
-          <Text alignSelf='center' fontWeight='semibold' color='#4c4c4d'>0</Text>
+          <Text alignSelf='center' fontWeight='semibold' color='#4c4c4d'>{cancelTransaction}</Text>
         </Box>
       </Box >
 
@@ -276,7 +300,85 @@ export default function TransactionList() {
                 <DrawerHeader bg='#009B90' color='white'>Status</DrawerHeader>
                 <DrawerBody>
                   <Box px='20px' py='10px'>
-                    asdfasdf
+
+                    <Center display='flex' w='full' fontWeight='semibold' h='50px' _hover={{ background: '#ccdefc', cursor: "pointer" }}
+                      onClick={() => {
+                        async function submit() {
+                          setStatusTransaction(``)
+                          setPage(1)
+                          onCloseStatus()
+                        }
+                        submit()
+                      }}>
+                      Semua Transaksi
+                    </Center>
+                    <Center display='flex' w='full' fontWeight='semibold' h='50px' _hover={{ background: '#ccdefc', cursor: "pointer" }}
+                      onClick={() => {
+                        async function submit() {
+                          setStatusTransaction(`Menunggu Pembayaran`)
+                          setPage(1)
+                          onCloseStatus()
+                        }
+                        submit()
+                      }}>
+                      Menunggu
+                    </Center>
+                    <Center display='flex' w='full' fontWeight='semibold' h='50px' _hover={{ background: '#ccdefc', cursor: "pointer" }}
+                      onClick={() => {
+                        async function submit() {
+                          setStatusTransaction(`Diproses`)
+                          setPage(1)
+                          onCloseStatus()
+                        }
+                        submit()
+                      }}>
+                      Diproses
+                    </Center>
+                    <Center display='flex' w='full' fontWeight='semibold' h='50px' _hover={{ background: '#ccdefc', cursor: "pointer" }}
+                      onClick={() => {
+                        async function submit() {
+                          setStatusTransaction(`Dikirim`)
+                          setPage(1)
+                          onCloseStatus()
+                        }
+                        submit()
+                      }}>
+                      Dikirim
+                    </Center>
+                    <Center display='flex' w='full' fontWeight='semibold' h='50px' _hover={{ background: '#ccdefc', cursor: "pointer" }}
+                      onClick={() => {
+                        async function submit() {
+                          setStatusTransaction(`Pesanan Dikonfirmasi`)
+                          setPage(1)
+                          onCloseStatus()
+                        }
+                        submit()
+                      }}>
+                      Selesai
+                    </Center>
+                    <Center display='flex' w='full' fontWeight='semibold' h='50px' _hover={{ background: '#ccdefc', cursor: "pointer" }}
+                      onClick={() => {
+                        async function submit() {
+                          setStatusTransaction(`Dibatalkan`)
+                          setPage(1)
+                          onCloseStatus()
+                        }
+                        submit()
+                      }}>
+                      Dibatalkan
+                    </Center>
+                    <Center display='flex' w='full' fontWeight='semibold' h='50px' _hover={{ background: '#ccdefc', cursor: "pointer" }}
+                      onClick={() => {
+                        async function submit() {
+                          setStatusTransaction(`Resep Dokter`)
+                          setPage(1)
+                          onCloseStatus()
+                        }
+                        submit()
+                      }}>
+                      Resep Dokter
+                    </Center>
+
                   </Box>
                 </DrawerBody>
               </DrawerContent>

@@ -84,7 +84,7 @@ export default function AdminNavBar() {
               </MenuButton>
 
               <MenuList>
-                <LinkNext href="/profile">
+                <LinkNext href="/admin">
                   <MenuItem><Icon boxSize='6' as={router.pathname == "/profile" ? AiFillSetting : IoSettingsOutline} /><Text ml='10px'>Pengaturan</Text></MenuItem>
                 </LinkNext>
                 <MenuItem><Icon boxSize='6' as={BiHelpCircle} /><Text ml='10px'>Bantuan</Text></MenuItem>

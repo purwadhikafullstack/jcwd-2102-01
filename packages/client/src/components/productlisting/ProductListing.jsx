@@ -317,7 +317,7 @@ export default function ProductListing() {
               {/* {formik.values.searchName} */}
               <FormControl isInvalid={formik.errors.searchName}>
                 <InputGroup >
-                  <Input placeholder="Cari Nama Produk" type='text' bg='white'
+                  <Input placeholder="Cari Nama Produk" id='search' type='text' bg='white'
                     onChange={(event) => formik.setFieldValue("searchName", event.target.value)} />
                   <InputRightElement>
                     <Icon
@@ -338,6 +338,8 @@ export default function ProductListing() {
                     async function submit() {
                       setSearchProduct('')
                       setTheParams('')
+                      document.getElementById("search").value = '';
+                      formik.values.searchName = ''
                     } submit()
                   }} >
                   <Icon boxSize='6' as={BiReset} color='white' />

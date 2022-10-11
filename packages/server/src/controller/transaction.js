@@ -482,42 +482,36 @@ const transactionsController = {
         where: {id_transaction: findTransactionId.id},
       });
 
-      // pengecekkan NamaRacikan untuk di filter versi maping 
-      let temp = findTransactionList.map(function (x) { return x.medicine_concoction_name })
-      let cekNamaRacikan = new Set(temp);
-      let filterNamaRacikan = [...cekNamaRacikan];
-      console.log(filterNamaRacikan);
-      // console.log(productList);
-
+      let newStokUpdate = 0
+      let newTotalSold = 0
       const renderTransactionList = () => { 
-        return filterNamaRacikan.map((x) => { 
-          return (
-        findTransactionList.map((val) => {
-          if (val.medicine_concoction_name == x) {
+        return findTransactionList.map((val) => {
+        // Mapping Panggil Product Stock untuk diupdate
+          newStokUpdate = val.id_unit == val.Product.Product_stocks[0].id_unit ? val.Product.Product_stocks[0].stock - val.buy_quantity : val.Product.Product_stocks[1].stock - val.buy_quantity 
+          newTotalSold = val.id_unit == val.Product.Product_stocks[0].id_unit ? val.Product.Product_stocks[0].total_sold + val.buy_quantity : val.Product.Product_stocks[1].total_sold + val.buy_quantity
 
-            // Mapping Panggil Product Stock untuk diupdate
-            let newStokUpdate = val.id_unit == val.Product.Product_stocks[0].id_unit ? val.Product.Product_stocks[0].stock - val.buy_quantity : val.Product.Product_stocks[1].stock - val.buy_quantity 
-            let newTotalSold = val.id_unit == val.Product.Product_stocks[0].id_unit ? val.Product.Product_stocks[0].total_sold + val.buy_quantity : val.Product.Product_stocks[1].total_sold + val.buy_quantity
-            // console.log('tes find ' +  val.Product.Product_stocks[0].stock);
-            // console.log('tes find ' +  val.Product.Product_stocks[0].Unit.id);
-            // console.log('tes find id uni' + val.id_unit);
-            // console.log('tes val cart ' + val.buy_quantity);
-            Product_stock.update({stock: newStokUpdate, total_sold:newTotalSold}, {
-            where: {
-              [Op.and]: [
-                { id_unit: val.id_unit},
-                { id_product: val.id_product, }
-              ]
-            },});
-            // tambah data stock history
-            Stock_history.create({
-            type: 'Penjualan', description: 'pengurangan', quantity : val.buy_quantity, id_product: val.id_product, id_unit: val.Product.Product_stocks[0].Unit.id, 
-            });
-      } 
-    }) 
-    )
-    }
-      )
+        console.log(' ');
+        console.log('--- tes find id PRoduct --- ' + val.id_product);
+        console.log('tes find id unit ' + val.id_unit);
+        console.log('tes find ' +  val.Product.Product_stocks[0].stock);
+        console.log('tes find ' +  val.Product.Product_stocks[0].Unit.id);
+        console.log('tes val cart ' + val.buy_quantity);
+        console.log('newStokupdate ' + newStokUpdate);
+        console.log('new Total Sold ' + newTotalSold);
+        
+        Product_stock.update({stock: newStokUpdate, total_sold:newTotalSold}, {
+        where: {
+          [Op.and]: [
+            { id_unit: val.id_unit},
+            { id_product: val.id_product, }
+          ]
+        },});
+        
+        // tambah data stock history
+        Stock_history.create({
+        type: 'Penjualan', description: 'pengurangan', quantity : val.buy_quantity, id_product: val.id_product, id_unit: val.id_unit == val.Product.Product_stocks[0].id_unit ? val.Product.Product_stocks[0].Unit.id : val.Product.Product_stocks[1].Unit.id, 
+        });
+      })
     }
     renderTransactionList()
     await Transaction.update(
@@ -574,97 +568,6 @@ const transactionsController = {
       });
     }
   },
-
-  //  // -------------------- Change transaction status -------------------- //
-  // editTransactionStatus: async (req, res) => {
-  //   try {
-  //     const { noInvoice } = req.params;
-  //     const { transaction_status } = req.body;
-      
-  //     // Jika status dikirim maka potong stok
-  //     if(transaction_status == 'Dikirim') {
-  //     // Mengambil Id Transaksi 
-  //     const findTransactionId = await Transaction.findOne({
-  //       where: { no_invoice: noInvoice },
-  //     });
-
-  //     // Mengambil data list Transaksi
-  //     const findTransactionList = await Transaction_list.findAll({
-  //       include: [
-  //         { model : User },
-  //         { model : Product,
-  //           include : [
-  //             { model: Product_stock,
-  //               include : [{model: Unit}],
-  //             }, 
-  //             ],
-  //         },
-  //       ],
-  //       where: {id_transaction: findTransactionId.id},
-  //     });
-
-  //     const renderTransactionList = () => { 
-  //       return findTransactionList.map((val) => {
-  //       // Mapping Panggil Product Stock untuk diupdate
-  //       let newStokUpdate = val.Product.Product_stocks[0].stock - val.buy_quantity
-  //       let newTotalSold = val.buy_quantity + val.Product.Product_stocks[0].total_sold
-  //       // console.log('tes find ' +  val.Product.Product_stocks[0].stock);
-  //       // console.log('tes find ' +  val.Product.Product_stocks[0].Unit.id);
-  //       // console.log('tes find id uni' + val.id_unit);
-  //       // console.log('tes val cart ' + val.buy_quantity);
-        
-  //       Product_stock.update({stock: newStokUpdate, total_sold:newTotalSold}, {
-  //       where: {
-  //         [Op.and]: [
-  //           { id_unit:val.id_unit},
-  //           { id_product: val.id_product, }
-  //         ]
-  //       },});
-        
-  //       // tambah data stock history
-  //       Stock_history.create({
-  //       type: 'Penjualan', description: 'pengurangan', quantity : val.buy_quantity, id_product: val.id_product, id_unit: val.Product.Product_stocks[0].Unit.id, 
-  //       });
-  //     })
-  //   }
-  //   renderTransactionList()
-  //   await Transaction.update(
-  //         { 
-  //           ...req.body, 
-  //         },
-  //         {
-  //           where: {
-  //             no_invoice : noInvoice,
-  //           },
-  //         }
-  //       )
-
-  //   return res.status(200).json({
-  //       message: "Berhasil mengirimpesanan",
-  //     });
-  //   } else {
-  //     await Transaction.update(
-  //         { 
-  //           ...req.body, 
-  //         },
-  //         {
-  //           where: {
-  //             no_invoice : noInvoice,
-  //           },
-  //         }
-  //       )
-  //       return res.status(200).json({
-  //         message: "Transaction status changed",
-  //       });
-  //   }
-
-  //   } catch (err) {
-  //     console.log(err);
-  //     res.status(500).json({
-  //       message: err.toString(),
-  //     });
-  //   }
-  // },
 
 // -------------------- Serve Custom Order Progress (Docter Ricepe) -------------------- //
   serveCustomOrder: async (req, res) => {

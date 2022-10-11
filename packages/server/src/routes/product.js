@@ -37,4 +37,6 @@ productController.editProduct);
 
 router.patch("/api/v1/product/:id", productController.deleteButtonProduct)
 
+router.post("/api/v1/product/:id", productController.convertionButton)
+
 module.exports = router;

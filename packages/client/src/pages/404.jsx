@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import imagenf from '../assets/img/404.gif'
 import NavBar from '../components/navbar/NavBar'
 import NavBarSignIn from '../components/navbar/NavBarSignIn'
+import AdminNavBar from '../components/admin/sidebar/AdminNavBar'
 import Footer from '../components/footer/Footer'
 import { useSelector } from 'react-redux';
 import Metatag from '../components/metatag/Metatag'
@@ -17,8 +18,9 @@ const NotFound = () => {
   <>
    <Metatag title={"404 Page Not Found"} description={"Page not found"}
     url={url} type="website">
-    {userSelector.id ? <NavBarSignIn /> : <NavBar />}
+    {!userSelector.id ? <NavBar /> : userSelector.roles == 'User' ? <NavBarSignIn /> : <AdminNavBar />}
     <Flex flexWrap={'wrap'} minH={'80vh'} justifyContent={'center'} >
+
      <Box display='flex' top={0} justifyContent={'center'} >
       {/* <Box position='absolute' zIndex={2} mt='30px' textAlign='center' boxShadow='md' p='6' rounded='md' bg='white' backdropContrast='30%'> */}
       <Box position='absolute' zIndex={2} mt='30px' textAlign='center' p='6' backdropContrast='30%'>

@@ -509,6 +509,57 @@ const productController = {
         });
       }
     },
+
+    convertionButton: async (req,res) =>{
+    try{
+      const {id} = req.params;
+      const {stock, id_product,id_unit,id_unit2, isi_perkemasan,capital_price,selling_price,converted} = req.body; 
+      const newStock = stock - parseInt(1);
+      const newProductConvert = 1 * isi_perkemasan;
+      let newCapital = parseFloat(capital_price) / parseFloat(isi_perkemasan);
+      let newSell = parseFloat(selling_price) / parseFloat(isi_perkemasan);
+      console.log("aioeoieoie");
+      console.log(stock)
+      console.log(newStock);
+      console.log(newProductConvert);
+    
+      const findOneStock = await Product_stock.findOne({
+        where:{ 
+          [Op.and]:[
+            {
+              id_unit: id_unit
+            },{id_product: id_product}
+          ]
+        } 
+      }
+      )
+    
+        const mcuButtconv = await Product_stock.create({
+          stock: newProductConvert,
+          isi_perkemasan: "0",
+          converted: "yes",
+          id_product: id_product,
+          id_unit: id_unit2,
+          // id_product: id_product2
+          // id_unit: id_unit,
+          capital_price:parseFloat(newCapital),
+          selling_price:parseFloat(newSell),
+        });
+
+return res.status(200).json({
+  message: "Konversi produk sukses",
+  result: [ 
+    // mcuButt,
+    findOneStock, mcuButtconv]
+});
+    }catch(err){
+      console.log(err);
+      res.status(500).json({
+        message: err.toString(),
+      });
+    }
+},
+
 };
 
 module.exports = productController;

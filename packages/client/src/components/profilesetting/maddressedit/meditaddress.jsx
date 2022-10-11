@@ -81,6 +81,7 @@ export default function MeditAddress(props) {
           status: "success",
           isClosable: true,
         })
+        onClose();
       } catch (err) {
         console.log(err);
       }
@@ -310,7 +311,7 @@ export default function MeditAddress(props) {
         {() => {
           async function submit() {
             await formik.handleSubmit();
-            onClose();
+
           }
           submit()
         }}
