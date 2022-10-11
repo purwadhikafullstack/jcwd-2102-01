@@ -35,7 +35,7 @@ export default function MaddAddress(props) {
       city_name: "",
       city_id: "",
       districts: "",
-      postal_code: postalCode,
+      postal_code: "",
       type: "",
     },
     validationSchema: Yup.object().shape({

@@ -12,26 +12,64 @@ import moment from 'moment';
 import UploadPayment from '../payment/UploadPayment';
 
 export default function MdetailTransaction(props) {
-   const { idDet, productsDet, noInvoiceDet, dateCreatedDet, statusDet, totalOrderDet, shippingCostDet, namaPenerimaDet, alamatPenerimaDet, provDet, cityDet, districtDet, kurirDet,
+   const { idDet, productsDet, noInvoiceDet, idRecipe, dateCreatedDet, statusDet, totalOrderDet, shippingCostDet, namaPenerimaDet, alamatPenerimaDet, provDet, cityDet, districtDet, kurirDet,
       grandTotalDet, qtyBuyDet, noHpPenerimaDet, unitDet, productNameDet, productImageDet, idUserDet, noteDet, cancelDet } = props
    const { isOpen: isOpenDetail, onOpen: onOpenDetail, onClose: onCloseDetail } = useDisclosure()
    const { isOpen: isOpenPayment, onOpen: onOpenPayment, onClose: onClosePayment } = useDisclosure()
    const toast = useToast();
 
+   // -------------------- pengecekkan NamaRacikan untuk di filter versi maping -------------------- //
+   let temp = productsDet.map(function (x) { return x.medicine_concoction_name })
+   let cekNamaRacikan = new Set(temp);
+   let filterNamaRacikan = [...cekNamaRacikan];
+   console.log(filterNamaRacikan);
+   // console.log(productsDet);
+
    const renderTransactionList = () => {
-      return productsDet.map((val, index) => {
-         return (
-            <ProductOrderList key={index}
-               image={val.Product?.Product_images[0]?.image_url}
-               productName={val.Product?.product_name}
-               qtyBuy={val.buy_quantity}
-               price={val.price}
-               totalPrice={val.total_price}
-               productCode={val.Product?.product_code}
-               unit={val.Unit?.unit_name}
-            />
-         )
-      })
+      if (idRecipe == 1) {
+         return productsDet.map((val, index) => {
+            return (
+               <ProductOrderList key={index}
+                  image={val.Product?.Product_images[0]?.image_url}
+                  productName={val.Product?.product_name}
+                  qtyBuy={val.buy_quantity}
+                  price={val.price}
+                  totalPrice={val.total_price}
+                  productCode={val.Product?.product_code}
+                  unit={val.Unit?.unit_name}
+               />
+            )
+         })
+      } else {
+         return filterNamaRacikan.map((x, index) => {
+            return (
+               <>
+                  <Text key={index} fontSize='md' color='#009B90' fontWeight='bold' mt='20px'>
+                     {x == '' ? 'Umum' : 'Racikan ' + x}
+                  </Text>
+                  {
+                     productsDet.map((val, index) => {
+                        if (val.medicine_concoction_name == x) {
+                           return (
+                              <>
+                                 <ProductOrderList key={index}
+                                    image={val.Product?.Product_images[0]?.image_url}
+                                    productName={val.Product?.product_name}
+                                    qtyBuy={val.buy_quantity}
+                                    price={val.price}
+                                    totalPrice={val.total_price}
+                                    productCode={val.Product?.product_code}
+                                    unit={val.Unit?.unit_name}
+                                 />
+                              </>
+                           )
+                        }
+                     })
+                  }
+               </>
+            )
+         })
+      }
    }
 
    //  console.log(productsDet);
@@ -55,9 +93,9 @@ export default function MdetailTransaction(props) {
                         <NextImage src={logo} width='180px' height='40px' />
                      </Center>
 
-                     {statusDet == 'Menunggu Pembayaran' ?
-                        // {/* -------------------- Batas Pembayaran -------------------- */ }
-                        <Box display='flex' flexWrap='wrap' my='10px' p='20px' justifyContent='center' boxShadow='md' bg='#ffffff' borderWidth='1px' borderRadius="10px">
+                     {/* {statusDet == 'Menunggu Pembayaran' ? */}
+                     {/* -------------------- Batas Pembayaran -------------------- */}
+                     {/* <Box display='flex' flexWrap='wrap' my='10px' p='20px' justifyContent='center' boxShadow='md' bg='#ffffff' borderWidth='1px' borderRadius="10px">
                            <Box w='300px'>
                               <Text fontWeight='semibold' color='#737A8D' fontSize='sm'>
                                  Batas Akhir Pembayaran
@@ -94,7 +132,7 @@ export default function MdetailTransaction(props) {
                               </Center>
                            </Center>
                         </Box>
-                        : null}
+                        : null} */}
 
 
                      {/* -------------------- Ringkasan Order -------------------- */}

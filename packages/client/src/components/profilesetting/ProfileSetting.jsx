@@ -152,7 +152,7 @@ export default function ProfileSetting() {
 
   return (
     <>
-      <Box maxH='400px' w={'375px'} m='30px' mt='0px' mb='20px' justifyContent={'center'} boxShadow='md' bg='#ffffff' borderWidth='1px' borderRadius="10px">
+      <Box maxH='200px' w={'375px'} m='30px' mt='0px' mb='20px' justifyContent={'center'} boxShadow='md' bg='#ffffff' borderWidth='1px' borderRadius="10px">
         {/* -------------------- User Profile Picture and data -------------------- */}
         <Box display='flex' justifyContent='center' m='5px' mt='20px'>
           <Avatar name={userSelector.first_name + userSelector.last_name} size='xl' src={`http://${userSelector.image_url}`} >
@@ -190,7 +190,7 @@ export default function ProfileSetting() {
         <Box display='flex' justifyContent="center" mb='10px'>
           <Text fontSize='sm' fontWeight='semibold' mt={0} color='#4c4c4d'>{userSelector.username}</Text>
         </Box>
-        <Box h='50px' display='flex' align='center'
+        {/* <Box h='50px' display='flex' align='center'
           justifyContent='space-between' borderBottomWidth='2px' borderTopWidth='2px' px='20px'>
           <Text alignSelf='center' fontWeight='semibold' color='#4c4c4d'>Transaksi Sukses</Text>
           <Text alignSelf='center' fontWeight='semibold' color='#4c4c4d'>0</Text>
@@ -209,7 +209,7 @@ export default function ProfileSetting() {
           justifyContent='space-between' px='20px'>
           <Text alignSelf='center' fontWeight='semibold' color='#4c4c4d'>Transaksi Batal</Text>
           <Text alignSelf='center' fontWeight='semibold' color='#4c4c4d'>0</Text>
-        </Box>
+        </Box> */}
       </Box >
 
       {/* -------------------- User Profile Setting -------------------- */}

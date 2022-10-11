@@ -1,5 +1,5 @@
 import {
-  Box, Text, Flex, Input, Select, InputGroup, Modal, ModalCloseButton, Icon, InputRightElement, ModalOverlay, ModalHeader, ModalBody,
+  Box, Tooltip, Text, Flex, Input, Select, InputGroup, Modal, ModalCloseButton, Icon, InputRightElement, ModalOverlay, ModalHeader, ModalBody,
   useDisclosure, ModalFooter, FormControl, Button, useToast, FormHelperText, ModalContent, Image, TableContainer,
   Table, Thead, Tr, Th, Td, Tbody, Tfoot, Tabs, TabList, Tab, TabPanels, TabPanel
 } from '@chakra-ui/react';
@@ -9,7 +9,8 @@ import { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import { useRouter } from "next/router";
 import { FaTrashAlt, FaEdit } from "react-icons/fa";
-import { BiSearchAlt } from "react-icons/bi";
+import { BiSearchAlt, BiPlusMedical } from "react-icons/bi";
+import { GiCancel } from "react-icons/gi";
 import { axiosInstance } from '../../../lib/api';
 import AdmMdetailTransaction from './AdmMdetailTransaction';
 import * as Yup from "yup";
@@ -28,6 +29,7 @@ export default function ServeOrder(props) {
   const dispatch = useDispatch()
   const router = useRouter();
   const toast = useToast();
+  const [changeInput, setChangeInput] = useState(false)
   const [product, setProduct] = useState([])
 
   // --------------- for Filtering --------------- //
@@ -142,6 +144,17 @@ export default function ServeOrder(props) {
   // console.log(filterNamaRacikan);
   // console.log(productList);
 
+  const renderNamaRacikan = () => {
+    return filterNamaRacikan.map((x, index) => {
+      if (x == '') { null } else {
+        return (
+          // <option key={index} value={x}>{x == '' ? '- List Racikan -' : x}</option>
+          <option key={index} value={x}>{x}</option>
+        )
+      }
+    })
+  }
+
   const renderTransactionList2 = () => {
     return filterNamaRacikan.map((x, index) => {
       return (
@@ -151,7 +164,7 @@ export default function ServeOrder(props) {
           </Text>
           <TableContainer borderTopRadius='6px' mb='8px'>
             <Table size='sm' >
-              <Thead bg='#213360' color='white' fontWeight='bold' >
+              <Thead bg='#213360' color='white' fontWeight='bold'>
                 <Tr>
                   <Th textAlign='center' color='white'>Act</Th>
                   <Th maxW='150px' color='white' textAlign='center'>Nama Produk</Th>
@@ -165,7 +178,6 @@ export default function ServeOrder(props) {
                   totalWeight += (val.buy_quantity * val.Product?.Product_description?.weight)
                   if (val.medicine_concoction_name == x) {
                     return (
-
                       <Tr _hover={{ background: '#c7fcfc' }} key={index}>
                         <Td>
                           <ModalEditProductList
@@ -324,6 +336,43 @@ export default function ServeOrder(props) {
     })
   }
 
+  const pagination = () => {
+    return (
+      <>
+        {/* ---------- Pagination ---------- */}
+        <Box display='flex' justifyContent='center' alignContent='center'>
+          <Button onClick={() => {
+            async function submit() {
+              setPage(page == 1 ? 1 : page - 1)
+            } submit()
+            var pageNow = page - 1
+            pageNow = pageNow <= 0 ? 1 : pageNow
+            document.getElementById("pagingInput2").value = parseInt(pageNow)
+          }}
+            size='sm' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
+            _hover={{ bg: '#009B90', color: 'white' }}>Prev</Button>
+          <Input w='50px' type='number' id='pagingInput2' textAlign='center' bg='white' defaultValue={page} onChange={(e) => {
+            !e.target.value ? null : e.target.value > totalPage || e.target.value <= 0 ? e.target.value = page :
+              setPage(parseInt(e.target.value))
+          }} />
+          <Text alignSelf='center' mx='5px'>of {totalPage}</Text>
+          <Button onClick={() => {
+            async function submit() {
+              setPage(totalPage == page ? page : page + 1)
+            } submit()
+            var pageNow = page + 1
+            pageNow = pageNow > totalPage ? page : pageNow
+            document.getElementById("pagingInput2").value = parseInt(pageNow);
+            // console.log("PageNow2 " + pageNow);
+            // console.log("page2 " + page);
+            // console.log("totalPage2 " + totalPage);
+          }} size='sm' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
+            _hover={{ bg: '#009B90', color: 'white' }}>Next</Button>
+        </Box>
+      </>
+    )
+  }
+
   useEffect(() => {
     fetchProduct()
     fetchCouriers()
@@ -431,6 +480,14 @@ export default function ServeOrder(props) {
 
                 <Box display='flex' fontSize='sm' justifyContent='space-between'>
                   <Text fontWeight='semibold' color='#213360' minW='160px'>
+                    Total Berat :
+                  </Text>
+                  <Text fontWeight='semibold' color='#213360' ml='5px' maxW='300px'>
+                    {totalWeight?.toLocaleString()} Gram
+                  </Text>
+                </Box>
+                <Box display='flex' fontSize='sm' justifyContent='space-between'>
+                  <Text fontWeight='semibold' color='#213360' minW='160px'>
                     Total Keseluruhan :
                   </Text>
                   <Text fontWeight='semibold' color='#213360' ml='5px' maxW='300px'>
@@ -519,16 +576,7 @@ export default function ServeOrder(props) {
                       </FormControl>
 
                       {/* ---------- Pagination ---------- */}
-                      <Box display='flex' justifyContent='center' alignSelf='center'>
-                        <Button onClick={() => setPage(page == 1 ? 1 : page - 1)} size='xs' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
-                          _hover={{ bg: '#009B90', color: 'white' }}>Prev</Button>
-                        {/* {renderButton()} */}
-                        <Input alignSelf='center' size='xs' w='50px' type='number' textAlign='center' bg='white' value={page}
-                          onChange={(event) => setPage(event.target.value > totalPage ? page : event.target.value < 1 ? 1 : event.target.value)} />
-                        <Text alignSelf='center' ml='5px'>of {totalPage}</Text>
-                        <Button onClick={() => setPage(totalPage == page ? page : page + 1)} size='xs' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
-                          _hover={{ bg: '#009B90', color: 'white' }}>Next</Button>
-                      </Box>
+                      {pagination()}
                     </Box>
 
                     <Box mt='5px' maxH='300px' maxW='850px' overflow='scroll' >
@@ -574,15 +622,50 @@ export default function ServeOrder(props) {
                       </Text>
                       <Input size='sm' w='200px' placeholder='Nama Obat Racikan' />
                     </Box> */}
-                    <Box display='flex' justifyContent='space-between' mt='10px'>
-                      {/* {formikPrescription.values.namaRacikan} */}
-                      <FormControl w='200px' isInvalid={formikPrescription.errors.namaRacikan}>
-                        <Input size='sm' w='200px' placeholder='Nama Obat Racikan'
-                          onChange={(event) => formikPrescription.setFieldValue("namaRacikan", event.target.value)} />
-                        <FormHelperText color="red">
-                          {formikPrescription.errors.namaRacikan}
-                        </FormHelperText>
-                      </FormControl>
+                    <Box display='flex' justifyContent='space-between' alignItems='center'>
+                      <Box display='flex' alignItems='center' >
+                        {/* {formikPrescription.values.namaRacikan} */}
+                        {filterNamaRacikan == '' || changeInput ?
+                          <>
+                            <FormControl mr='10px' w='200px' alignSelf='center' isInvalid={formikPrescription.errors.namaRacikan}>
+                              <Input size='sm' w='200px' placeholder='Nama Obat Racikan'
+                                onChange={(event) => formikPrescription.setFieldValue("namaRacikan", event.target.value)} />
+                              <FormHelperText color="red">
+                                {formikPrescription.errors.namaRacikan}
+                              </FormHelperText>
+                            </FormControl>
+                            {filterNamaRacikan == '' ? null :
+                              <Tooltip label='Batalkan' fontSize='sm' bg='red'>
+                                <Button onClick={() => {
+                                  function submit() {
+                                    setChangeInput(false)
+                                    formikPrescription.values.namaRacikan = ''
+                                  }
+                                  submit()
+                                }
+                                } variant='link' size='xs' colorScheme={'red'}>
+                                  <Icon boxSize={5} as={GiCancel} />
+                                </Button>
+                              </Tooltip>
+                            }
+                          </>
+                          :
+                          <>
+                            <FormControl w='200px' mr='10px' isInvalid={formikPrescription.errors.namaRacikan}>
+                              <Select size='sm' w='200px' onChange={(event) => formikPrescription.setFieldValue("namaRacikan", event.target.value)}>
+                                <option value='' color='grey'>-- List Racikan --</option>
+                                {renderNamaRacikan()}
+                              </Select>
+                            </FormControl>
+                            <Tooltip label='Tambah Racikan Obat Baru' fontSize='sm' >
+                              <Button onClick={() => setChangeInput(true)} variant='link' size='xs' colorScheme='whatsapp'>
+                                <Icon boxSize={5} as={BiPlusMedical} />
+                              </Button>
+                            </Tooltip>
+                          </>
+                        }
+
+                      </Box>
 
                       <FormControl isInvalid={formik.errors.searchName} w='200px' alignSelf='center' >
                         <InputGroup size='sm' w='200px' borderRadius='6px' alignSelf='center'>
@@ -603,16 +686,8 @@ export default function ServeOrder(props) {
                       </FormControl>
 
                       {/* ---------- Pagination ---------- */}
-                      <Box display='flex' justifyContent='center' alignSelf='center'>
-                        <Button onClick={() => setPage(page == 1 ? 1 : page - 1)} size='xs' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
-                          _hover={{ bg: '#009B90', color: 'white' }}>Prev</Button>
-                        {/* {renderButton()} */}
-                        <Input alignSelf='center' size='xs' w='50px' type='number' textAlign='center' bg='white' value={page}
-                          onChange={(event) => setPage(event.target.value > totalPage ? page : event.target.value < 1 ? 1 : event.target.value)} />
-                        <Text alignSelf='center' ml='5px'>of {totalPage}</Text>
-                        <Button onClick={() => setPage(totalPage == page ? page : page + 1)} size='xs' m='3px' borderColor='#009B90' borderRadius='9px' bg='white' borderWidth='2px'
-                          _hover={{ bg: '#009B90', color: 'white' }}>Next</Button>
-                      </Box>
+                      {pagination()}
+
                     </Box>
 
                     <Box mt='5px' maxH='300px' maxW='850px' overflow='scroll' >

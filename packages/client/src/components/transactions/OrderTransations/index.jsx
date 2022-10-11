@@ -242,8 +242,8 @@ export default function OrderTrasanctions() {
         }
         let newTransaction = await axiosInstance.post("/transaction/api/v1/Trasanction/" + userSelector.id, qs.stringify(body))
         let noInvoice = newTransaction.data.result[0].no_invoice
-        console.log(newTransaction.data.result);
-        console.log(newTransaction.data.result[0].no_invoice);
+        // console.log(newTransaction.data.result);
+        // console.log(newTransaction.data.result[0].no_invoice);
 
         router.push('/transactions/alltransactions')
         dispatch({

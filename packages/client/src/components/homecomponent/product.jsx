@@ -1,4 +1,4 @@
-import { Box, Text } from '@chakra-ui/react';
+import { Box, Text, useMediaQuery } from '@chakra-ui/react';
 import NextLink from 'next/link'
 import banner from '../../assets/img/bg.png'
 import Image from 'next/image';
@@ -17,6 +17,10 @@ import "swiper/css/navigation";
 
 export default function HomePrduct() {
   const [product, setProduct] = useState([])
+  const [filterLaptop] = useMediaQuery('(min-width: 1120px)')
+  const [filterTab] = useMediaQuery('(min-width: 768px)')
+  const [filterMobile] = useMediaQuery('(min-width: 600px)')
+  const [filterMobile2] = useMediaQuery('(min-width: 360px)')
   const autoRender = useSelector((state) => state.automateRendering)
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter();
@@ -39,7 +43,7 @@ export default function HomePrduct() {
   const renderProduct = () => {
     return product.map((val, index) => {
       return (
-        <SwiperSlide key={index}>
+        <SwiperSlide key={index} >
           <ProductCard
             productId={val.id}
             productCode={val.product_code}
@@ -70,7 +74,7 @@ export default function HomePrduct() {
   }, [autoRender]);
   return (
     // <Box m='15px' mb='15px' maxW='1090px'>
-    <Box m='15px' mb='15px' maxW='1090px'>
+    <Box m='15px' mb='15px' maxW='1090px' w={filterTab ? "1090px" : filterMobile ? '768px' : filterMobile ? '600px' : '380px'} >
       <Box display='flex' justifyContent='space-between' mb='10px'>
         <Text fontWeight='bold' fontSize='lg'>Produk Populer</Text>
         <NextLink href='/productlist'>
@@ -83,9 +87,9 @@ export default function HomePrduct() {
    </Box> */}
 
       <Swiper
-        slidesPerView={5}
-        // centeredSlides={true}
-        spaceBetween={30}
+        slidesPerView={filterTab ? 5 : filterMobile ? 4 : filterMobile ? 2 : 2}
+        // centeredSlides={filterMobile2 ? true : false}
+        spaceBetween={20}
         pagination={{
           clickable: true,
         }}

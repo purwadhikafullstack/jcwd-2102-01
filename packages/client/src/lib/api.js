@@ -5,6 +5,7 @@ import auth_types from "../redux/reducers/auth/type";
 import { configureStore } from "@reduxjs/toolkit";
 export const axiosInstance = axios.create({
   baseURL: "https://jcwd210201api.purwadhikabootcamp.com",
+ 
   // headers: {
   //   "x-secret-key": "abc",
   // },

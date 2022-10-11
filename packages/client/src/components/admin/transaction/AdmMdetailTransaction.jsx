@@ -101,17 +101,21 @@ export default function AdmMdetailTransaction(props) {
                               borderColor={statusDet == 'Menunggu Pembayaran' || statusDet == 'Menunggu Konfirmasi Pembayaran' ? '#CBAF4E' :
                                  statusDet == 'Diproses' ? '#757575' :
                                     statusDet == 'Dikirim' ? '#0677c7' :
-                                       statusDet == 'Pesanan Dikonfirmasi' ? '#87DF9F' : '#FF6B6B'}
+                                       statusDet == 'Pesanan Dikonfirmasi' ? '#87DF9F' :
+                                          statusDet == 'Resep Dokter' ? '#B032FF' : '#FF6B6B'}
+
                               bg={statusDet == 'Menunggu Pembayaran' || statusDet == 'Menunggu Konfirmasi Pembayaran' ? '#FFDE6B4D' :
                                  statusDet == 'Diproses' ? '#ededed' :
                                     statusDet == 'Dikirim' ? '#bae2ff' :
-                                       statusDet == 'Pesanan Dikonfirmasi' ? '#c2ffd3' : '#fcd7d7'} >
+                                       statusDet == 'Pesanan Dikonfirmasi' ? '#c2ffd3' :
+                                          statusDet == 'Resep Dokter' ? '#EFD7FE' : '#fcd7d7'} >
 
                               <Text fontSize='xs' textAlign='center' fontWeight='semibold'
                                  color={statusDet == 'Menunggu Pembayaran' || statusDet == 'Menunggu Konfirmasi Pembayaran' ? '#CBAF4E' :
                                     statusDet == 'Diproses' ? '#757575' :
                                        statusDet == 'Dikirim' ? '#0677c7' :
-                                          statusDet == 'Pesanan Dikonfirmasi' ? '#26c754' : '#FF6B6B'}
+                                          statusDet == 'Pesanan Dikonfirmasi' ? '#26c754' :
+                                             statusDet == 'Resep Dokter' ? '#B032FF' : '#FF6B6B'}
                               >{statusDet}</Text>
                            </Box>
                         </Box>
