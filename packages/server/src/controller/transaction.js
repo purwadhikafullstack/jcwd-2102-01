@@ -9,7 +9,7 @@ const transactionsController = {
     try {
       const { buy_quantity, price, total_price, note, id_user, id_product, id_unit } = req.body;
       
-      // ---------------  Mengambil produk stok --------------- //
+      // --------------- Mengambil produk stok --------------- //
       const findproduct = await Product_stock.findOne({
         where: {
           [Op.and]: [
@@ -490,14 +490,14 @@ const transactionsController = {
           newStokUpdate = val.id_unit == val.Product.Product_stocks[0].id_unit ? val.Product.Product_stocks[0].stock - val.buy_quantity : val.Product.Product_stocks[1].stock - val.buy_quantity 
           newTotalSold = val.id_unit == val.Product.Product_stocks[0].id_unit ? val.Product.Product_stocks[0].total_sold + val.buy_quantity : val.Product.Product_stocks[1].total_sold + val.buy_quantity
 
-        console.log(' ');
-        console.log('--- tes find id PRoduct --- ' + val.id_product);
-        console.log('tes find id unit ' + val.id_unit);
-        console.log('tes find ' +  val.Product.Product_stocks[0].stock);
-        console.log('tes find ' +  val.Product.Product_stocks[0].Unit.id);
-        console.log('tes val cart ' + val.buy_quantity);
-        console.log('newStokupdate ' + newStokUpdate);
-        console.log('new Total Sold ' + newTotalSold);
+        // console.log(' ');
+        // console.log('--- tes find id PRoduct --- ' + val.id_product);
+        // console.log('tes find id unit ' + val.id_unit);
+        // console.log('tes find ' +  val.Product.Product_stocks[0].stock);
+        // console.log('tes find ' +  val.Product.Product_stocks[0].Unit.id);
+        // console.log('tes val cart ' + val.buy_quantity);
+        // console.log('newStokupdate ' + newStokUpdate);
+        // console.log('new Total Sold ' + newTotalSold);
         
         Product_stock.update({stock: newStokUpdate, total_sold:newTotalSold}, {
         where: {

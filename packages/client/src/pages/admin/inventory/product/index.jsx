@@ -134,22 +134,6 @@ export default function Product(props) {
   //   }
   //   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   // catch(err){
   //   console.log(err);
   // }
@@ -229,8 +213,6 @@ export default function Product(props) {
     return product?.map((val, index) => {
       // 
       return (
-
-
         <Tr key={index}>
           <Td>{val.id}</Td>
           <Td>{val.product_name}</Td>
@@ -309,16 +291,16 @@ export default function Product(props) {
           <Td>
             <Buttonmcu
               key={index}
-              stock={val.stock}
-              id_product={val.id_product}
-              isi_perkemasan={val.isi_perkemasan}
-              id_unit={val.id_unit}
-              id_unit2={val.id_unit2}
-              capital_price={val.capital_price}
-              selling_price={val.selling_price}
+              stock={val.Product_stocks[0].stock}
+              id_product={val.id}
+              isi_perkemasan={val.Product_stocks[0].isi_perkemasan}
+              id_unit={val.Product_stocks[0].id_unit}
+              id_unit2={val.Product_stocks[0].id}
+              capital_price={val.Product_stocks[0].capital_price}
+              selling_price={val.Product_stocks[0].selling_price}
               Product_stocks={val.Product_stocks}
-              Unit={val.Unit}
-
+              Unit={val.Product_stocks[0].Unit}
+            // id_product = {val.id_product}
             />
           </Td>
         </Tr>
@@ -382,6 +364,7 @@ export default function Product(props) {
               </TableContainer> </Box>
 
           </Flex>
+          {/* <AdmFooter /> */}
 
         </Box>
 
