@@ -112,7 +112,7 @@ export default function Buttonmcu(props) {
           // if()
           return (
             <>
-              <option value={val.id}>{val.unit_name}</option>
+              <option key={index} value={val.id}>{val.unit_name}</option>
               {/* <option value={val.id=2}>{val.unit_name}</option>
                 <option value={val.id=3}>{val.unit_name}</option> */}
             </>

@@ -231,7 +231,7 @@ export default function Product(props) {
       return (
 
 
-        <Tr>
+        <Tr key={index}>
           <Td>{val.id}</Td>
           <Td>{val.product_name}</Td>
           <Td>{val.product_code}</Td>
