@@ -114,6 +114,7 @@ export default function AdmTransactionCard(props) {
             transaction_status: "Dikirim"
          }
          await axiosInstance.patch("/transaction/api/v1/invoice/" + noInvoice, qs.stringify(body))
+
          dispatch({
             type: "FETCH_RENDER",
             payload: { value: !autoRender.value }

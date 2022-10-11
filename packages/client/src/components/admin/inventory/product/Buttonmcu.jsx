@@ -42,7 +42,7 @@ export default function Buttonmcu(props) {
   const autoRender = useSelector((state) => state.automateRendering)
   //    const {editCategory,editMargin,editFirstprice,editTotalsold,editIsiperkemasan,editConverted,editSellingprice,editCapitalprice,editStock,editKomposisi,editWeight,editPeringatan,editProductname,editImage,editCode, editKegunaan,editKemasan,editGolongan,editCarasimpan,editNomor_ijin_edar, editCara_pakai,editId} = data
   // const {id, product_code, product_name, kegunaan, kemasan, golongan, cara_simpan, nomor_ijin_edar, cara_pakai, peringatan, weight, komposisi, stock, capital_price, selling_price, converted, isi_perkemasan, total_sold, first_price, margin, Product_stocks,image_url,  Product_images, Product_stock,Product_description, Product_categories} = data
-  const { id, product_code, unit_name, product_name, kegunaan, kemasan, golongan, cara_simpan, nomor_ijin_edar, cara_pakai, peringatan, weight, komposisi, stock, capital_price, selling_price, converted, isi_perkemasan, total_sold, first_price, margin, Product_stocks, image_url, Unit, Product_images, Product_description, Product_categories } = props
+  const { Product_stocks, id_product, id_unit, isi_perkemasan, stock, capital_price, selling_price, Unit, id_unit2 } = props
   const toast = useToast();
   const [selectedFile, setSelectedFile] = useState(null);
   const inputFileRef = useRef(null)
@@ -54,26 +54,38 @@ export default function Buttonmcu(props) {
     try {
       await axiosInstance.get("/products/api/v1/units").then((res) => {
         setUnits(res.data.result);
+        console.log(res.data.result);
       })
     } catch (err) {
       console.log(err);
-
+      //  console.log(id);
     }
   }
+
   const formik = useFormik({
     initialValues: {
       // product_name:product_name,
-      unit_name: unit_name,
+      // unit_name:unit_name,
+      id_product: id_product,
+      stock: stock,
+      isi_perkemasan: isi_perkemasan,
+      id_unit: id_unit,
+      id_unit2: id_unit2,
+      capital_price: capital_price,
+      selling_price: selling_price,
+      Unit: Unit
+
+
     },
     enableReinitialize: true,
     onSubmit: async (values) => {
       // const formData = new FormData();
-      const { product_name, unit_name, id_unit, id_unit2, id_product, stock, isi_perkemasan, capital_price, selling_price, converted } = formik.values
+      // const {product_name, unit_name, id_unit,id_unit2,id_product, stock, isi_perkemasan, capital_price, selling_price, converted} = formik.values
       try {
         let body = {
           // product_name :values.product_name,
           stock: values.stock,
-          id_product: values.id_produduct,
+          id_product: values.id_product,
           isi_perkemasan: values.isi_perkemasan,
           id_unit: values.id_unit,
           id_unit2: values.id_unit2,
@@ -81,14 +93,20 @@ export default function Buttonmcu(props) {
           selling_price: values.selling_price
         }
         //  }catch{
-        toast({
-          title: `Product has been edited`,
-          description: "Berhasil mengedit produk",
-          status: "success",
-          isClosable: true,
-        })
-        console.log(body)
+        console.log("askjdniasda");
+        console.log(id_product)
+        console.log(body);
+        await axiosInstance.post("/products/api/v1/product/" + id_product, qs.stringify(body)).then(() => {
+          toast({
+            title: `Product has been edited`,
+            description: "Berhasil mengedit produk",
+            status: "success",
+            isClosable: true,
+          })
+          // console.log("askdnanknaksndkjasndkj")
+          // console.log(id_unit)
 
+        })
       }
       catch (err) {
         // console.log(editId);
@@ -107,16 +125,19 @@ export default function Buttonmcu(props) {
 
       <Select placeholder='Select option'
         onChange={(e) => formik.setFieldValue("id_unit", e.target.value)}
-        defaultValue={formik.values.user_name}>
+        defaultValue={formik.values.unit_name}>
         {units?.map((val, index) => {
-          // if()
-          return (
-            <>
-              <option key={index} value={val.id}>{val.unit_name}</option>
-              {/* <option value={val.id=2}>{val.unit_name}</option>
+          if (Product_stocks[0].Unit.unit_name == val.unit_name)
+            <option value={val.id} disabled>{val.unit_name}</option>
+          else {
+            return (
+              <>
+                <option value={val.id}>{val.unit_name}</option>
+                {/* <option value={val.id=2}>{val.unit_name}</option>
                 <option value={val.id=3}>{val.unit_name}</option> */}
-            </>
-          )
+              </>
+            )
+          }
         }
         )
         }
@@ -149,6 +170,7 @@ export default function Buttonmcu(props) {
 
             <Box width="200px" mt="20px">
               <Text>Jumlah Stock</Text>
+              {/* <Text>{id_product}</Text > */}
             </Box>
             <Box width="200px" mt="20px">
               <Text>{Product_stocks[0].stock}</Text>
@@ -198,4 +220,3 @@ export default function Buttonmcu(props) {
     </>
   )
 }
-
