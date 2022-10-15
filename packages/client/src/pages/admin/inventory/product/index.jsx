@@ -110,14 +110,18 @@ export default function Product(props) {
   //   try{
   // alert(id)
   async function deletedProduct(id) {
-    console.log(id)
+    // console.log(id)
     try {
       axiosInstance.patch("/products/api/v1/product/" + id)
+      toast({
+        title: `Produk berhasil dihapus`,
+        status: "success",
+        isClosable: true,
+      })
     } catch (err) {
       console.log("error")
     }
   }
-
 
   // async function filterProd (){
   //   console.log();
@@ -204,8 +208,8 @@ export default function Product(props) {
   //     }
   // }
   useEffect(() => {
-    deletedProduct()
-  }, [])
+    fetchProduct()
+  }, [product])
 
   // alert() 
 

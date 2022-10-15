@@ -98,8 +98,8 @@ export default function AllTransactions() {
           setTransactionFetch(res.data.result)
           const temp = res.data.result
           setTransactionLength(temp.length)
-          console.log(res.data.result)
-          console.log('test' + res.data.result.length)
+          // console.log(res.data.result)
+          // console.log('test' + res.data.result.length)
         })
     } catch (err) {
       console.log(err)
@@ -150,6 +150,7 @@ export default function AllTransactions() {
   //  -------------------- reset filter -------------------- //
   const resetFilter = async () => {
     setSearchInvNo('')
+    document.getElementById("search").value = '';
     setHoursStart(0)
     setMinutesStart(0)
     setHoursEnd(0)
@@ -185,7 +186,7 @@ export default function AllTransactions() {
           {/* {formik.values.searchInvoice} */}
           <FormControl isInvalid={formik.errors.searchInvoice}>
             <InputGroup size='md' >
-              <Input placeholder="Cari No Invoice" type='text' bg='white' borderRadius='8px'
+              <Input placeholder="Cari No Invoice" id='search' type='text' bg='white' borderRadius='8px'
                 onChange={(event) => formik.setFieldValue("searchInvoice", event.target.value)} />
               <InputRightElement>
                 <Icon

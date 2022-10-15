@@ -326,14 +326,9 @@ export default function RegisterForm() {
 
             {/* ---------- Sign Up Button ---------- */}
             <Box align={"center"}>
-              <Button
+              <Button w={'250px'}
+                colorScheme='twitter'
                 loadingText="Submitting"
-                size="lg"
-                bg={"blue.400"}
-                color={"white"}
-                _hover={{
-                  bg: "blue.500",
-                }}
                 onClick={formik.handleSubmit}
               >
                 Sign up

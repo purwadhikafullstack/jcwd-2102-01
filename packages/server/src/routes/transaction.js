@@ -28,6 +28,9 @@ router.post("/api/v1/user/:idUser/invoice/:noInvoice", transactionsController.ge
 // -------------------- Change transaction status
 router.patch("/api/v1/invoice/:noInvoice", transactionsController.editTransactionStatus);
 
+// -------------------- Decrese Stock
+router.patch("/api/v1/Product/Stocks", transactionsController.decreseStock);
+
 // -------------------- Upload Payment proof
 router.post(
   "/api/v1/payment/:noInvoice",
