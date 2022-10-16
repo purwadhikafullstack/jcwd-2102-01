@@ -228,9 +228,9 @@ export default function NavBarSignIn() {
               </Modal>
 
               <Link onClick={onOpenCart} >
-                <Button background='white' _hover={{ background: '#E8F5FD', color: '#00ACEE', borderBottomWidth: '3px', borderBottomColor: '#3B9AE1' }} borderRadius={0} h={16} mr='8px'>
+                <Button background='white' color='black' _hover={{ background: '#E8F5FD', color: '#00ACEE', borderBottomWidth: '3px', borderBottomColor: '#3B9AE1' }} borderRadius={0} h={16} mr='8px'>
                   {/* <Icon boxSize='6' as={IoCartOutline} /> */}
-                  <Avatar _hover={{ color: '#00ACEE' }} icon={<Icon boxSize='6' as={IoCartOutline} />} bg='white'>
+                  <Avatar _hover={{ color: '#00ACEE' }} color='black' icon={<Icon boxSize='6' as={IoCartOutline} />} bg='white'>
                     {cartLength <= 0 ? (
                       <></>
                     ) : (
