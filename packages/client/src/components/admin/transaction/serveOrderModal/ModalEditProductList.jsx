@@ -146,7 +146,7 @@ export default function ModalEditProductList(props) {
               <Text fontWeight='semibold' color='#213360' minW='140px'>
                 Quantity
               </Text>:
-              {formik.values.qtyBuy}
+              {/* {formik.values.qtyBuy} */}
               <Text color='#213360' ml='5px' maxW='300px'>
                 <FormControl isInvalid={formik.errors.qtyBuy}>
                   <NumberInput defaultValue={buyQuantity} min={1}>

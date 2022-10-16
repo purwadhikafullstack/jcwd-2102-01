@@ -174,6 +174,7 @@ export default function TransactionList() {
 
   const resetFilter = async () => {
     setSearchInvNo('')
+    document.getElementById("search").value = '';
     setHoursStart(0)
     setMinutesStart(0)
     setHoursEnd(0)
@@ -249,7 +250,7 @@ export default function TransactionList() {
             {/* {formik.values.searchInvoice} */}
             <FormControl isInvalid={formik.errors.searchInvoice}>
               <InputGroup size='sm' >
-                <Input placeholder="Cari No Invoice" type='text' bg='white' borderRadius='8px'
+                <Input placeholder="Cari No Invoice" id='search' type='text' bg='white' borderRadius='8px'
                   onChange={(event) => formik.setFieldValue("searchInvoice", event.target.value)} />
                 <InputRightElement>
                   <Icon

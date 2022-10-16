@@ -18,7 +18,6 @@ export default function AdmMdetailTransaction(props) {
    let cekNamaRacikan = new Set(temp);
    let filterNamaRacikan = [...cekNamaRacikan];
    // console.log(filterNamaRacikan);
-   // console.log(productList);
 
    const renderTransactionList = () => {
       if (idRecipe == 1) {
@@ -70,7 +69,6 @@ export default function AdmMdetailTransaction(props) {
 
    }
 
-   // console.log(productsDet);
    return (
       <>
          <Button onClick={onOpenDetail} variant='link' color='#009B90'>

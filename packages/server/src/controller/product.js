@@ -220,6 +220,9 @@ const productController = {
         findProduct= await Product.findAll({
         offset: (page - 1) * limit,
         limit: limit ? parseInt(limit) : undefined,
+        where: {
+            is_deleted: {[Op.notIn]:['yes']}
+            },
         include: [
           { model: Product_description },
           { model : Product_category,
@@ -232,7 +235,7 @@ const productController = {
           { model : Product_stock,
             include: [{model: Unit}],
             where: {
-            converted: {[Op.notIn]:[1]}
+            converted: {[Op.notIn]:['yes']}
             }
           },
           { model : Product_image,

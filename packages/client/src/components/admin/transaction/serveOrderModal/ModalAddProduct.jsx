@@ -1,7 +1,7 @@
 import {
  Box, Text, Input, InputLeftElement, InputGroup,
  Modal, ModalCloseButton, Icon, InputRightElement, Tooltip, ModalOverlay, ModalHeader, ModalBody, useDisclosure, ModalFooter,
- Button, useToast, ModalContent,
+ Button, useToast, ModalContent, Link
 } from '@chakra-ui/react';
 import { useDispatch, useSelector } from 'react-redux'
 import { useState, } from "react";
@@ -73,11 +73,13 @@ export default function ModalAddProduct(props) {
    {/* ----- Button Convert satuan link ke Product List ----- */}
    {converted == 'yes' ? null
     :
-    <Tooltip label='Convert satuan' fontSize='sm' >
-     <Button onClick={onOpeSAddQty} variant='link' size='xs' color='#009B90' mr='5px' >
-      <Icon boxSize={5} as={SiConvertio} _hover={{ color: '#02d1c2' }} />
-     </Button>
-    </Tooltip>
+    <Link href={'/admin/inventory/product'}>
+     <Tooltip label='Convert satuan' fontSize='sm' >
+      <Button variant='link' size='xs' color='#009B90' mr='5px' >
+       <Icon boxSize={5} as={SiConvertio} _hover={{ color: '#02d1c2' }} />
+      </Button>
+     </Tooltip>
+    </Link>
    }
 
    <Modal isOpen={isOpenAddQty} onClose={onCloseAddQty} size='lg'>

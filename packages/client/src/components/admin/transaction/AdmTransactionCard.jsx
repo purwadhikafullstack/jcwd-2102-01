@@ -62,6 +62,7 @@ export default function AdmTransactionCard(props) {
       }
    })
 
+
    // -------------------- Transaction will be process -------------------- //
    const confirmPayment = async () => {
       try {
@@ -69,6 +70,7 @@ export default function AdmTransactionCard(props) {
             transaction_status: "Diproses"
          }
          await axiosInstance.patch("/transaction/api/v1/invoice/" + noInvoice, qs.stringify(body))
+
          dispatch({
             type: "FETCH_RENDER",
             payload: { value: !autoRender.value }
@@ -114,6 +116,20 @@ export default function AdmTransactionCard(props) {
             transaction_status: "Dikirim"
          }
          await axiosInstance.patch("/transaction/api/v1/invoice/" + noInvoice, qs.stringify(body))
+
+         await products.map((val, index) => {
+            let body2 = {
+               id_product: val.id_product,
+               id_unit: val.id_unit,
+               buy_quantity: val.buy_quantity
+            }
+
+            axiosInstance.patch("/transaction/api/v1/Product/Stocks", qs.stringify(body2))
+            dispatch({
+               type: "FETCH_RENDER",
+               payload: { value: !autoRender.value }
+            })
+         })
 
          dispatch({
             type: "FETCH_RENDER",

@@ -238,7 +238,7 @@ export default function ProductListing() {
     fetchProduct()
     page
 
-  }, [autoRender, searchProduct, page, limit]);
+  }, [autoRender, searchProduct, page, limit, routerQuery]);
 
   return (
     <>
