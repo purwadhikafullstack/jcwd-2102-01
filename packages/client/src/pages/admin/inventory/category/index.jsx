@@ -121,6 +121,11 @@ export default function Category() {
   }, [
     // autoRender.value
   ])
+  useEffect(() => {
+    fetchCategory()
+  }, [
+    autoRender.value
+  ])
 
   //   async function deleteCategory() {
   //     try {

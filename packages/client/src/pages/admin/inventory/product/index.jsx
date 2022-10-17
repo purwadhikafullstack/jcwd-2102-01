@@ -41,6 +41,7 @@ import Buttonmcu from "../../../../components/admin/inventory/product/Buttonmcu"
 //  import Buttondeleted from "../../../../components/admin/inventory/product/Buttondelete";
 export default function Product(props) {
   // const { isOpen, onOpen, onClose } = useDisclosure();
+  const userSelector = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const productSelector = useSelector((state) => state.auth);
   const [product, setProduct] = useState([]);
@@ -105,6 +106,18 @@ export default function Product(props) {
   useEffect(() => {
     fetchProduct()
   }, [])
+
+  useEffect(() => {
+    if (!userSelector?.id) {
+      router.push("/login")
+    }
+    else if (userSelector?.id && userSelector.roles == "User") {
+      router.push("/")
+    }
+    else {
+      setIsLoading(false);
+    }
+  }, [userSelector?.id]);
 
   // async function deletedProduct(id){
   //   try{

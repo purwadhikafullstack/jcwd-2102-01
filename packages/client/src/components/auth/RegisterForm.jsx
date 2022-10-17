@@ -143,7 +143,7 @@ export default function RegisterForm() {
               </FormControl>
 
               {/* ---------- Username Input ---------- */}
-              {formik.values.username}
+              {/* {formik.values.username} */}
               <FormControl
                 id="username"
                 isInvalid={formik.errors.username}

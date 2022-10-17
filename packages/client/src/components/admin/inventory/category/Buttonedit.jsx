@@ -56,20 +56,20 @@ export default function Buttonedit(props) {
     validateOnChange: false,
     onSubmit: async () => {
       const { change_category } = formik.values
-      alert(change_category)
+      // alert(change_category)
       try {
         let body = {
           category: change_category,
         }
 
-        await axiosInstance.patch("/api/v1/Category/" + editId, qs.stringify(body)).then(() => {
+        await axiosInstance.patch("/category/api/v1/Category/" + editId, qs.stringify(body)).then(() => {
 
 
           // setEditInput(false)
-          // dispatch({
-          //     type: "FETCH_RENDER",
-          //     payload: { value: !autoRender.value }
-          //   })
+          dispatch({
+            type: "FETCH_RENDER",
+            payload: { value: !autoRender.value }
+          })
           toast({
             title: `Category has been edited`,
             description: "Berhasil mengedit category",

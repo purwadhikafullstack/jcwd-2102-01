@@ -44,13 +44,14 @@ export default function Buttondeleted(props) {
   const { iddelete } = props
   const toast = useToast()
   const dispatch = useDispatch()
+
   async function deleteCategory() {
     try {
-      await axiosInstance.delete("/api/v1/Category/" + iddelete)
-      // dispatch({
-      //   type: "FETCH_RENDER",
-      //   payload: { value: !autoRender.value }
-      // })
+      await axiosInstance.delete("/category/api/v1/Category/" + iddelete)
+      dispatch({
+        type: "FETCH_RENDER",
+        payload: { value: !autoRender.value }
+      })
 
       toast({
         title: "Success",
