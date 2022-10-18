@@ -66,10 +66,10 @@ export default function Buttonadd(props) {
         }
 
         axiosInstance.post("/category/api/v1/Category", formData).then(() => {
-          //   dispatch({
-          //     type: "FETCH_RENDER",
-          //     payload: { value: !autoRender.value }
-          //   })
+          dispatch({
+            type: "FETCH_RENDER",
+            payload: { value: !autoRender.value }
+          })
 
           toast({
             title: "Succes",

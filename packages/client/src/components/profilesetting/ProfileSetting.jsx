@@ -401,7 +401,7 @@ export default function ProfileSetting() {
               <ModalHeader >Ganti Kata sandi</ModalHeader>
               <ModalCloseButton />
               <ModalBody pb={6} >
-                <MchangePassword />
+                <MchangePassword onClose={onCloseChangePass} />
               </ModalBody>
             </ModalContent>
           </Modal>

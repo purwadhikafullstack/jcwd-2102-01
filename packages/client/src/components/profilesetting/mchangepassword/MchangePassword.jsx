@@ -1,6 +1,6 @@
 import {
   Box, Text, Stack, Heading, Button, InputGroup, Icon, FormHelperText, Progress,
-  InputRightElement, FormControl, FormLabel, Input, Center
+  InputRightElement, FormControl, FormLabel, Input, Center, useToast
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import Image from 'next/image';
@@ -13,10 +13,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from "next/router";
 import qs from 'qs';
 
-export default function MchangePassword() {
+export default function MchangePassword(props) {
+  const { onClose } = props
   const [passwordViewOld, setPasswordViewOld] = useState(false);
   const [passwordView, setPasswordView] = useState(false);
   const [passwordViewRep, setPasswordViewRep] = useState(false);
+  const toast = useToast();
   const userSelector = useSelector((state) => state.auth)
   const router = useRouter()
 
@@ -49,8 +51,15 @@ export default function MchangePassword() {
         const res = await axiosInstance.patch(`/user/editUserPassword/${userSelector.id}`, qs.stringify(body));
         // console.log(res);
         // console.log(restoken);
+        toast({
+          title: `Password berhasil dirubah`,
+          description: "Password berhasil dirubah",
+          status: "success",
+          isClosable: true,
+        })
+        onClose();
+        // router.push('/profilesetting')
 
-        router.push('/home')
       } catch (err) {
         console.log(err);
       }
